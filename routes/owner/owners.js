@@ -12,9 +12,10 @@ const {
 } = require('../../controllers/owner/ownerController');
 
 const { protect, authorize } = require('../../middleware/auth');
-const { 
-  validateId, 
-  handleValidationErrors 
+const {
+  validateOwner,
+  validateId,
+  handleValidationErrors
 } = require('../../middleware/validation');
 
 const router = express.Router();
@@ -25,12 +26,12 @@ router.use(protect);
 router
   .route('/')
   .get(getOwners)
-  .post(authorize('admin', 'manager'), createOwner);
+  .post(authorize('admin', 'manager'), validateOwner, handleValidationErrors, createOwner);
 
 router
   .route('/:id')
   .get(validateId, handleValidationErrors, getOwner)
-  .put(authorize('admin', 'manager'), validateId, handleValidationErrors, updateOwner)
+  .put(authorize('admin', 'manager'), validateId, validateOwner, handleValidationErrors, updateOwner)
   .delete(authorize('admin'), validateId, handleValidationErrors, deleteOwner);
 
 router

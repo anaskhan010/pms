@@ -8,14 +8,14 @@ const {
   updatePassword,
   forgotPassword,
   resetPassword
-} = require('../controllers/authController');
+} = require('../../controllers/user/authController');
 
-const { protect } = require('../middleware/auth');
+const { protect } = require('../../middleware/auth');
 const { 
   validateUserRegistration, 
   validateUserLogin, 
   handleValidationErrors 
-} = require('../middleware/validation');
+} = require('../../middleware/validation');
 
 const router = express.Router();
 

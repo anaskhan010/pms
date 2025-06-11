@@ -97,9 +97,7 @@ exports.validateProperty = [
 exports.validateUnit = [
   body('property_id')
     .notEmpty()
-    .withMessage('Property ID is required')
-    .isUUID()
-    .withMessage('Property ID must be a valid UUID'),
+    .withMessage('Property ID is required'),
   
   body('unit_number')
     .notEmpty()
@@ -131,25 +129,43 @@ exports.validateUnit = [
     .withMessage('Area must be a positive number')
 ];
 
+// Owner validation rules
+exports.validateOwner = [
+  body('owner_type')
+    .isIn(['Individual', 'Company', 'Bank', 'RealEstateAgent'])
+    .withMessage('Owner type must be one of: Individual, Company, Bank, RealEstateAgent'),
+
+  body('name')
+    .notEmpty()
+    .withMessage('Name is required')
+    .isLength({ max: 255 })
+    .withMessage('Name cannot exceed 255 characters'),
+
+  body('email')
+    .optional()
+    .isEmail()
+    .withMessage('Please provide a valid email')
+    .normalizeEmail(),
+
+  body('phone_number')
+    .optional()
+    .isMobilePhone()
+    .withMessage('Please provide a valid phone number')
+];
+
 // Contract validation rules
 exports.validateContract = [
   body('unit_id')
     .notEmpty()
-    .withMessage('Unit ID is required')
-    .isUUID()
-    .withMessage('Unit ID must be a valid UUID'),
-  
+    .withMessage('Unit ID is required'),
+
   body('tenant_id')
     .notEmpty()
-    .withMessage('Tenant ID is required')
-    .isUUID()
-    .withMessage('Tenant ID must be a valid UUID'),
-  
+    .withMessage('Tenant ID is required'),
+
   body('owner_id')
     .notEmpty()
-    .withMessage('Owner ID is required')
-    .isUUID()
-    .withMessage('Owner ID must be a valid UUID'),
+    .withMessage('Owner ID is required'),
   
   body('contract_type')
     .isIn(['Rental', 'Lease'])
@@ -220,9 +236,7 @@ exports.validateTenant = [
 exports.validatePayment = [
   body('tenant_id')
     .notEmpty()
-    .withMessage('Tenant ID is required')
-    .isUUID()
-    .withMessage('Tenant ID must be a valid UUID'),
+    .withMessage('Tenant ID is required'),
   
   body('payment_amount')
     .isFloat({ min: 0.01 })
@@ -244,6 +258,8 @@ exports.validatePayment = [
 // ID parameter validation
 exports.validateId = [
   param('id')
-    .isUUID()
-    .withMessage('ID must be a valid UUID')
+    .isLength({ min: 1 })
+    .withMessage('ID is required')
+    .notEmpty()
+    .withMessage('ID cannot be empty')
 ];

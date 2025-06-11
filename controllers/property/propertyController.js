@@ -1,6 +1,6 @@
 const Property = require('../../models/property/Property');
-const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../utils/asyncHandler');
+const ErrorResponse = require('../../utils/errorResponse');
+const asyncHandler = require('../../utils/asyncHandler');
 
 // @desc    Get all properties
 // @route   GET /api/v1/properties

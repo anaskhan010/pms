@@ -7,14 +7,14 @@ const {
   deleteProperty,
   getPropertyUnits,
   getPropertyStatistics
-} = require('../controllers/propertyController');
+} = require('../../controllers/property/propertyController');
 
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../../middleware/auth');
 const { 
   validateProperty, 
   validateId, 
   handleValidationErrors 
-} = require('../middleware/validation');
+} = require('../../middleware/validation');
 
 const router = express.Router();
 

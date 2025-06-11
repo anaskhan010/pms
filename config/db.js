@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const colors = require('colors');
 
 class Database {
   constructor() {
@@ -16,9 +17,6 @@ class Database {
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true,
         charset: 'utf8mb4',
         timezone: '+00:00'
       });
@@ -30,7 +28,12 @@ class Database {
       
       return this.pool;
     } catch (error) {
-      console.error(`Database connection error: ${error.message}`.red);
+      console.error(`Database connection error: ${error.message}`);
+      console.error('Full error:', error);
+      console.error('Please check:');
+      console.error('1. MySQL server is running');
+      console.error('2. Database credentials in config.env are correct');
+      console.error('3. Database exists');
       process.exit(1);
     }
   }

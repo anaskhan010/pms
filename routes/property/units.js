@@ -7,14 +7,14 @@ const {
   deleteUnit,
   getUnitDetails,
   updateUnitStatus
-} = require('../controllers/unitController');
+} = require('../../controllers/property/unitController');
 
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../../middleware/auth');
 const { 
   validateUnit, 
   validateId, 
   handleValidationErrors 
-} = require('../middleware/validation');
+} = require('../../middleware/validation');
 
 const router = express.Router();
 
