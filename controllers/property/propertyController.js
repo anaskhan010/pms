@@ -45,9 +45,21 @@ exports.getProperty = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Create new property
-// @route   POST /api/v1/properties
-// @access  Private (Admin/Manager)
+// get all properties by tenant_id
+exports.getPropertiesByTenant = asyncHandler(async (req, res, next) => {
+  const tenantId = req.params.tenantId;
+  console.log('tenantId=====', tenantId);
+
+  const properties = await Property.findAllPropertiesByTenant(tenantId);
+
+  res.status(200).json({
+    success: true,
+    count: properties.length,
+    data: properties
+  });
+});
+
+
 exports.createProperty = asyncHandler(async (req, res, next) => {
   const property = await Property.create(req.body);
 

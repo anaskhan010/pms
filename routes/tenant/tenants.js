@@ -24,7 +24,7 @@ const router = express.Router();
 router.use(protect);
 
 router
-  .route('/')
+  .route('/create-tenant')
   .get(getTenants)
   .post(authorize('admin', 'manager'), validateTenant, handleValidationErrors, createTenant);
 

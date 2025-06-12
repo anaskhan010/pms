@@ -44,10 +44,9 @@ exports.getTenant = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Create new tenant
-// @route   POST /api/v1/tenants
-// @access  Private (Admin/Manager)
+
 exports.createTenant = asyncHandler(async (req, res, next) => {
+  
   // Check if tenant with email already exists
   if (req.body.email) {
     const existingTenant = await Tenant.findByEmail(req.body.email);
@@ -64,9 +63,7 @@ exports.createTenant = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update tenant
-// @route   PUT /api/v1/tenants/:id
-// @access  Private (Admin/Manager)
+
 exports.updateTenant = asyncHandler(async (req, res, next) => {
   let tenant = await Tenant.findById(req.params.id);
 

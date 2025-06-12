@@ -95,7 +95,10 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     // Connect to database
-    await db.connect();
+    await db.getConnection();
+    console.log('Database connection successful'.white);
+    
+
     
     const server = app.listen(PORT, () => {
       console.log(

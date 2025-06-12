@@ -6,7 +6,8 @@ const {
   updateProperty,
   deleteProperty,
   getPropertyUnits,
-  getPropertyStatistics
+  getPropertyStatistics,
+  getPropertiesByTenant
 } = require('../../controllers/property/propertyController');
 
 const { protect, authorize } = require('../../middleware/auth');
@@ -22,9 +23,15 @@ const router = express.Router();
 router.use(protect);
 
 router
-  .route('/')
+  .route('/create-property')
   .get(getProperties)
   .post(authorize('admin', 'manager'), validateProperty, handleValidationErrors, createProperty);
+
+  // get all properties by tenant_id
+  router
+  .route('/get-all-properties-by-tenant/:tenantId')
+  .get(validateId, getPropertiesByTenant);
+
 
 router
   .route('/:id')
