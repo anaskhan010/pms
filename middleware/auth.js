@@ -32,10 +32,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponse('No user found with this token', 401));
     }
 
-    // Check if user is active
-    if (!user.is_active) {
-      return next(new ErrorResponse('User account is deactivated', 401));
-    }
+   
 
     req.user = user;
     next();

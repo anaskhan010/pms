@@ -6,25 +6,21 @@ const asyncHandler = require('../../utils/asyncHandler');
 // @route   GET /api/v1/owners
 // @access  Private
 exports.getOwners = asyncHandler(async (req, res, next) => {
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
+  // const page = parseInt(req.query.page, 10) || 1;
+  // const limit = parseInt(req.query.limit, 10) || 10;
   
-  const filters = {
-    owner_type: req.query.owner_type,
-    search: req.query.search
-  };
+  // const filters = {
+  //   owner_type: req.query.owner_type,
+  //   search: req.query.search
+  // };
 
-  const result = await Owner.findAll(page, limit, filters);
+  const result = await Owner.findAll();
 
   res.status(200).json({
     success: true,
-    count: result.owners.length,
-    pagination: {
-      page: result.page,
-      pages: result.pages,
-      total: result.total
-    },
-    data: result.owners
+   
+   
+    data: result[0]
   });
 });
 
@@ -44,11 +40,9 @@ exports.getOwner = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Create new owner
-// @route   POST /api/v1/owners
-// @access  Private (Admin/Manager)
-exports.createOwner = asyncHandler(async (req, res, next) => {
-  // Check if owner with email already exists
+
+exports.createOwner = asyncHandler(async (req, res,next) => {
+ 
   if (req.body.email) {
     const existingOwner = await Owner.findByEmail(req.body.email);
     if (existingOwner) {
@@ -56,7 +50,7 @@ exports.createOwner = asyncHandler(async (req, res, next) => {
     }
   }
 
-  const owner = await Owner.create(req.body);
+  const owner = await Owner.createOwner(req.body);
 
   res.status(201).json({
     success: true,
@@ -64,9 +58,7 @@ exports.createOwner = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update owner
-// @route   PUT /api/v1/owners/:id
-// @access  Private (Admin/Manager)
+
 exports.updateOwner = asyncHandler(async (req, res, next) => {
   let owner = await Owner.findById(req.params.id);
 

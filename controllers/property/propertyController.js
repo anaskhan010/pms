@@ -2,9 +2,7 @@ const Property = require('../../models/property/Property');
 const ErrorResponse = require('../../utils/errorResponse');
 const asyncHandler = require('../../utils/asyncHandler');
 
-// @desc    Get all properties
-// @route   GET /api/v1/properties
-// @access  Private
+
 exports.getProperties = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -29,9 +27,7 @@ exports.getProperties = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get single property
-// @route   GET /api/v1/properties/:id
-// @access  Private
+
 exports.getProperty = asyncHandler(async (req, res, next) => {
   const property = await Property.findById(req.params.id);
 

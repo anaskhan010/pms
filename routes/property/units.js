@@ -22,9 +22,11 @@ const router = express.Router();
 router.use(protect);
 
 router
-  .route('/')
-  .get(getUnits)
+  .route('/create-unit')
   .post(authorize('admin', 'manager'), validateUnit, handleValidationErrors, createUnit);
+
+router.get("/get-all-units",getUnits)
+
 
 router
   .route('/:id')

@@ -2,9 +2,7 @@ const User = require('../../models/user/User');
 const ErrorResponse = require('../../utils/errorResponse');
 const asyncHandler = require('../../utils/asyncHandler');
 
-// @desc    Register user
-// @route   POST /api/v1/auth/register
-// @access  Public
+
 exports.register = asyncHandler(async (req, res, next) => {
   const { username, email, password, role, first_name, last_name, phone_number } = req.body;
 
@@ -44,10 +42,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  // Check if user is active
-  if (!user.is_active) {
-    return next(new ErrorResponse('Account is deactivated', 401));
-  }
+
 
   // Check password
   const isMatch = await User.matchPassword(password, user.password);

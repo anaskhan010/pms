@@ -24,7 +24,6 @@ router.use(protect);
 
 router
   .route('/create-property')
-  .get(getProperties)
   .post(authorize('admin', 'manager'), validateProperty, handleValidationErrors, createProperty);
 
   // get all properties by tenant_id
@@ -32,7 +31,7 @@ router
   .route('/get-all-properties-by-tenant/:tenantId')
   .get(validateId, getPropertiesByTenant);
 
-
+router.get("/get-all-properties",getProperties)
 router
   .route('/:id')
   .get(validateId, handleValidationErrors, getProperty)

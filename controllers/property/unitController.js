@@ -17,17 +17,13 @@ exports.getUnits = asyncHandler(async (req, res, next) => {
     search: req.query.search
   };
 
-  const result = await Unit.findAll(page, limit, filters);
+  const result = await Unit.findAllUnits(page, limit, filters);
 
   res.status(200).json({
     success: true,
-    count: result.units.length,
-    pagination: {
-      page: result.page,
-      pages: result.pages,
-      total: result.total
-    },
-    data: result.units
+    count: result.length,
+   
+    data: result
   });
 });
 
@@ -57,7 +53,7 @@ exports.createUnit = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Property not found with id of ${req.body.property_id}`, 404));
   }
 
-  const unit = await Unit.create(req.body);
+  const unit = await Unit.createUnit(req.body);
 
   res.status(201).json({
     success: true,

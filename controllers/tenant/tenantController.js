@@ -17,7 +17,7 @@ exports.getTenants = asyncHandler(async (req, res, next) => {
   const result = await Tenant.findAll(page, limit, filters);
 
   res.status(200).json({
-    success: true,
+   
     count: result.tenants.length,
     pagination: {
       page: result.page,

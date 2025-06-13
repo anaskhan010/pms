@@ -24,9 +24,10 @@ const router = express.Router();
 router.use(protect);
 
 router
-  .route('/')
-  .get(getOwners)
+  .route('/create-owner')
   .post(authorize('admin', 'manager'), validateOwner, handleValidationErrors, createOwner);
+
+router.get("/find-all-owners",getOwners)
 
 router
   .route('/:id')

@@ -82,9 +82,8 @@ const createUser = async (userData) => {
 
   const sql = `
     INSERT INTO Users (
-       username, email, password, role, first_name, last_name,
-      phone_number
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+       username, email, password, role
+    ) VALUES (?, ?, ?, ?)
   `;
 
   const values = [
@@ -92,9 +91,7 @@ const createUser = async (userData) => {
     userData.email,
     hashedPassword,
     userData.role,
-    userData.first_name ?? null,
-    userData.last_name ?? null,
-    userData.phone_number ?? null
+  
   ];
 
   const result = await db.execute(sql, values);

@@ -25,8 +25,7 @@ const router = express.Router();
 router.use(protect);
 
 router
-  .route('/')
-  .get(getContracts)
+  .route('/create-contract')
   .post(authorize('admin', 'manager'), validateContract, handleValidationErrors, createContract);
 
 router

@@ -25,8 +25,10 @@ router.use(protect);
 
 router
   .route('/create-tenant')
-  .get(getTenants)
   .post(authorize('admin', 'manager'), validateTenant, handleValidationErrors, createTenant);
+
+router.get("/get-all-tenants",getTenants)
+
 
 router
   .route('/:id')

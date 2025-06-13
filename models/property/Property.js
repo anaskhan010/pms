@@ -7,15 +7,13 @@ const create = async (propertyData) => {
 
   const sql = `
     INSERT INTO Properties (
-     tenant_id,property_number, address_line1, address_line2, city,
+     property_number, address_line1, address_line2, city,
       state_province, postal_code, country, plot_size_sqm, total_units,
       description
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
-    propertyData.tenant_id,
-   
     propertyData.property_number,
     propertyData.address_line1,
     propertyData.address_line2 || null,

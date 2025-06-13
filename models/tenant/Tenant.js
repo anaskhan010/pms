@@ -10,8 +10,8 @@ const create = async (tenantData) => {
     INSERT INTO Tenants (
       first_name, last_name, email, phone_number, nationality,
       id_document_type, id_document_number, date_of_birth, emergency_contact_name,
-      emergency_contact_phone, notes,property_id ,user_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      emergency_contact_phone, notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -27,8 +27,6 @@ const create = async (tenantData) => {
     tenantData.emergency_contact_name || null,
     tenantData.emergency_contact_phone || null,
     tenantData.notes || null,
-    tenantData.property_id,
-    tenantData.user_id
   ];
 
   const result = await db.query(sql, values);
@@ -117,7 +115,7 @@ const findAll = async (page = 1, limit = 10, filters = {}) => {
   const tenants = await db.query(sql, values);
 
   return {
-    tenants: tenants.map(tenant => {
+    tenants: tenants[0].map(tenant => {
       // Attach methods to each tenant object
       tenant.update = (updateData) => update(tenant.tenant_id, updateData);
       tenant.delete = () => deleteTenant(tenant.tenant_id);

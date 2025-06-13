@@ -54,7 +54,8 @@ exports.getContract = asyncHandler(async (req, res, next) => {
 // @access  Private (Admin/Manager)
 exports.createContract = asyncHandler(async (req, res, next) => {
   // Verify unit exists
-  const unit = await Unit.findById(req.body.unit_id);
+  const unit = await Unit.findUnitById(req.body.unit_id);
+  console.log(unit,"check unit======")
   if (!unit) {
     return next(new ErrorResponse(`Unit not found with id of ${req.body.unit_id}`, 404));
   }
@@ -72,12 +73,12 @@ exports.createContract = asyncHandler(async (req, res, next) => {
   }
 
   // Check if unit already has an active contract
-  const existingContract = await unit.getCurrentContract();
-  if (existingContract && existingContract.contract_status === 'Active') {
+  const existingContract = await unit[0].current_status;
+  if (existingContract && existingContract.contract_status === 'Occupied') {
     return next(new ErrorResponse('Unit already has an active contract', 400));
   }
 
-  const contract = await Contract.create(req.body);
+  const contract = await Contract.createContract(req.body);
 
   res.status(201).json({
     success: true,
