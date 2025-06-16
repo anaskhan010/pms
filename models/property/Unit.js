@@ -196,6 +196,20 @@ const getRecentTickets = async (unitId, limit = 5) => {
   return tickets;
 };
 
+
+const getUnitByTenantId = async(tenant_id) =>{
+  const query = `SELECT u.*, c.contract_type,c.start_date AS contract_start_date ,c.end_date AS contract_end_date ,c.duration_years AS contract_duration_years ,c.monthly_rent_amount AS contract_monthly_rent_amount ,c.currency AS contract_currency,c.payment_frequency AS contract_payment_frequency ,c.grace_period_days AS contract_grace_period_days,c.contract_status ,c.signed_date AS contract_signed_date,
+o.owner_type, o.name AS owner_name, o.contact_person AS owner_contact_person, o.email AS owner_email, o.phone_number AS owner_phone_number,
+o.address AS owner_address, o.id_document_info AS owner_id_documnet_info,
+t.first_name AS tenant_first_name, t.last_name AS tenant_last_name, t.email AS tenant_email, t.phone_number AS tenant_phone_number,t.nationality AS tenant_nationality, t.id_document_type AS tenant_id_document_type, t.id_document_number AS tenant_id_document_number, t.date_of_birth AS tenant_date_of_birth, t.emergency_contact_name  AS tenant_emergency_contact_name, t.emergency_contact_phone AS tenant_emergency_contact_phone, t.notes AS tenant_notes
+FROM Units AS u
+JOIN Contracts AS c ON u.unit_id = c.unit_id
+JOIN Owners AS o ON c.owner_id = o.owner_id
+JOIN Tenants AS t ON c.tenant_id = t.tenant_id WHERE t.tenant_id = ?`
+const row = await db.execute(query,[tenant_id]);
+return row[0]
+}
+
 // Export all functions
 module.exports = {
   createUnit,
@@ -208,5 +222,6 @@ module.exports = {
   getCurrentTenant,
   getUnitOwnership,
   getUtilityMeters,
-  getRecentTickets
+  getRecentTickets,
+  getUnitByTenantId
 };

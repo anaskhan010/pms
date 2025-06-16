@@ -6,7 +6,8 @@ const {
   updateUnit,
   deleteUnit,
   getUnitDetails,
-  updateUnitStatus
+  updateUnitStatus,
+  getUnitByTenantId
 } = require('../../controllers/property/unitController');
 
 const { protect, authorize } = require('../../middleware/auth');
@@ -26,6 +27,8 @@ router
   .post(authorize('admin', 'manager'), validateUnit, handleValidationErrors, createUnit);
 
 router.get("/get-all-units",getUnits)
+
+router.get("/get-unit-by-tenantId/:tenant_id",getUnitByTenantId)
 
 
 router

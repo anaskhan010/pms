@@ -7,7 +7,8 @@ const {
   deleteProperty,
   getPropertyUnits,
   getPropertyStatistics,
-  getPropertiesByTenant
+  getPropertiesByTenant,
+  getAllPropertyByOwnerId
 } = require('../../controllers/property/propertyController');
 
 const { protect, authorize } = require('../../middleware/auth');
@@ -30,6 +31,8 @@ router
   router
   .route('/get-all-properties-by-tenant/:tenantId')
   .get(validateId, getPropertiesByTenant);
+
+  router.get("/getAllPropertyByOwnerId/:owner_id",getAllPropertyByOwnerId)
 
 router.get("/get-all-properties",getProperties)
 router

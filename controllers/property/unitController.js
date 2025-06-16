@@ -48,7 +48,7 @@ exports.getUnit = asyncHandler(async (req, res, next) => {
 // @access  Private (Admin/Manager)
 exports.createUnit = asyncHandler(async (req, res, next) => {
   // Verify property exists
-  const property = await Property.findUnitById(req.body.property_id);
+  const property = await Property.findById(req.body.property_id);
   if (!property) {
     return next(new ErrorResponse(`Property not found with id of ${req.body.property_id}`, 404));
   }
@@ -158,3 +158,15 @@ exports.updateUnitStatus = asyncHandler(async (req, res, next) => {
     data: unit
   });
 });
+
+
+
+exports.getUnitByTenantId = asyncHandler(async(req,res)=>{
+  const tenant_id = req.params.tenant_id;
+
+  const result = await Unit.getUnitByTenantId(tenant_id);
+  res.status(200).json({
+    success:true,
+    result
+  })
+})
