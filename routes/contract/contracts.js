@@ -28,6 +28,8 @@ router
   .route('/create-contract')
   .post(authorize('admin', 'manager'), validateContract, handleValidationErrors, createContract);
 
+router.get("/get-all-contracts",validateId,getContracts)
+
 router
   .route('/:id')
   .get(validateId, handleValidationErrors, getContract)

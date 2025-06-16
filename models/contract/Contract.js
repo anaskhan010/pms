@@ -44,7 +44,7 @@ const findContractById = async (id) => {
 };
 
 // Get all contracts with pagination
-const findAllContracts = async (page = 1, limit = 10, filters = {}) => {
+const findAllContracts = async (page = 1, limit = 10) => {
   const offset = (page - 1) * limit;
   let sql = `
     SELECT c.*, t.first_name, t.last_name, u.unit_number, p.property_number, p.address_line1
@@ -57,40 +57,22 @@ const findAllContracts = async (page = 1, limit = 10, filters = {}) => {
   let countSql = 'SELECT COUNT(*) as total FROM Contracts WHERE 1=1';
   const values = [];
 
-  // Apply filters
-  if (filters.contract_status) {
-    sql += ' AND c.contract_status = ?';
-    countSql += ' AND contract_status = ?';
-    values.push(filters.contract_status);
-  }
-
-  if (filters.contract_type) {
-    sql += ' AND c.contract_type = ?';
-    countSql += ' AND contract_type = ?';
-    values.push(filters.contract_type);
-  }
-
-  if (filters.unit_id) {
-    sql += ' AND c.unit_id = ?';
-    countSql += ' AND unit_id = ?';
-    values.push(filters.unit_id);
-  }
-
-  if (filters.tenant_id) {
-    sql += ' AND c.tenant_id = ?';
-    countSql += ' AND tenant_id = ?';
-    values.push(filters.tenant_id);
-  }
-
   sql += ' ORDER BY c.created_at DESC LIMIT ? OFFSET ?';
   values.push(limit, offset);
 
   const [totalResult] = await db.query(countSql, values.slice(0, -2));
+  console.log(totalResult[0].total,"====constracts====")
   const contracts = await db.query(sql, values);
 
+ 
+// console.log(
+//   totalResult[0].total,
+//   page,
+//   Math.ceil(totalResult[0].total / limit),"========check issue=====")
+
   return {
-    contracts,
-    total: totalResult.total,
+    contracts:contracts[0],
+    total: totalResult[0].total,
     page,
     pages: Math.ceil(totalResult.total / limit)
   };

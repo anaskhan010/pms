@@ -31,7 +31,7 @@ exports.getUnits = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/units/:id
 // @access  Private
 exports.getUnit = asyncHandler(async (req, res, next) => {
-  const unit = await Unit.findById(req.params.id);
+  const unit = await Unit.findUnitById(req.params.id);
 
   if (!unit) {
     return next(new ErrorResponse(`Unit not found with id of ${req.params.id}`, 404));
@@ -48,7 +48,7 @@ exports.getUnit = asyncHandler(async (req, res, next) => {
 // @access  Private (Admin/Manager)
 exports.createUnit = asyncHandler(async (req, res, next) => {
   // Verify property exists
-  const property = await Property.findById(req.body.property_id);
+  const property = await Property.findUnitById(req.body.property_id);
   if (!property) {
     return next(new ErrorResponse(`Property not found with id of ${req.body.property_id}`, 404));
   }
@@ -65,7 +65,7 @@ exports.createUnit = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/units/:id
 // @access  Private (Admin/Manager)
 exports.updateUnit = asyncHandler(async (req, res, next) => {
-  let unit = await Unit.findById(req.params.id);
+  let unit = await Unit.findUnitById(req.params.id);
 
   if (!unit) {
     return next(new ErrorResponse(`Unit not found with id of ${req.params.id}`, 404));
@@ -83,7 +83,7 @@ exports.updateUnit = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/units/:id
 // @access  Private (Admin only)
 exports.deleteUnit = asyncHandler(async (req, res, next) => {
-  const unit = await Unit.findById(req.params.id);
+  const unit = await Unit.findUnitById(req.params.id);
 
   if (!unit) {
     return next(new ErrorResponse(`Unit not found with id of ${req.params.id}`, 404));
@@ -101,7 +101,7 @@ exports.deleteUnit = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/units/:id/details
 // @access  Private
 exports.getUnitDetails = asyncHandler(async (req, res, next) => {
-  const unit = await Unit.findById(req.params.id);
+  const unit = await Unit.findUnitById(req.params.id);
 
   if (!unit) {
     return next(new ErrorResponse(`Unit not found with id of ${req.params.id}`, 404));
@@ -145,7 +145,7 @@ exports.updateUnitStatus = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Status must be one of: ${validStatuses.join(', ')}`, 400));
   }
 
-  let unit = await Unit.findById(req.params.id);
+  let unit = await Unit.findUnitById(req.params.id);
 
   if (!unit) {
     return next(new ErrorResponse(`Unit not found with id of ${req.params.id}`, 404));

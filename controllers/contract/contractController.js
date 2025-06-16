@@ -12,21 +12,18 @@ exports.getContracts = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   
-  const filters = {
-    contract_status: req.query.contract_status,
-    contract_type: req.query.contract_type,
-    unit_id: req.query.unit_id,
-    tenant_id: req.query.tenant_id
-  };
+  
 
-  const result = await Contract.findAll(page, limit, filters);
+  const result = await Contract.findAllContracts(page, limit);
+
+  console.log(result,"======result=======")
 
   res.status(200).json({
     success: true,
-    count: result.contracts.length,
+   
     pagination: {
       page: result.page,
-      pages: result.pages,
+     
       total: result.total
     },
     data: result.contracts
