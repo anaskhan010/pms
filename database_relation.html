@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Property Management System - Database Schema (Interactive)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f4f8;
+      }
+      .table-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #e2e8f0;
+        position: relative;
+        z-index: 1;
+      }
+      .table-header {
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .key-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .pk-badge {
+        background-color: #e0f2fe;
+        color: #0c4a6e;
+      }
+      .fk-badge {
+        background-color: #dcfce7;
+        color: #166534;
+      }
+      .unique-badge {
+        background-color: #fef9c3;
+        color: #854d0e;
+      }
+      .enum-badge {
+        background-color: #f3e8ff;
+        color: #6b21a8;
+      }
+
+      .relationship-pill {
+        background-color: #e2e8f0;
+        color: #475569;
+        padding: 3px 8px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-block;
+        margin-left: 8px;
+      }
+      .relationship-pill:hover {
+        background-color: #cbd5e1;
+        color: #1e293b;
+        transform: translateY(-1px);
+      }
+
+      h1,
+      h2 {
+        font-weight: 700;
+      }
+
+      /* Presentation Mode Styles */
+      #presentation-toggle {
+        transition: all 0.3s ease;
+      }
+      .presentation-on {
+        background-color: #2563eb !important;
+        color: white !important;
+      }
+      body.presentation-mode .table-card {
+        opacity: 0.3;
+      }
+      body.presentation-mode .table-card.highlight {
+        opacity: 1;
+        transform: scale(1.03);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        z-index: 10;
+      }
+
+      /* Arrow Canvas Styles */
+      #arrow-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+      }
+      #arrow-canvas path {
+        stroke: #3b82f6;
+        stroke-width: 2.5px;
+        fill: none;
+        stroke-dasharray: 8 6;
+        animation: dash 1s linear infinite;
+      }
+      @keyframes dash {
+        to {
+          stroke-dashoffset: -28;
+        }
+      }
+    </style>
+  </head>
+  <body class="p-4 sm:p-6 md:p-8">
+    <svg id="arrow-canvas">
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="0"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+        </marker>
+      </defs>
+    </svg>
+
+    <div class="max-w-7xl mx-auto">
+      <header class="text-center mb-10">
+        <h1 class="text-3xl sm:text-4xl text-slate-800 mb-2">
+          Property Management System: Database Schema
+        </h1>
+        <p class="text-slate-600 mb-4">
+          An interactive overview of the tables and their relationships.
+        </p>
+        <button
+          id="presentation-toggle"
+          class="bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-lg shadow-sm"
+        >
+          Toggle Presentation Mode
+        </button>
+      </header>
+
+      <!-- Section: Core Tables -->
+      <section class="mb-12">
+        <h2
+          class="text-2xl text-slate-700 font-bold mb-6 pb-2 border-b-2 border-slate-300"
+        >
+          1. Core Tables
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+          <!-- Properties -->
+          <div id="table-Properties" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Properties</h3>
+              <p class="text-sm text-slate-500">Buildings or land parcels.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> property_id
+              </li>
+              <li>property_number, address_line1</li>
+              <li>plot_size_sqm, total_units</li>
+              <li>created_at, updated_at</li>
+            </ul>
+          </div>
+
+          <!-- Units -->
+          <div id="table-Units" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Units</h3>
+              <p class="text-sm text-slate-500">Individual rentable spaces.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> unit_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> property_id
+                <a
+                  href="#table-Properties"
+                  class="relationship-pill"
+                  data-target="table-Properties"
+                  title="Links to Properties table"
+                  >Properties</a
+                >
+              </li>
+              <li>
+                unit_number,
+                <span class="key-badge enum-badge">ENUM</span> unit_type
+              </li>
+              <li>
+                <span class="key-badge enum-badge">ENUM</span> current_status
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> merged_group_id
+                <a
+                  href="#table-MergedUnits"
+                  class="relationship-pill"
+                  data-target="table-MergedUnits"
+                  title="Links to MergedUnits table"
+                  >MergedUnits</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Owners -->
+          <div id="table-Owners" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Owners</h3>
+              <p class="text-sm text-slate-500">
+                People or companies owning units.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> owner_id
+              </li>
+              <li><span class="key-badge enum-badge">ENUM</span> owner_type</li>
+              <li>name, contact_person</li>
+              <li>email, phone_number</li>
+            </ul>
+          </div>
+
+          <!-- Tenants -->
+          <div id="table-Tenants" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Tenants</h3>
+              <p class="text-sm text-slate-500">
+                People or companies renting units.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> tenant_id
+              </li>
+              <li>first_name, last_name</li>
+              <li>
+                <span class="key-badge unique-badge">UNIQ</span> email,
+                phone_number
+              </li>
+              <li>
+                <span class="key-badge unique-badge">UNIQ</span>
+                id_document_number
+              </li>
+            </ul>
+          </div>
+
+          <!-- UnitOwnership -->
+          <div id="table-UnitOwnership" class="table-card md:col-span-2">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">UnitOwnership</h3>
+              <p class="text-sm text-slate-500">
+                Links Units to their current Owners.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> unit_ownership_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> owner_id
+                <a
+                  href="#table-Owners"
+                  class="relationship-pill"
+                  data-target="table-Owners"
+                  title="Links to Owners table"
+                  >Owners</a
+                >
+              </li>
+              <li>
+                <span class="key-badge enum-badge">ENUM</span> ownership_type,
+                is_current
+              </li>
+            </ul>
+          </div>
+
+          <!-- TitleDeedHistory -->
+          <div id="table-TitleDeedHistory" class="table-card md:col-span-2">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">TitleDeedHistory</h3>
+              <p class="text-sm text-slate-500">
+                Audit trail of all ownership changes.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> deed_history_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> property_id
+                <a
+                  href="#table-Properties"
+                  class="relationship-pill"
+                  data-target="table-Properties"
+                  title="Links to Properties table"
+                  >Properties</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> previous_owner_id
+                <a
+                  href="#table-Owners"
+                  class="relationship-pill"
+                  data-target="table-Owners"
+                  title="Links to Owners table"
+                  >Owners</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> new_owner_id
+                <a
+                  href="#table-Owners"
+                  class="relationship-pill"
+                  data-target="table-Owners"
+                  title="Links to Owners table"
+                  >Owners</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Financial & Contracts -->
+      <section class="mb-12">
+        <h2
+          class="text-2xl text-slate-700 font-bold mb-6 pb-2 border-b-2 border-slate-300"
+        >
+          2. Financial & Contract Management
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Contracts -->
+          <div id="table-Contracts" class="table-card lg:col-span-3">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Contracts</h3>
+              <p class="text-sm text-slate-500">Rental and lease agreements.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> contract_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> owner_id
+                <a
+                  href="#table-Owners"
+                  class="relationship-pill"
+                  data-target="table-Owners"
+                  title="Links to Owners table"
+                  >Owners</a
+                >
+              </li>
+              <li>
+                <span class="key-badge enum-badge">ENUM</span> contract_type,
+                <span class="key-badge enum-badge">ENUM</span> contract_status
+              </li>
+            </ul>
+          </div>
+
+          <!-- Invoices -->
+          <div id="table-Invoices" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Invoices</h3>
+              <p class="text-sm text-slate-500">
+                Bills for rent and other charges.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> invoice_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> contract_id
+                <a
+                  href="#table-Contracts"
+                  class="relationship-pill"
+                  data-target="table-Contracts"
+                  title="Links to Contracts table"
+                  >Contracts</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+              <li>
+                <span class="key-badge unique-badge">UNIQ</span> invoice_number
+              </li>
+            </ul>
+          </div>
+
+          <!-- Payments -->
+          <div id="table-Payments" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Payments</h3>
+              <p class="text-sm text-slate-500">
+                Records of received payments.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> payment_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> invoice_id
+                <a
+                  href="#table-Invoices"
+                  class="relationship-pill"
+                  data-target="table-Invoices"
+                  title="Links to Invoices table"
+                  >Invoices</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> contract_id
+                <a
+                  href="#table-Contracts"
+                  class="relationship-pill"
+                  data-target="table-Contracts"
+                  title="Links to Contracts table"
+                  >Contracts</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- EjariRegistrations -->
+          <div id="table-EjariRegistrations" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">
+                EjariRegistrations
+              </h3>
+              <p class="text-sm text-slate-500">
+                Official government contract registrations.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> ejari_registration_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> contract_id
+                <a
+                  href="#table-Contracts"
+                  class="relationship-pill"
+                  data-target="table-Contracts"
+                  title="Links to Contracts table"
+                  >Contracts</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> registered_by_user_id
+                <a
+                  href="#table-Users"
+                  class="relationship-pill"
+                  data-target="table-Users"
+                  title="Links to Users table"
+                  >Users</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Utility Management -->
+      <section class="mb-12">
+        <h2
+          class="text-2xl text-slate-700 font-bold mb-6 pb-2 border-b-2 border-slate-300"
+        >
+          3. Utility Management
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Utilities -->
+          <div id="table-Utilities" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Utilities</h3>
+              <p class="text-sm text-slate-500">Defines utility types.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> utility_type_id
+              </li>
+              <li>
+                <span class="key-badge unique-badge">UNIQ</span> utility_name
+              </li>
+            </ul>
+          </div>
+
+          <!-- UnitUtilityMeters -->
+          <div id="table-UnitUtilityMeters" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">
+                UnitUtilityMeters
+              </h3>
+              <p class="text-sm text-slate-500">Meters installed in units.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> unit_meter_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> utility_type_id
+                <a
+                  href="#table-Utilities"
+                  class="relationship-pill"
+                  data-target="table-Utilities"
+                  title="Links to Utilities table"
+                  >Utilities</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- UtilityBills -->
+          <div id="table-UtilityBills" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">UtilityBills</h3>
+              <p class="text-sm text-slate-500">Billing for utility usage.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> utility_bill_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_meter_id
+                <a
+                  href="#table-UnitUtilityMeters"
+                  class="relationship-pill"
+                  data-target="table-UnitUtilityMeters"
+                  title="Links to UnitUtilityMeters table"
+                  >UnitUtilityMeters</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> owner_id
+                <a
+                  href="#table-Owners"
+                  class="relationship-pill"
+                  data-target="table-Owners"
+                  title="Links to Owners table"
+                  >Owners</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Maintenance & Support -->
+      <section class="mb-12">
+        <h2
+          class="text-2xl text-slate-700 font-bold mb-6 pb-2 border-b-2 border-slate-300"
+        >
+          4. Maintenance & Support
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Tickets -->
+          <div id="table-Tickets" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">Tickets</h3>
+              <p class="text-sm text-slate-500">Tracks issues and requests.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> ticket_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> assigned_to_user_id
+                <a
+                  href="#table-Users"
+                  class="relationship-pill"
+                  data-target="table-Users"
+                  title="Links to Users table"
+                  >Users</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- TicketComments -->
+          <div id="table-TicketComments" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">TicketComments</h3>
+              <p class="text-sm text-slate-500">Conversation on tickets.</p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> comment_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> ticket_id
+                <a
+                  href="#table-Tickets"
+                  class="relationship-pill"
+                  data-target="table-Tickets"
+                  title="Links to Tickets table"
+                  >Tickets</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> user_id
+                <a
+                  href="#table-Users"
+                  class="relationship-pill"
+                  data-target="table-Users"
+                  title="Links to Users table"
+                  >Users</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Merged Units & Users -->
+      <section class="mb-12">
+        <h2
+          class="text-2xl text-slate-700 font-bold mb-6 pb-2 border-b-2 border-slate-300"
+        >
+          5. Unit Merging & User Management
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- MergedUnits -->
+          <div id="table-MergedUnits" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">MergedUnits</h3>
+              <p class="text-sm text-slate-500">
+                Virtual units from combined physical units.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> merged_group_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> primary_owner_id
+                <a
+                  href="#table-Owners"
+                  class="relationship-pill"
+                  data-target="table-Owners"
+                  title="Links to Owners table"
+                  >Owners</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> primary_tenant_id
+                <a
+                  href="#table-Tenants"
+                  class="relationship-pill"
+                  data-target="table-Tenants"
+                  title="Links to Tenants table"
+                  >Tenants</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- MergedUnitComponents -->
+          <div id="table-MergedUnitComponents" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">
+                MergedUnitComponents
+              </h3>
+              <p class="text-sm text-slate-500">
+                Links physical units to merged groups.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> component_id
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> merged_group_id
+                <a
+                  href="#table-MergedUnits"
+                  class="relationship-pill"
+                  data-target="table-MergedUnits"
+                  title="Links to MergedUnits table"
+                  >MergedUnits</a
+                >
+              </li>
+              <li>
+                <span class="key-badge fk-badge">FK</span> unit_id
+                <a
+                  href="#table-Units"
+                  class="relationship-pill"
+                  data-target="table-Units"
+                  title="Links to Units table"
+                  >Units</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Users (Internal Staff) -->
+          <div id="table-Users" class="table-card">
+            <div class="table-header p-4">
+              <h3 class="font-bold text-lg text-slate-800">
+                Users (Internal Staff)
+              </h3>
+              <p class="text-sm text-slate-500">
+                Internal staff accounts for the PMS.
+              </p>
+            </div>
+            <ul class="p-4 space-y-2 text-sm">
+              <li class="pk-field">
+                <span class="key-badge pk-badge">PK</span> user_id
+              </li>
+              <li>
+                <span class="key-badge unique-badge">UNIQ</span> username,
+                <span class="key-badge unique-badge">UNIQ</span> email
+              </li>
+              <li>
+                <span class="key-badge enum-badge">ENUM</span> role, is_active
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const presentationToggle = document.getElementById(
+          "presentation-toggle"
+        );
+        const body = document.body;
+        const arrowCanvas = document.getElementById("arrow-canvas");
+
+        presentationToggle.addEventListener("click", () => {
+          body.classList.toggle("presentation-mode");
+          presentationToggle.classList.toggle("presentation-on");
+          if (!body.classList.contains("presentation-mode")) {
+            clearArrows();
+            document
+              .querySelectorAll(".table-card.highlight")
+              .forEach((c) => c.classList.remove("highlight"));
+          }
+        });
+
+        const relationshipPills =
+          document.querySelectorAll(".relationship-pill");
+
+        function clearArrows() {
+          arrowCanvas.innerHTML =
+            '<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" /></marker></defs>';
+        }
+
+        function drawArrow(startEl, endEl) {
+          clearArrows();
+          const startRect = startEl.getBoundingClientRect();
+          const endRect = endEl.getBoundingClientRect();
+
+          const startX = startRect.left + window.scrollX + startRect.width / 2;
+          const startY = startRect.top + window.scrollY + startRect.height / 2;
+
+          // Find the closest edge on the target element
+          const endPoints = [
+            {
+              x: endRect.left + window.scrollX + endRect.width / 2,
+              y: endRect.top + window.scrollY,
+            }, // Top-mid
+            {
+              x: endRect.left + window.scrollX + endRect.width / 2,
+              y: endRect.bottom + window.scrollY,
+            }, // Bottom-mid
+            {
+              x: endRect.left + window.scrollX,
+              y: endRect.top + window.scrollY + endRect.height / 2,
+            }, // Left-mid
+            {
+              x: endRect.right + window.scrollX,
+              y: endRect.top + window.scrollY + endRect.height / 2,
+            }, // Right-mid
+          ];
+
+          let closestPoint = endPoints[0];
+          let minDistance = Infinity;
+
+          endPoints.forEach((p) => {
+            const dist = Math.hypot(startX - p.x, startY - p.y);
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestPoint = p;
+            }
+          });
+
+          const endX = closestPoint.x;
+          const endY = closestPoint.y;
+
+          const path = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path"
+          );
+          const controlX = startX;
+          const controlY = endY;
+          const pathData = `M${startX},${startY} Q${controlX},${controlY} ${endX},${endY}`;
+
+          path.setAttribute("d", pathData);
+          path.setAttribute("marker-end", "url(#arrowhead)");
+          arrowCanvas.appendChild(path);
+        }
+
+        relationshipPills.forEach((pill) => {
+          pill.addEventListener("mouseover", () => {
+            if (body.classList.contains("presentation-mode")) {
+              const sourceCard = pill.closest(".table-card");
+              const targetCardId = pill.dataset.target;
+              const targetCard = document.getElementById(targetCardId);
+
+              if (sourceCard) sourceCard.classList.add("highlight");
+              if (targetCard) targetCard.classList.add("highlight");
+
+              const targetPK = targetCard.querySelector(".pk-field");
+              drawArrow(pill, targetPK || targetCard);
+            }
+          });
+
+          pill.addEventListener("mouseout", () => {
+            if (body.classList.contains("presentation-mode")) {
+              const sourceCard = pill.closest(".table-card");
+              const targetCardId = pill.dataset.target;
+              const targetCard = document.getElementById(targetCardId);
+
+              if (sourceCard) sourceCard.classList.remove("highlight");
+              if (targetCard) targetCard.classList.remove("highlight");
+              clearArrows();
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
