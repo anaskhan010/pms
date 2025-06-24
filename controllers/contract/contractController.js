@@ -34,7 +34,7 @@ exports.getContracts = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/contracts/:id
 // @access  Private
 exports.getContract = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -87,7 +87,7 @@ exports.createContract = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/contracts/:id
 // @access  Private (Admin/Manager)
 exports.updateContract = asyncHandler(async (req, res, next) => {
-  let contract = await Contract.findById(req.params.id);
+  let contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -105,7 +105,7 @@ exports.updateContract = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/contracts/:id
 // @access  Private (Admin only)
 exports.deleteContract = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -123,7 +123,7 @@ exports.deleteContract = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/contracts/:id/details
 // @access  Private
 exports.getContractDetails = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -141,7 +141,7 @@ exports.getContractDetails = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/contracts/:id/invoices
 // @access  Private
 exports.getContractInvoices = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -160,7 +160,7 @@ exports.getContractInvoices = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/contracts/:id/payments
 // @access  Private
 exports.getContractPayments = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -190,7 +190,7 @@ exports.updateContractStatus = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Status must be one of: ${validStatuses.join(', ')}`, 400));
   }
 
-  let contract = await Contract.findById(req.params.id);
+  let contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
@@ -208,7 +208,7 @@ exports.updateContractStatus = asyncHandler(async (req, res, next) => {
 // @route   POST /api/v1/contracts/:id/renew
 // @access  Private (Admin/Manager)
 exports.renewContract = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
     return next(new ErrorResponse(`Contract not found with id of ${req.params.id}`, 404));
