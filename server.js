@@ -45,7 +45,7 @@ app.use(helmet());
 
 // Enable CORS
 app.use(cors({
-  origin: 'http://sentrixproperty.research-hero.xyz',
+  origin: 'https://sentrixproperty.research-hero.xyz',
   credentials: true
 }));
 
