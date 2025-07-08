@@ -1,0 +1,146 @@
+{
+  error: TypeError: Router.use() requires a middleware function but got a Module
+      at Function.use (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/router/index.js:469:13)
+      at Function.<anonymous> (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:227:21)
+      at Array.forEach (<anonymous>)
+      at Function.use (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:224:7)
+      at Object.<anonymous> (/Users/junaid/Documents/PMS/backend/server.js:110:5)
+      at Module._compile (node:internal/modules/cjs/loader:1554:14)
+      at Object..js (node:internal/modules/cjs/loader:1706:10)
+      at Module.load (node:internal/modules/cjs/loader:1289:32)
+      at Function._load (node:internal/modules/cjs/loader:1108:12)
+      at TracingChannel.traceSync (node:diagnostics_channel:322:14),
+  level: 'error',
+  message: 'uncaughtException: Router.use() requires a middleware function but got a Module\n' +
+    'TypeError: Router.use() requires a middleware function but got a Module\n' +
+    '    at Function.use (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/router/index.js:469:13)\n' +
+    '    at Function.<anonymous> (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:227:21)\n' +
+    '    at Array.forEach (<anonymous>)\n' +
+    '    at Function.use (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:224:7)\n' +
+    '    at Object.<anonymous> (/Users/junaid/Documents/PMS/backend/server.js:110:5)\n' +
+    '    at Module._compile (node:internal/modules/cjs/loader:1554:14)\n' +
+    '    at Object..js (node:internal/modules/cjs/loader:1706:10)\n' +
+    '    at Module.load (node:internal/modules/cjs/loader:1289:32)\n' +
+    '    at Function._load (node:internal/modules/cjs/loader:1108:12)\n' +
+    '    at TracingChannel.traceSync (node:diagnostics_channel:322:14)',
+  stack: 'TypeError: Router.use() requires a middleware function but got a Module\n' +
+    '    at Function.use (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/router/index.js:469:13)\n' +
+    '    at Function.<anonymous> (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:227:21)\n' +
+    '    at Array.forEach (<anonymous>)\n' +
+    '    at Function.use (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:224:7)\n' +
+    '    at Object.<anonymous> (/Users/junaid/Documents/PMS/backend/server.js:110:5)\n' +
+    '    at Module._compile (node:internal/modules/cjs/loader:1554:14)\n' +
+    '    at Object..js (node:internal/modules/cjs/loader:1706:10)\n' +
+    '    at Module.load (node:internal/modules/cjs/loader:1289:32)\n' +
+    '    at Function._load (node:internal/modules/cjs/loader:1108:12)\n' +
+    '    at TracingChannel.traceSync (node:diagnostics_channel:322:14)',
+  exception: true,
+  date: 'Sat Jul 05 2025 00:55:22 GMT-0500 (Central Daylight Time)',
+  process: {
+    pid: 83171,
+    uid: 501,
+    gid: 20,
+    cwd: '/Users/junaid/Documents/PMS/backend',
+    execPath: '/usr/local/bin/node',
+    version: 'v22.14.0',
+    argv: [
+      '/usr/local/bin/node',
+      '/Users/junaid/Documents/PMS/backend/server.js'
+    ],
+    memoryUsage: {
+      rss: 87310336,
+      heapTotal: 37138432,
+      heapUsed: 20548304,
+      external: 2328630,
+      arrayBuffers: 17055
+    }
+  },
+  os: {
+    loadavg: [ 4.509765625, 3.263671875, 2.54736328125 ],
+    uptime: 1045780
+  },
+  trace: [
+    {
+      column: 13,
+      file: '/Users/junaid/Documents/PMS/backend/node_modules/express/lib/router/index.js',
+      function: 'Function.use',
+      line: 469,
+      method: 'use',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js',
+      function: null,
+      line: 227,
+      method: null,
+      native: false
+    },
+    {
+      column: null,
+      file: null,
+      function: 'Array.forEach',
+      line: null,
+      method: 'forEach',
+      native: false
+    },
+    {
+      column: 7,
+      file: '/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js',
+      function: 'Function.use',
+      line: 224,
+      method: 'use',
+      native: false
+    },
+    {
+      column: 5,
+      file: '/Users/junaid/Documents/PMS/backend/server.js',
+      function: null,
+      line: 110,
+      method: null,
+      native: false
+    },
+    {
+      column: 14,
+      file: 'node:internal/modules/cjs/loader',
+      function: 'Module._compile',
+      line: 1554,
+      method: '_compile',
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/modules/cjs/loader',
+      function: 'Object..js',
+      line: 1706,
+      method: '.js',
+      native: false
+    },
+    {
+      column: 32,
+      file: 'node:internal/modules/cjs/loader',
+      function: 'Module.load',
+      line: 1289,
+      method: 'load',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/modules/cjs/loader',
+      function: 'Function._load',
+      line: 1108,
+      method: '_load',
+      native: false
+    },
+    {
+      column: 14,
+      file: 'node:diagnostics_channel',
+      function: 'TracingChannel.traceSync',
+      line: 322,
+      method: 'traceSync',
+      native: false
+    }
+  ],
+  service: 'pms-api',
+  timestamp: '2025-07-05 00:55:22'
+}

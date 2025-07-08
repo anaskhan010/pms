@@ -1,0 +1,757 @@
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 06:19:10',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-03 06:19:11',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '6dfcf5aa-6e51-4a7f-9b16-d7d2c0fe99e6',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1569.34ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 06:19:11'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/1',
+    method: 'GET',
+    requestId: '23df8063-8c23-4f50-80b2-6251d7c526a4'
+  },
+  timestamp: '2025-07-03 06:43:47',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/1',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '184ms',
+  timestamp: '2025-07-03 06:43:47',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 500,
+  responseTime: '176ms',
+  timestamp: '2025-07-03 06:46:51',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  requestId: 'b2278619-b813-4c9a-806c-3f46bf0a4d5e',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  duration: '1310.60ms',
+  userId: undefined,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 06:46:55'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 06:47:00',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-03 06:47:01',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '57293c2c-be8f-4481-9923-f599310bd6aa',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1563.25ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 06:47:01'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+    method: 'GET',
+    requestId: '800008cd-31f8-4fd0-8958-fccf69cfa020'
+  },
+  timestamp: '2025-07-03 07:05:00',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '175ms',
+  timestamp: '2025-07-03 07:05:00',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/statistics',
+    method: 'GET',
+    requestId: 'c7a295fe-e6dc-48f1-b43c-d87009a4461e'
+  },
+  timestamp: '2025-07-03 07:05:00',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '175ms',
+  timestamp: '2025-07-03 07:05:00',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  requestId: '94f00cdd-bb5f-4f4d-a195-74ef589a46cf',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  duration: '1330.25ms',
+  userId: undefined,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:05:03'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 07:05:05',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-03 07:05:06',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '5017b81e-1605-4226-9bbd-8f66596fdc55',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1557.56ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:05:06'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Egyptian',
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 0
+  },
+  timestamp: '2025-07-03 07:06:49',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 07:06:53',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_properties_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      city: undefined,
+      country: undefined,
+      property_type: undefined,
+      status: undefined,
+      search: undefined,
+      min_units: undefined,
+      max_units: undefined,
+      built_year_from: undefined,
+      built_year_to: undefined
+    },
+    resultCount: 4
+  },
+  timestamp: '2025-07-03 07:06:58',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 07:12:28',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '1fc67633-9f6d-4262-92fc-a61f4fd7fbf8',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1264.16ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:14:46'
+}
+{
+  service: 'pms-api',
+  requestId: '1abfbc31-8edd-4aed-b457-b788f1840cd8',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  duration: '1708.28ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:05'
+}
+{
+  service: 'pms-api',
+  requestId: '37355965-e615-48c0-ae59-22f6c85fda5b',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '2249.25ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:05'
+}
+{
+  service: 'pms-api',
+  requestId: '96b695d7-3505-496f-827d-62727035babe',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  duration: '2678.05ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:24'
+}
+{
+  service: 'pms-api',
+  requestId: 'c6f9fee5-a880-46b6-aa93-19ca334fde49',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '3195.10ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:25'
+}
+{
+  service: 'pms-api',
+  requestId: '85d66114-6df8-4f1d-aa32-30a2986def85',
+  method: 'GET',
+  url: '/api/v1/properties/get-all-properties',
+  duration: '3720.05ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:35'
+}
+{
+  service: 'pms-api',
+  requestId: '59279549-5efb-46cb-a5bb-cb7a3152ca53',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  duration: '4228.83ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:54'
+}
+{
+  service: 'pms-api',
+  requestId: '0e9cff90-a39d-4e37-8c8e-a83fd60f5393',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '4725.84ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:15:55'
+}
+{
+  service: 'pms-api',
+  requestId: '362db93d-3e5f-412e-b0a0-518b4e6a323b',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  duration: '5236.16ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:16:14'
+}
+{
+  service: 'pms-api',
+  requestId: '43fc0328-48fa-4229-8491-793c952c90d7',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '5782.47ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:16:15'
+}
+{
+  service: 'pms-api',
+  requestId: '2eadd049-9f1b-40f9-930b-de2ac796f45d',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  duration: '6223.60ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:16:57'
+}
+{
+  service: 'pms-api',
+  requestId: '5950f244-c8c8-4577-812d-dbd509ce7dba',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '6790.80ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:16:58'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 07:17:30',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '2b7c3001-079a-4565-92b1-3650cf3d36fa',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  duration: '7533.09ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:17:30'
+}
+{
+  service: 'pms-api',
+  requestId: 'd590c912-10a3-4d7f-b0e3-d5573fe2738e',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '7677.85ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:17:31'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-03 07:21:52',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/statistics',
+    method: 'GET',
+    requestId: '5003fad6-1ba7-4b09-a161-b8ad29f88aa8'
+  },
+  timestamp: '2025-07-03 07:32:45',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '175ms',
+  timestamp: '2025-07-03 07:32:45',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 07:32:45',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '1a733db6-1f5e-4442-a518-827d9f55f5d4',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1040.36ms',
+  userId: 12,
+  statusCode: 304,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:32:52'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_properties_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      city: undefined,
+      country: undefined,
+      property_type: undefined,
+      status: undefined,
+      search: undefined,
+      min_units: undefined,
+      max_units: undefined,
+      built_year_from: undefined,
+      built_year_to: undefined
+    },
+    resultCount: 4
+  },
+  timestamp: '2025-07-03 07:33:39',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/properties/get-all-properties',
+    method: 'GET',
+    requestId: '70544768-9bfd-48fb-84e4-b48418eea7ba'
+  },
+  timestamp: '2025-07-03 07:57:29',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/properties/get-all-properties',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '185ms',
+  timestamp: '2025-07-03 07:57:29',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 500,
+  responseTime: '188ms',
+  timestamp: '2025-07-03 07:57:31',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  requestId: 'a21d112a-0488-4d70-9929-e06d632b56ee',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  duration: '1330.31ms',
+  userId: undefined,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:58:14'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-03 07:58:18',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-03 07:58:19',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '70aa40af-d8cd-49bc-9214-2119a69bf3a6',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1720.55ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-03 07:58:19'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'export_tenants',
+  details: {
+    filters: {
+      nationality: '',
+      search: '',
+      status: '',
+      id_document_type: '',
+      created_from: undefined,
+      created_to: undefined
+    },
+    count: 2
+  },
+  timestamp: '2025-07-03 08:00:41',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_properties_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      city: undefined,
+      country: undefined,
+      property_type: undefined,
+      status: undefined,
+      search: undefined,
+      min_units: undefined,
+      max_units: undefined,
+      built_year_from: undefined,
+      built_year_to: undefined
+    },
+    resultCount: 4
+  },
+  timestamp: '2025-07-03 08:01:13',
+  level: 'info',
+  message: 'User Action'
+}

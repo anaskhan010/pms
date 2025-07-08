@@ -1,0 +1,312 @@
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-04 01:35:17',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-04 01:35:18',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: 'f7ee1554-a855-4550-8132-def24176c0b5',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1559.41ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-04 01:35:18'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_properties_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      city: undefined,
+      country: undefined,
+      property_type: undefined,
+      status: undefined,
+      search: undefined,
+      min_units: undefined,
+      max_units: undefined,
+      built_year_from: undefined,
+      built_year_to: undefined
+    },
+    resultCount: 4
+  },
+  timestamp: '2025-07-04 01:35:19',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/statistics',
+    method: 'GET',
+    requestId: 'e76386b7-b74d-4b70-a137-dcb5de71b4ab'
+  },
+  timestamp: '2025-07-04 02:51:45',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '183ms',
+  timestamp: '2025-07-04 02:51:45',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+    method: 'GET',
+    requestId: 'ede009c0-f608-4636-bc1b-e33ed4658dda'
+  },
+  timestamp: '2025-07-04 02:51:45',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '189ms',
+  timestamp: '2025-07-04 02:51:45',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  requestId: 'b425ef4c-261f-4dd6-b92c-a4f51ccea107',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  duration: '1346.45ms',
+  userId: undefined,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-04 02:51:50'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-04 03:01:27',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-04 03:01:28',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: '622c60a4-8090-49bd-ab7d-7d6cea679121',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1618.61ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-04 03:01:28'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-04 03:40:44',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-04 03:40:45',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: 'd1866528-e068-4c19-8469-475cd63fdd46',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1661.00ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-04 03:40:45'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_properties_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      city: undefined,
+      country: undefined,
+      property_type: undefined,
+      status: undefined,
+      search: undefined,
+      min_units: undefined,
+      max_units: undefined,
+      built_year_from: undefined,
+      built_year_to: undefined
+    },
+    resultCount: 4
+  },
+  timestamp: '2025-07-04 03:40:48',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+    method: 'GET',
+    requestId: '7f3e08bf-f04d-466d-8c27-936ded627c38'
+  },
+  timestamp: '2025-07-04 03:58:33',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '189ms',
+  timestamp: '2025-07-04 03:58:33',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/statistics',
+    method: 'GET',
+    requestId: '7d0b4349-09f0-422c-b398-bb13eef428e6'
+  },
+  timestamp: '2025-07-04 03:58:33',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '190ms',
+  timestamp: '2025-07-04 03:58:33',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 500,
+  responseTime: '930ms',
+  timestamp: '2025-07-04 03:58:36',
+  level: 'warn',
+  message: 'API Request Failed'
+}

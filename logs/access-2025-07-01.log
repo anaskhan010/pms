@@ -1,0 +1,1000 @@
+{
+  message: '::1 - anonymous [01/Jul/2025:12:00:39 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.121 ms 7c1cb267-f6ff-4882-a374-b5256cb80e44 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:00:39'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:00:39 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.100 ms 7a73febb-5094-4ae8-8f52-913cbe5bb27b none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:00:39'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/statistics',
+    method: 'GET',
+    requestId: 'd266837a-58ef-45e0-a513-c58017690205'
+  },
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '182ms',
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:00:39 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 401 63 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 182.286 ms d266837a-58ef-45e0-a513-c58017690205 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:00:39'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+    method: 'GET',
+    requestId: '658ee578-8a6c-4add-a2c9-edf3757bfb00'
+  },
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '192ms',
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:00:39 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 401 63 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 192.037 ms 658ee578-8a6c-4add-a2c9-edf3757bfb00 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:00:39'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:00:41 +0000] "OPTIONS /api/v1/auth/login HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.109 ms 6a2812fe-0f27-4fea-91a4-aff28106b0f9 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:00:41'
+}
+{
+  service: 'pms-api',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 500,
+  responseTime: '182ms',
+  timestamp: '2025-07-01 07:00:41',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:00:41 +0000] "POST /api/v1/auth/login HTTP/1.1" 500 43 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 182.387 ms f875f982-365f-457c-87d2-5f2f5901c918 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:00:41'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:15 +0000] "OPTIONS /api/v1/auth/login HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.104 ms 3b99f44f-5bbf-40b9-a25d-7ccc3934deb1 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:15'
+}
+{
+  service: 'pms-api',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 200,
+  responseTime: '1340ms',
+  timestamp: '2025-07-01 07:37:16',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  service: 'pms-api',
+  requestId: '1daf4520-7fbf-4f0c-af98-ef9791b95ebb',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  duration: '1339.65ms',
+  userId: undefined,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-01 07:37:16'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:16 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 333 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 1339.439 ms 1daf4520-7fbf-4f0c-af98-ef9791b95ebb none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:16'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:21 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.110 ms 16802ca6-6f7f-4d42-993b-f8449f04de5b none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:21'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:21 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.110 ms 087af8b4-7bfb-418d-92bf-dcec9faac6e8 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:21'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-01 07:37:22',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '705ms',
+  timestamp: '2025-07-01 07:37:22',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:22 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 705.240 ms fec76e2a-fb60-4fb1-a536-2abc67eb9ed5 miss-stored',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:22'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-01 07:37:23',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '1674ms',
+  timestamp: '2025-07-01 07:37:23',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  service: 'pms-api',
+  requestId: 'e1f5d241-6831-46b0-88a9-664ad46d4863',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1674.78ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-01 07:37:23'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:23 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 200 360 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 1674.425 ms e1f5d241-6831-46b0-88a9-664ad46d4863 miss-stored',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:23'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:28 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.481 ms db1100ca-87df-4464-b1cb-eca95bdd81cf none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:28'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:28 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.115 ms 02656c68-e752-4729-b236-831aa993a9c7 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:28'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '178ms',
+  timestamp: '2025-07-01 07:37:28',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:28 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 178.603 ms f9d6fc98-2cab-459c-be36-8cf250521b72 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:28'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '191ms',
+  timestamp: '2025-07-01 07:37:28',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:28 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 191.403 ms b374dbae-6792-4b66-a224-0b4265c0899c hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:28'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:41 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.160 ms 9928169f-2a3c-4fca-9030-f3a39aabbe58 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:41'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:37:41 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.206 ms ce7ea521-e320-45a6-a6e8-6a0bdbcd4dc8 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:41'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '178ms',
+  timestamp: '2025-07-01 07:37:41',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:41 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 178.191 ms e25e0eb9-40b8-47bd-b857-4945d07f3950 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:41'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '187ms',
+  timestamp: '2025-07-01 07:37:41',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:41 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 187.600 ms 301bcedb-ef95-42c2-be42-27a4d3f4faab hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:41'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '178ms',
+  timestamp: '2025-07-01 07:37:43',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:43 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 177.587 ms c2233368-4663-4292-a087-3024e357ac61 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:43'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '189ms',
+  timestamp: '2025-07-01 07:37:43',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:37:43 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 189.168 ms 43b3f9a8-0bc5-49b0-a250-6cfd2916b337 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:37:43'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:38:57 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.109 ms 93d7631a-42c4-4635-b073-57e424a703e0 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:38:57'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:38:57 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.174 ms b38197a7-65ac-48cd-a587-ab164cb24b24 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:38:57'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '181ms',
+  timestamp: '2025-07-01 07:38:57',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:38:57 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 181.798 ms bba872f8-adde-4b51-ab77-49cc5846d1f8 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:38:57'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '194ms',
+  timestamp: '2025-07-01 07:38:57',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:38:57 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 194.330 ms e47d43e0-bece-406f-b2b6-2ea8ffa0ef23 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:38:57'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:39:32 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.165 ms a6cba879-ebc7-49d1-a342-f970ed94c010 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:39:32'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:39:32 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.165 ms 88a6051d-163d-49e1-bf11-11fde24d636b none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:39:32'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '182ms',
+  timestamp: '2025-07-01 07:39:33',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:39:33 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 182.743 ms 4b616bad-6f4a-4ff7-9b74-c463cefb6c8b hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:39:33'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '192ms',
+  timestamp: '2025-07-01 07:39:33',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:39:33 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 191.913 ms 7be29571-2199-491b-af74-7f88e419b264 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:39:33'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:06 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.189 ms 63058c6f-f98f-4a1f-8fd1-6398bf0db3d5 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:06'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:06 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.111 ms ef51f3b6-2731-4e55-9b8b-8151b044ad55 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:06'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '178ms',
+  timestamp: '2025-07-01 07:41:07',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:07 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 177.960 ms 97b0d3aa-c4dd-483e-8ef9-3605b171554e hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:07'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '187ms',
+  timestamp: '2025-07-01 07:41:07',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:07 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 187.796 ms faad8449-cbd5-4e7f-afff-fd1d8a42a577 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:07'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:16 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Egyptian HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.126 ms ec2410e0-3dfa-4edd-be28-cae40e8b9402 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:16'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:16 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Egyptian HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 1.206 ms eb2953c0-af2f-4e06-a1de-f2bbfb32b770 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:16'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:16 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.146 ms 4ffb5fa8-52a3-451e-8301-f613de40d0da none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:16'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '182ms',
+  timestamp: '2025-07-01 07:41:16',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:16 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 181.597 ms 3440f49b-a3b2-4360-95ee-9fd2c2dc8810 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:16'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Egyptian',
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 0
+  },
+  timestamp: '2025-07-01 07:41:17',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Egyptian',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '567ms',
+  timestamp: '2025-07-01 07:41:17',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:17 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Egyptian HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 566.747 ms ee3ef283-e492-45f2-aace-5d29a5819b7b miss-stored',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:17'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Egyptian',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '188ms',
+  timestamp: '2025-07-01 07:41:17',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:17 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Egyptian HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 188.231 ms 176ce58d-31ab-4633-856c-6f216e8bc8ec hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:17'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:19 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.522 ms 38705421-bfda-485d-8f89-f3417e69aa6a none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:19'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:19 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.099 ms ffc837ee-93f0-4566-acf8-86ded17061a0 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:19'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '192ms',
+  timestamp: '2025-07-01 07:41:20',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:20 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 188.501 ms 6ef08338-4105-4b51-8e0c-d752a693c5b1 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:20'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-01 07:41:20',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '532ms',
+  timestamp: '2025-07-01 07:41:20',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:20 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 532.005 ms 4cc4f838-90f4-4dd4-9af8-88b864eb0693 miss-stored',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:20'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '181ms',
+  timestamp: '2025-07-01 07:41:20',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:20 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 181.452 ms a107da63-4ef6-412f-b063-ff3903ba8d92 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:20'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:23 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=active HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.127 ms 94f221dc-a8f3-4e86-a6d9-59a315504bb4 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:23'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:23 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=active HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.444 ms 730afb92-b14c-4cbc-a4c0-8477e1635ae8 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:23'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:23 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.238 ms c403172b-70c5-4f20-b132-71b41fda299c none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:23'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '188ms',
+  timestamp: '2025-07-01 07:41:23',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:23 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 188.229 ms a01e81b3-081f-4756-8384-dfd664215edb hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:23'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: 'active',
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-01 07:41:24',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=active',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '533ms',
+  timestamp: '2025-07-01 07:41:24',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:24 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=active HTTP/1.1" 200 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 532.769 ms d98aea2f-355d-46aa-928f-b06e469166a5 miss-stored',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:24'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=active',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '178ms',
+  timestamp: '2025-07-01 07:41:24',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:24 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=active HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 177.743 ms 336cfb2e-79b1-4280-8ada-ef3f31bb6407 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:24'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:26 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=inactive HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.176 ms 2a45ffa9-6cd8-4f2e-a942-e4738a679ed7 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:26'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:26 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=inactive HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.213 ms 2c75ec7a-3c42-4f5a-bb88-db433d2c7647 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:26'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '178ms',
+  timestamp: '2025-07-01 07:41:26',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:26 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 178.740 ms d4702a1c-e859-4b32-9e45-b7b46565896b hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:26'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: 'inactive',
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 0
+  },
+  timestamp: '2025-07-01 07:41:26',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=inactive',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '564ms',
+  timestamp: '2025-07-01 07:41:26',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:26 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=inactive HTTP/1.1" 200 213 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 564.474 ms a58fe148-7e64-4162-a984-1968fed346bc miss-stored',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:26'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=inactive',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '188ms',
+  timestamp: '2025-07-01 07:41:27',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:27 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani&status=inactive HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 187.959 ms dc3bc601-48b5-476b-87cc-0e64746ee1b4 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:27'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:30 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.104 ms 20e6c1b7-f827-444a-bf2c-198f4fe2a05b none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:30'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:30 +0000] "OPTIONS /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.117 ms 7fae6610-a5ab-4221-b3ad-7b74c24f0f71 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:30'
+}
+{
+  message: '::1 - anonymous [01/Jul/2025:12:41:30 +0000] "OPTIONS /api/v1/tenants/statistics HTTP/1.1" 204 0 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" none 0.990 ms 0386a70c-edc3-4c1e-9eb8-deadb62077c1 none',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:30'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '180ms',
+  timestamp: '2025-07-01 07:41:31',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:31 +0000] "GET /api/v1/tenants/statistics HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 180.190 ms 1467672f-194f-4bab-9b79-3ac102b7cdb1 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:31'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '192ms',
+  timestamp: '2025-07-01 07:41:31',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:31 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 192.092 ms 8aecc662-8f8c-417f-b8f0-5a09708fce79 hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:31'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: 12,
+  userRole: 'admin',
+  statusCode: 200,
+  responseTime: '188ms',
+  timestamp: '2025-07-01 07:41:31',
+  level: 'http',
+  message: 'API Request'
+}
+{
+  message: '::1 - 12 [01/Jul/2025:12:41:31 +0000] "GET /api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc&nationality=Pakistani HTTP/1.1" 304 - "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" admin 188.299 ms 70ca3641-eea0-4205-ba2b-a57ecad2adad hit',
+  level: 'http',
+  service: 'pms-api',
+  timestamp: '2025-07-01 07:41:31'
+}

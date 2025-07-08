@@ -1,0 +1,28 @@
+{
+  service: 'pms-api',
+  error: 'listen EADDRINUSE: address already in use :::5000',
+  stack: 'Error: listen EADDRINUSE: address already in use :::5000\n' +
+    '    at Server.setupListenHandle [as _listen2] (node:net:1937:16)\n' +
+    '    at listenInCluster (node:net:1994:12)\n' +
+    '    at Server.listen (node:net:2099:7)\n' +
+    '    at Function.listen (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:635:24)\n' +
+    '    at startServer (/Users/junaid/Documents/PMS/backend/server.js:175:24)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  level: 'error',
+  message: 'Uncaught Exception',
+  timestamp: '2025-06-28 23:53:03'
+}
+{
+  service: 'pms-api',
+  error: 'listen EADDRINUSE: address already in use :::5000',
+  stack: 'Error: listen EADDRINUSE: address already in use :::5000\n' +
+    '    at Server.setupListenHandle [as _listen2] (node:net:1937:16)\n' +
+    '    at listenInCluster (node:net:1994:12)\n' +
+    '    at Server.listen (node:net:2099:7)\n' +
+    '    at Function.listen (/Users/junaid/Documents/PMS/backend/node_modules/express/lib/application.js:635:24)\n' +
+    '    at startServer (/Users/junaid/Documents/PMS/backend/server.js:175:24)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  level: 'error',
+  message: 'Uncaught Exception',
+  timestamp: '2025-06-28 23:53:18'
+}

@@ -1,0 +1,35 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/junaid/Documents/PMS/backend/logs/.82cea254ccb71e8b519a25a34e005b2e8499f950-audit.json",
+    "files": [
+        {
+            "date": 1751170809505,
+            "name": "/Users/junaid/Documents/PMS/backend/logs/rejections-2025-06-28.log",
+            "hash": "2f0186f832c807b191a0e2cfa847b31b1e18a9704594f914d20cdc0316abda1f"
+        },
+        {
+            "date": 1751173280708,
+            "name": "/Users/junaid/Documents/PMS/backend/logs/rejections-2025-06-29.log",
+            "hash": "7da00e656906a52d1466162b79f095c23d02150792275bcfce4d1762eb90a66a"
+        },
+        {
+            "date": 1751541533567,
+            "name": "/Users/junaid/Documents/PMS/backend/logs/rejections-2025-07-03.log",
+            "hash": "37d1884237acb5cd88cd3ffdf2ab3ba36356240112a4f044659edf9887a70b85"
+        },
+        {
+            "date": 1751610895887,
+            "name": "/Users/junaid/Documents/PMS/backend/logs/rejections-2025-07-04.log",
+            "hash": "357188a44d965526ccb96c6aa5aba74dc35b536f993972182c070aaac1006e24"
+        },
+        {
+            "date": 1751691750867,
+            "name": "/Users/junaid/Documents/PMS/backend/logs/rejections-2025-07-05.log",
+            "hash": "5a74800c1d2643aee9e7dd4dec1bbfae21eb5397e88f171f15242d3149b324c7"
+        }
+    ],
+    "hashType": "sha256"
+}
