@@ -151,15 +151,25 @@ const getTenantApartments = asyncHandler(async (req, res, next) => {
 
 const assignApartment = asyncHandler(async (req, res, next) => {
   try {
-    const assignmentId = await tenantModel.assignApartment(req.params.id, req.params.apartmentId);
+    const { startDate, endDate, securityFee } = req.body;
+
+    // Prepare contract data if provided
+    const contractData = (startDate && endDate) ? {
+      startDate,
+      endDate,
+      securityFee: securityFee || 0
+    } : null;
+
+    const result = await tenantModel.assignApartment(
+      req.params.id,
+      req.params.apartmentId,
+      contractData
+    );
 
     res.status(201).json({
       success: true,
-      data: {
-        assignmentId,
-        tenantId: req.params.id,
-        apartmentId: req.params.apartmentId
-      }
+      data: result,
+      message: 'Apartment assigned successfully with contract created'
     });
   } catch (error) {
     return next(new ErrorResponse(error.message, 400));
@@ -238,6 +248,20 @@ const getAvailableApartments = asyncHandler(async (req, res, next) => {
   });
 });
 
+const getAvailableTenantsForAssignment = asyncHandler(async (req, res, next) => {
+  try {
+    // Get tenants who don't have current apartment assignments
+    const tenants = await tenantModel.getAvailableTenantsForAssignment();
+
+    res.status(200).json({
+      success: true,
+      data: tenants
+    });
+  } catch (error) {
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
 export default {
   createTenant,
   getAllTenants,
@@ -252,5 +276,6 @@ export default {
   getAllBuildings,
   getFloorsByBuilding,
   getApartmentsByFloor,
-  getAvailableApartments
+  getAvailableApartments,
+  getAvailableTenantsForAssignment
 };

@@ -20,6 +20,7 @@ router.get('/buildings', adminOnly, tenantController.getAllBuildings);
 router.get('/buildings/:buildingId/floors', adminOnly, tenantController.getFloorsByBuilding);
 router.get('/floors/:floorId/apartments', adminOnly, tenantController.getApartmentsByFloor);
 router.get('/available-apartments', adminOnly, tenantController.getAvailableApartments);
+router.get('/available-for-assignment', adminOnly, tenantController.getAvailableTenantsForAssignment);
 
 // Alternative endpoints for frontend compatibility
 router.get('/get-all-tenants', adminOnly, tenantController.getAllTenants);

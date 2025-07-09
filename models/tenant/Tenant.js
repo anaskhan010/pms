@@ -283,10 +283,24 @@ const getTenantApartments = async (tenantId) => {
   return rows;
 };
 
-const assignApartment = async (tenantId, apartmentId) => {
+const assignApartment = async (tenantId, apartmentId, contractData = null) => {
   const tenant = await getTenantById(tenantId);
   if (!tenant) {
     throw new Error('Tenant not found');
+  }
+
+  // Check if apartment exists and is vacant
+  const apartmentCheck = await db.execute(
+    'SELECT apartmentId, status FROM apartment WHERE apartmentId = ?',
+    [apartmentId]
+  );
+
+  if (apartmentCheck[0].length === 0) {
+    throw new Error('Apartment not found');
+  }
+
+  if (apartmentCheck[0][0].status === 'Rented') {
+    throw new Error('Apartment is already rented');
   }
 
   const existingAssignment = await db.execute(
@@ -298,17 +312,95 @@ const assignApartment = async (tenantId, apartmentId) => {
     throw new Error('Apartment already assigned to this tenant');
   }
 
-  const query = 'INSERT INTO ApartmentAssigned (tenantId, apartmentId) VALUES (?, ?)';
-  const result = await db.execute(query, [tenantId, apartmentId]);
+  // Start transaction
+  const connection = await db.getConnection();
+  await connection.beginTransaction();
 
-  return result[0].insertId;
+  try {
+    // 1. Assign apartment to tenant
+    const assignQuery = 'INSERT INTO ApartmentAssigned (tenantId, apartmentId) VALUES (?, ?)';
+    const assignResult = await connection.execute(assignQuery, [tenantId, apartmentId]);
+    const assignmentId = assignResult[0].insertId;
+
+    // 2. Update apartment status to 'Rented'
+    const statusUpdateQuery = 'UPDATE apartment SET status = ? WHERE apartmentId = ?';
+    await connection.execute(statusUpdateQuery, ['Rented', apartmentId]);
+
+    // 3. Create contract if contract data is provided
+    let contractId = null;
+    if (contractData && contractData.startDate && contractData.endDate) {
+      const contractQuery = `
+        INSERT INTO Contract (SecurityFee, tenantId, startDate, endDate)
+        VALUES (?, ?, ?, ?)
+      `;
+      const contractValues = [
+        contractData.securityFee || 0,
+        tenantId,
+        contractData.startDate,
+        contractData.endDate
+      ];
+      const contractResult = await connection.execute(contractQuery, contractValues);
+      contractId = contractResult[0].insertId;
+
+      // 4. Link contract to apartment in ContractDetails
+      const contractDetailsQuery = `
+        INSERT INTO ContractDetails (contractId, apartmentId)
+        VALUES (?, ?)
+      `;
+      await connection.execute(contractDetailsQuery, [contractId, apartmentId]);
+    }
+
+    await connection.commit();
+
+    return {
+      assignmentId,
+      contractId,
+      tenantId,
+      apartmentId,
+      message: 'Apartment assigned successfully'
+    };
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 const removeApartmentAssignment = async (tenantId, apartmentId) => {
-  const query = 'DELETE FROM ApartmentAssigned WHERE tenantId = ? AND apartmentId = ?';
-  const result = await db.execute(query, [tenantId, apartmentId]);
+  // Start transaction
+  const connection = await db.getConnection();
+  await connection.beginTransaction();
 
-  return result[0].affectedRows > 0;
+  try {
+    // 1. Check if assignment exists
+    const checkQuery = 'SELECT * FROM ApartmentAssigned WHERE tenantId = ? AND apartmentId = ?';
+    const checkResult = await connection.execute(checkQuery, [tenantId, apartmentId]);
+
+    if (checkResult[0].length === 0) {
+      await connection.rollback();
+      return false;
+    }
+
+    // 2. Remove apartment assignment
+    const deleteQuery = 'DELETE FROM ApartmentAssigned WHERE tenantId = ? AND apartmentId = ?';
+    const deleteResult = await connection.execute(deleteQuery, [tenantId, apartmentId]);
+
+    // 3. Update apartment status back to 'Vacant'
+    const statusUpdateQuery = 'UPDATE apartment SET status = ? WHERE apartmentId = ?';
+    await connection.execute(statusUpdateQuery, ['Vacant', apartmentId]);
+
+    // 4. Optionally handle contract cleanup (you might want to keep contracts for history)
+    // For now, we'll keep the contract but you could add logic to mark it as terminated
+
+    await connection.commit();
+    return deleteResult[0].affectedRows > 0;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 const getTenantStatistics = async () => {
@@ -379,6 +471,20 @@ const getAvailableApartments = async () => {
   return rows;
 };
 
+const getAvailableTenantsForAssignment = async () => {
+  const query = `
+    SELECT t.tenantId, u.firstName, u.lastName, u.email, u.phoneNumber,
+           t.occupation, u.nationality
+    FROM tenant t
+    INNER JOIN user u ON t.userId = u.userId
+    LEFT JOIN ApartmentAssigned aa ON t.tenantId = aa.tenantId
+    WHERE aa.tenantId IS NULL
+    ORDER BY u.firstName, u.lastName
+  `;
+  const [rows] = await db.execute(query);
+  return rows;
+};
+
 export default {
   createTenant,
   getTenantById,
@@ -395,5 +501,6 @@ export default {
   getAllBuildings,
   getFloorsByBuilding,
   getApartmentsByFloor,
-  getAvailableApartments
+  getAvailableApartments,
+  getAvailableTenantsForAssignment
 };
