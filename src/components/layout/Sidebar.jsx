@@ -11,24 +11,39 @@ const Sidebar = ({ isOpen, onToggle }) => {
     onToggle && onToggle(!isOpen);
   };
 
-  // Define menu items - Admin only
+  // Define menu items - Admin and Owner
   const getMenuItems = () => {
-    // Only admin menu items (removed manager, owner, tenant roles)
-    return [
-      { path: "/admin/dashboard", icon: "grid", label: "Dashboard" },
-      { path: "/admin/tenants", icon: "users", label: "Tenants" },
-      { path: "/admin/buildings", icon: "building", label: "Buildings" },
-      { path: "/admin/villas", icon: "home", label: "Villas" },
-      { path: "/admin/virtual-demo", icon: "video", label: "Virtual Tour" },
-      { path: "/admin/vendors", icon: "briefcase", label: "Vendors" },
-      {
-        path: "/admin/transactions",
-        icon: "credit-card",
-        label: "Financial Transactions",
-      },
-      { path: "/admin/user-management", icon: "user-group", label: "User Management" },
-      { path: "/admin/messages", icon: "chat", label: "Messages" },
-    ];
+
+    if (user?.role === 'admin' || user?.role === 'super_admin') {
+      // Full admin menu items
+      return [
+        { path: "/admin/dashboard", icon: "grid", label: "Dashboard" },
+        { path: "/admin/tenants", icon: "users", label: "Tenants" },
+        { path: "/admin/buildings", icon: "building", label: "Buildings" },
+        { path: "/admin/villas", icon: "home", label: "Villas" },
+        { path: "/admin/virtual-demo", icon: "video", label: "Virtual Tour" },
+        { path: "/admin/vendors", icon: "briefcase", label: "Vendors" },
+        {
+          path: "/admin/transactions",
+          icon: "credit-card",
+          label: "Financial Transactions",
+        },
+        { path: "/admin/user-management", icon: "user-group", label: "User Management" },
+        { path: "/admin/messages", icon: "chat", label: "Messages" },
+      ];
+    }
+
+    if (user?.role === 'owner') {
+      // Limited owner menu items
+      return [
+        { path: "/admin/dashboard", icon: "grid", label: "Dashboard" },
+        { path: "/admin/tenants", icon: "users", label: "My Tenants" },
+        { path: "/admin/buildings", icon: "building", label: "My Buildings" },
+        { path: "/admin/messages", icon: "chat", label: "Messages" },
+      ];
+    }
+
+    return [];
   };
 
   const menuItems = getMenuItems();
@@ -61,11 +76,13 @@ const Sidebar = ({ isOpen, onToggle }) => {
             <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-white">
               SENTRIX Real Estate
             </h1>
-            <p className="text-xs text-teal-300 mt-1">Admin Portal</p>
+            <p className="text-xs text-teal-300 mt-1">
+              {user?.role === 'owner' ? 'Owner Portal' : 'Admin Portal'}
+            </p>
           </div>
         ) : (
           <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-white">
-            AP
+            {user?.role === 'owner' ? 'OP' : 'AP'}
           </h1>
         )}
         <button

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
-const AddBuildingModal = ({ isOpen, onClose, onSubmit, loading = false }) => {
+const AddBuildingModal = ({ isOpen, onClose, onSubmit, loading = false, editData = null, isEditMode = false }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [formData, setFormData] = useState({
     // Building Info Tab
@@ -29,12 +29,14 @@ const AddBuildingModal = ({ isOpen, onClose, onSubmit, loading = false }) => {
     { id: 2, name: 'Apartments', icon: '🏠' }
   ];
 
-  // Reset form when modal opens/closes
+  // Reset form when modal opens/closes or populate with edit data
   useEffect(() => {
     if (!isOpen) {
       resetForm();
+    } else if (isEditMode && editData) {
+      populateEditData();
     }
-  }, [isOpen]);
+  }, [isOpen, isEditMode, editData]);
 
   const resetForm = () => {
     setFormData({
@@ -50,6 +52,48 @@ const AddBuildingModal = ({ isOpen, onClose, onSubmit, loading = false }) => {
       building: [],
       floors: {},
       apartments: {}
+    });
+  };
+
+  const populateEditData = () => {
+    if (!editData) return;
+
+    // Populate building info
+    setFormData({
+      buildingName: editData.buildingName || '',
+      buildingAddress: editData.buildingAddress || '',
+      buildingImages: [], // Will be handled separately for existing images
+      floors: editData.floors || [],
+      apartments: (editData.apartments || []).map(apartment => ({
+        ...apartment,
+        // Ensure amenities is always an array of strings
+        amenities: Array.isArray(apartment.amenities)
+          ? apartment.amenities.map(amenity =>
+              typeof amenity === 'string' ? amenity : amenity.amenityName || amenity
+            )
+          : []
+      }))
+    });
+
+    // Set up image preview URLs for existing building images
+    const buildingImageUrls = editData.buildingImages?.map(img =>
+      `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.imageUrl}`
+    ) || [];
+
+    // Set up apartment image preview URLs
+    const apartmentImageUrls = {};
+    editData.apartments?.forEach(apartment => {
+      if (apartment.apartmentImages && apartment.apartmentImages.length > 0) {
+        apartmentImageUrls[apartment.id] = apartment.apartmentImages.map(img =>
+          `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.imageUrl}`
+        );
+      }
+    });
+
+    setImagePreviewUrls({
+      building: buildingImageUrls,
+      floors: {}, // Floors don't have images in current implementation
+      apartments: apartmentImageUrls
     });
   };
 
@@ -144,7 +188,7 @@ const AddBuildingModal = ({ isOpen, onClose, onSubmit, loading = false }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Add New Building"
+      title={isEditMode ? "Edit Building" : "Add New Building"}
       size="full"
       className="max-h-[95vh] max-w-6xl"
     >

@@ -117,8 +117,8 @@ export const useAuthUtils = () => {
   // Removed manager, owner, tenant role checks - Admin only system
 
   /**
-   * Get navigation items - Admin only
-   * @returns {Array} Navigation items for admin users
+   * Get navigation items - Admin and Owner
+   * @returns {Array} Navigation items based on user role
    */
   const getNavigationItems = () => {
     if (isAdmin()) {
@@ -134,11 +134,20 @@ export const useAuthUtils = () => {
       ];
     }
 
+    if (auth.user?.role === 'owner') {
+      return [
+        { name: 'Dashboard', href: '/admin/dashboard', icon: 'home' },
+        { name: 'My Tenants', href: '/admin/tenants', icon: 'users' },
+        { name: 'My Buildings', href: '/admin/buildings', icon: 'building' },
+        { name: 'Messages', href: '/admin/messages', icon: 'chat' },
+      ];
+    }
+
     return [];
   };
 
   /**
-   * Format user role for display with color - Admin only
+   * Format user role for display with color - Admin and Owner
    * @returns {Object} Role info with color
    */
   const getRoleInfo = () => {
@@ -146,7 +155,8 @@ export const useAuthUtils = () => {
 
     const roleInfo = {
       'super_admin': { name: 'Super Admin', color: 'purple' },
-      'admin': { name: 'Administrator', color: 'red' }
+      'admin': { name: 'Administrator', color: 'red' },
+      'owner': { name: 'Building Owner', color: 'blue' }
     };
 
     return roleInfo[role] || { name: 'Unknown', color: 'gray' };

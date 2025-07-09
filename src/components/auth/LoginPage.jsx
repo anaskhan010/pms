@@ -101,11 +101,8 @@ const LoginPage = () => {
         switch (user.role) {
           case "admin":
           case "super_admin":
-          case "manager":
-            redirectPath = "/admin/dashboard";
-            break;
           case "owner":
-            redirectPath = "/owner/dashboard";
+            redirectPath = "/admin/dashboard";
             break;
           case "tenant":
             redirectPath = "/tenant/dashboard";
@@ -393,7 +390,7 @@ const LoginPage = () => {
             </div>
           </form>
 
-          <div className="mt-6 text-center">
+         {/* <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
               <Link
@@ -403,7 +400,7 @@ const LoginPage = () => {
                 Sign up here
               </Link>
             </p>
-          </div>
+          </div>  */}
 
           <div className="mt-6">
             <div className="relative">

@@ -25,14 +25,15 @@ const RoleBasedRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Redirect based on user role - Only admin access allowed
+  // Redirect based on user role - Admin and Owner access allowed
   switch (user?.role) {
     case "admin":
     case "super_admin":
+    case "owner":
       return <Navigate to="/admin/dashboard" replace />;
 
     default:
-      // Only admin roles are allowed, redirect others to login
+      // Only admin and owner roles are allowed, redirect others to login
       return <Navigate to="/login" replace />;
   }
 };

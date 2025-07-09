@@ -32,11 +32,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected admin routes - Only admin access */}
+        {/* Protected admin routes - Admin and Owner access */}
         <Route
           path="/admin"
           element={
-            <ProtectedRoute requiredRoles={["admin", "super_admin"]}>
+            <ProtectedRoute requiredRoles={["admin", "super_admin", "owner"]}>
               <AdminLayout />
             </ProtectedRoute>
           }

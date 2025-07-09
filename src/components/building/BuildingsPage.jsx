@@ -4,6 +4,7 @@ import adminApiService from "../../services/adminApiService";
 import notificationService from "../../services/notificationService";
 import { DeleteConfirmationModal } from "../common";
 import AddBuildingModal from "./AddBuildingModal";
+import AssignBuildingModal from "./AssignBuildingModal";
 
 const BuildingsPage = () => {
   const [buildings, setBuildings] = useState([]);
@@ -47,6 +48,7 @@ const BuildingsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingBuildingId, setEditingBuildingId] = useState(null);
+  const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState({
     buildingName: "",
     buildingAddress: "",
@@ -60,6 +62,12 @@ const BuildingsPage = () => {
     buildingId: null,
     buildingName: '',
     loading: false
+  });
+
+  // Assign building modal state
+  const [assignModal, setAssignModal] = useState({
+    isOpen: false,
+    building: null
   });
 
   const handleChange = (e) => {
@@ -105,34 +113,62 @@ const BuildingsPage = () => {
   const handleComprehensiveSubmit = async (comprehensiveData) => {
     setLoading(true);
     try {
-      const response = await adminApiService.createComprehensiveBuilding(comprehensiveData);
+      let response;
+
+      if (isEditMode && editingBuildingId) {
+        response = await adminApiService.updateComprehensiveBuilding(editingBuildingId, comprehensiveData);
+        if (response.success) {
+          notificationService.success('Building updated successfully!');
+        }
+      } else {
+        response = await adminApiService.createComprehensiveBuilding(comprehensiveData);
+        if (response.success) {
+          notificationService.success('Building created successfully with all floors and apartments');
+        }
+      }
 
       if (response.success) {
-        notificationService.success('Building created successfully with all floors and apartments');
         await fetchBuildings(); // Refresh the buildings list
         setIsModalOpen(false);
+        resetForm();
         setError(null);
       } else {
-        notificationService.error(response.error || 'Failed to create building');
-        setError(response.error || 'Failed to create building');
+        const errorMessage = response.error || (isEditMode ? 'Failed to update building' : 'Failed to create building');
+        notificationService.error(errorMessage);
+        setError(errorMessage);
       }
     } catch (err) {
-      console.error('Error creating comprehensive building:', err);
-      notificationService.error('An unexpected error occurred while creating building');
-      setError('An unexpected error occurred while creating building');
+      console.error('Error with comprehensive building operation:', err);
+      const errorMessage = `An unexpected error occurred while ${isEditMode ? 'updating' : 'creating'} building`;
+      notificationService.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (building) => {
-    setIsEditMode(true);
-    setEditingBuildingId(building.id);
-    setFormData({
-      buildingName: building.name,
-      buildingAddress: building.address,
-    });
-    setIsModalOpen(true);
+  const handleEdit = async (building) => {
+    try {
+      setLoading(true);
+
+      // Fetch comprehensive building data for editing
+      const response = await adminApiService.getComprehensiveBuildingById(building.id);
+
+      if (response.success) {
+        setIsEditMode(true);
+        setEditingBuildingId(building.id);
+        setEditData(response.data);
+        setUseComprehensiveModal(true);
+        setIsModalOpen(true);
+      } else {
+        setError(response.error || 'Failed to fetch building details for editing');
+      }
+    } catch (err) {
+      console.error('Error fetching building for edit:', err);
+      setError('An unexpected error occurred while fetching building details');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = (id, buildingName = '') => {
@@ -169,6 +205,29 @@ const BuildingsPage = () => {
     setDeleteModal({ isOpen: false, buildingId: null, buildingName: '', loading: false });
   };
 
+  // Handle assign building to user
+  const handleAssignBuilding = (building) => {
+    setAssignModal({
+      isOpen: true,
+      building: building
+    });
+  };
+
+  // Handle assign building modal close
+  const handleAssignModalClose = () => {
+    setAssignModal({
+      isOpen: false,
+      building: null
+    });
+  };
+
+  // Handle successful assignment
+  const handleAssignSuccess = () => {
+    // Optionally refresh buildings list or show success message
+    // The success notification is already handled in the modal
+    fetchBuildings();
+  };
+
   const resetForm = () => {
     setFormData({
       buildingName: "",
@@ -177,6 +236,8 @@ const BuildingsPage = () => {
     setSelectedImages([]);
     setIsEditMode(false);
     setEditingBuildingId(null);
+    setEditData(null);
+    setUseComprehensiveModal(false);
   };
 
   const handleModalClose = () => {
@@ -311,10 +372,16 @@ const BuildingsPage = () => {
                       Edit
                     </button>
                     <button
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 hover:text-red-900 mr-3"
                       onClick={() => handleDelete(building.id, building.name)}
                     >
                       Delete
+                    </button>
+                    <button
+                      className="text-green-600 hover:text-green-900"
+                      onClick={() => handleAssignBuilding(building)}
+                    >
+                      Assign Building To User
                     </button>
                   </td>
                 </tr>
@@ -332,6 +399,8 @@ const BuildingsPage = () => {
           onClose={handleModalClose}
           onSubmit={handleComprehensiveSubmit}
           loading={loading}
+          editData={editData}
+          isEditMode={isEditMode}
         />
       )}
 
@@ -344,6 +413,14 @@ const BuildingsPage = () => {
         message="Are you sure you want to delete this building? This action cannot be undone and will remove all associated floors, apartments, and tenant data."
         itemName={deleteModal.buildingName}
         loading={deleteModal.loading}
+      />
+
+      {/* Assign Building Modal */}
+      <AssignBuildingModal
+        isOpen={assignModal.isOpen}
+        onClose={handleAssignModalClose}
+        building={assignModal.building}
+        onAssignSuccess={handleAssignSuccess}
       />
 
     </div>

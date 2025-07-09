@@ -133,6 +133,14 @@ const UserManagementPage = () => {
       }
 
       if (response.success) {
+        // Handle building assignments for owners
+        if (userData.assignedBuildings && userData.assignedBuildings.length > 0) {
+          const userId = response.data?.userId || editingUser?.userId;
+          if (userId) {
+            await handleBuildingAssignments(userId, userData.assignedBuildings);
+          }
+        }
+
         notificationService.success(response.message);
         setIsModalOpen(false);
         setEditingUser(null);
@@ -143,6 +151,29 @@ const UserManagementPage = () => {
     } catch (error) {
       console.error('Error saving user:', error);
       notificationService.error('An error occurred while saving the user');
+    }
+  };
+
+  // Handle building assignments for owners
+  const handleBuildingAssignments = async (userId, buildingIds) => {
+    try {
+      // Assign each building to the owner
+      for (const buildingId of buildingIds) {
+        await fetch('/api/buildings/assignBuildingToOwner', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            buildingId,
+            userId
+          })
+        });
+      }
+    } catch (error) {
+      console.error('Error assigning buildings:', error);
+      notificationService.error('User created but failed to assign buildings');
     }
   };
 

@@ -676,12 +676,15 @@ const ContractsTab = ({ contracts, loading }) => {
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
                 {contracts.map((contract) => (
-                  <tr key={contract.id} className="hover:bg-slate-50">
+                  <tr key={contract.contract_id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                      {contract.id}
+                      #{contract.contract_id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                      {contract.property_name || 'N/A'}
+                      <div>
+                        <div className="font-medium">{contract.property_info || 'N/A'}</div>
+                        <div className="text-xs text-slate-400">{contract.property_address}</div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                       {formatDate(contract.start_date)}
@@ -691,17 +694,23 @@ const ContractsTab = ({ contracts, loading }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        contract.status === 'active'
+                        contract.contract_status === 'Active'
                           ? 'bg-teal-100 text-teal-800'
                           : 'bg-slate-100 text-slate-800'
                       }`}>
-                        {contract.status}
+                        {contract.contract_status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Button variant="secondary" size="sm" className="border-slate-300 text-slate-700 hover:bg-slate-50">
-                        View Details
-                      </Button>
+                      <div className="space-y-1">
+                        <Button variant="secondary" size="sm" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+                          View Details
+                        </Button>
+                        <div className="text-xs text-slate-500">
+                          <div>Rent: {contract.currency} {contract.monthly_rent_amount}</div>
+                          <div>Security: {contract.currency} {contract.security_fee}</div>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))}

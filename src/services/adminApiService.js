@@ -425,6 +425,49 @@ export const adminApiService = {
   },
 
   /**
+   * Update tenant
+   * @param {number} tenantId - Tenant ID
+   * @param {Object} tenantData - Updated tenant data
+   * @returns {Promise<Object>} API response
+   */
+  async updateTenant(tenantId, tenantData) {
+    try {
+      const formData = new FormData();
+
+      // Add tenant fields
+      if (tenantData.firstName) formData.append('firstName', tenantData.firstName);
+      if (tenantData.lastName) formData.append('lastName', tenantData.lastName);
+      if (tenantData.email) formData.append('email', tenantData.email);
+      if (tenantData.phoneNumber) formData.append('phoneNumber', tenantData.phoneNumber);
+      if (tenantData.address) formData.append('address', tenantData.address);
+      if (tenantData.gender) formData.append('gender', tenantData.gender);
+      if (tenantData.nationality) formData.append('nationality', tenantData.nationality);
+      if (tenantData.dateOfBirth) formData.append('dateOfBirth', tenantData.dateOfBirth);
+      if (tenantData.occupation) formData.append('occupation', tenantData.occupation);
+      if (tenantData.registrationNumber) formData.append('registrationNumber', tenantData.registrationNumber);
+      if (tenantData.registrationExpiry) formData.append('registrationExpiry', tenantData.registrationExpiry);
+
+      const response = await api.put(`/tenants/updateTenant/${tenantId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return {
+        success: true,
+        data: response.data.data || {},
+        message: response.data.message || "Tenant updated successfully"
+      };
+    } catch (error) {
+      console.error("Error updating tenant:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to update tenant"
+      };
+    }
+  },
+
+  /**
    * Delete tenant
    * @param {string} tenantId - Tenant ID
    * @returns {Promise<Object>} API response
@@ -444,6 +487,29 @@ export const adminApiService = {
           error.response?.data?.error ||
           error.message ||
           "Failed to delete tenant",
+      };
+    }
+  },
+
+  /**
+   * Get tenant contracts
+   * @param {string} tenantId - Tenant ID
+   * @returns {Promise<Object>} API response
+   */
+  async getTenantContracts(tenantId) {
+    try {
+      const response = await api.get(`/tenants/${tenantId}/contracts`);
+      return {
+        success: true,
+        data: response.data.data || [],
+        count: response.data.count || 0
+      };
+    } catch (error) {
+      console.error("Error fetching tenant contracts:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch tenant contracts",
+        data: []
       };
     }
   },
@@ -537,6 +603,28 @@ export const adminApiService = {
       return {
         success: false,
         error: error.response?.data?.error || error.message || "Failed to fetch building",
+        data: {}
+      };
+    }
+  },
+
+  /**
+   * Get comprehensive building details with floors and apartments for editing
+   * @param {number} buildingId - Building ID
+   * @returns {Promise<Object>} API response
+   */
+  async getComprehensiveBuildingById(buildingId) {
+    try {
+      const response = await api.get(`/buildings/getComprehensiveBuilding/${buildingId}`);
+      return {
+        success: true,
+        data: response.data.data || {}
+      };
+    } catch (error) {
+      console.error("Error fetching comprehensive building details:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch comprehensive building details",
         data: {}
       };
     }
@@ -671,6 +759,66 @@ export const adminApiService = {
       return {
         success: false,
         error: error.response?.data?.error || error.message || "Failed to update building",
+        data: {}
+      };
+    }
+  },
+
+  /**
+   * Update comprehensive building with floors and apartments
+   * @param {number} buildingId - Building ID
+   * @param {Object} buildingData - Complete building data
+   * @returns {Promise<Object>} API response
+   */
+  async updateComprehensiveBuilding(buildingId, buildingData) {
+    try {
+      const formData = new FormData();
+
+      // Add building data
+      formData.append('buildingData', JSON.stringify({
+        buildingName: buildingData.buildingName,
+        buildingAddress: buildingData.buildingAddress
+      }));
+
+      // Add floors data
+      formData.append('floorsData', JSON.stringify(buildingData.floors));
+
+      // Add apartments data
+      formData.append('apartmentsData', JSON.stringify(buildingData.apartments));
+
+      // Add building images
+      if (buildingData.buildingImages && buildingData.buildingImages.length > 0) {
+        buildingData.buildingImages.forEach((image) => {
+          formData.append('buildingImages', image);
+        });
+      }
+
+      // Add apartment images
+      if (buildingData.apartments && buildingData.apartments.length > 0) {
+        buildingData.apartments.forEach((apartment) => {
+          if (apartment.apartmentImages && apartment.apartmentImages.length > 0) {
+            apartment.apartmentImages.forEach((image) => {
+              formData.append(`apartmentImages_${apartment.id}`, image);
+            });
+          }
+        });
+      }
+
+      const response = await api.put(`/buildings/updateComprehensiveBuilding/${buildingId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return {
+        success: true,
+        data: response.data.data || {}
+      };
+    } catch (error) {
+      console.error("Error updating comprehensive building:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to update comprehensive building",
         data: {}
       };
     }
@@ -1442,6 +1590,76 @@ export const adminApiService = {
       return {
         success: false,
         error: error.response?.data?.error || error.message || 'Failed to fetch user roles',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get users by role ID (for building assignment)
+   * @param {number} roleId - Role ID to filter users
+   * @returns {Promise<Object>} API response
+   */
+  async getUsersByRole(roleId) {
+    try {
+      const response = await api.get(`/users?roleId=${roleId}&limit=100`);
+      return {
+        success: true,
+        data: response.data.data?.users || []
+      };
+    } catch (error) {
+      console.error('Error fetching users by role:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch users by role',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Assign building to user
+   * @param {number} buildingId - Building ID
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async assignBuildingToUser(buildingId, userId) {
+    try {
+      const response = await api.post('/buildings/assignBuildingToOwner', {
+        buildingId,
+        userId
+      });
+      return {
+        success: true,
+        data: response.data.data || {},
+        message: response.data.message || 'Building assigned successfully'
+      };
+    } catch (error) {
+      console.error('Error assigning building to user:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to assign building to user'
+      };
+    }
+  },
+
+  /**
+   * Get buildings assigned to a user
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async getUserAssignedBuildings(userId) {
+    try {
+      const response = await api.get(`/buildings/getUserAssignedBuildings/${userId}`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching user assigned buildings:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch assigned buildings',
         data: []
       };
     }

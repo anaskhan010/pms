@@ -13,12 +13,41 @@ const UserModal = ({ isOpen, onClose, onSave, user, roles }) => {
     nationality: '',
     dateOfBirth: '',
     roleId: '',
-    image: null
+    image: null,
+    assignedBuildings: []
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [buildings, setBuildings] = useState([]);
+  const [loadingBuildings, setLoadingBuildings] = useState(false);
+
+  // Fetch buildings when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchBuildings();
+    }
+  }, [isOpen]);
+
+  const fetchBuildings = async () => {
+    setLoadingBuildings(true);
+    try {
+      const response = await fetch('/api/buildings/getBuildings', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBuildings(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching buildings:', error);
+    } finally {
+      setLoadingBuildings(false);
+    }
+  };
 
   // Initialize form data when user prop changes
   useEffect(() => {
@@ -34,7 +63,8 @@ const UserModal = ({ isOpen, onClose, onSave, user, roles }) => {
         nationality: user.nationality || '',
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '',
         roleId: user.roleId || '',
-        image: null
+        image: null,
+        assignedBuildings: user.assignedBuildings || []
       });
       setImagePreview(user.image || null);
     } else {
@@ -49,7 +79,8 @@ const UserModal = ({ isOpen, onClose, onSave, user, roles }) => {
         nationality: '',
         dateOfBirth: '',
         roleId: '',
-        image: null
+        image: null,
+        assignedBuildings: []
       });
       setImagePreview(null);
     }
@@ -316,6 +347,59 @@ const UserModal = ({ isOpen, onClose, onSave, user, roles }) => {
               )}
             </div>
           </div>
+
+          {/* Building Assignment for Owners */}
+          {formData.roleId && roles.find(r => r.roleId === parseInt(formData.roleId))?.roleName === 'owner' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Assign Buildings
+              </label>
+              {loadingBuildings ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+                  <span className="ml-2 text-gray-600">Loading buildings...</span>
+                </div>
+              ) : (
+                <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-md p-3">
+                  {buildings.length === 0 ? (
+                    <p className="text-gray-500 text-sm">No buildings available</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {buildings.map((building) => (
+                        <label key={building.buildingId} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.assignedBuildings.includes(building.buildingId)}
+                            onChange={(e) => {
+                              const buildingId = building.buildingId;
+                              if (e.target.checked) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  assignedBuildings: [...prev.assignedBuildings, buildingId]
+                                }));
+                              } else {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  assignedBuildings: prev.assignedBuildings.filter(id => id !== buildingId)
+                                }));
+                              }
+                            }}
+                            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            {building.buildingName} - {building.buildingAddress}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                Select buildings that this owner will manage
+              </p>
+            </div>
+          )}
 
           {/* Address */}
           <div>
