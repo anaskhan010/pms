@@ -63,6 +63,11 @@ const getAllTenants = asyncHandler(async (req, res, next) => {
     search: req.query.search
   };
 
+  // Add owner building filtering if user is owner
+  if (req.ownerBuildings && req.ownerBuildings.length > 0) {
+    filters.ownerBuildings = req.ownerBuildings;
+  }
+
   const result = await tenantModel.getAllTenants(page, limit, filters);
 
   res.status(200).json({
@@ -262,6 +267,22 @@ const getAvailableTenantsForAssignment = asyncHandler(async (req, res, next) => 
   }
 });
 
+const getTenantContracts = asyncHandler(async (req, res, next) => {
+  try {
+    const tenantId = req.params.id;
+    const contracts = await tenantModel.getTenantContracts(tenantId);
+
+    res.status(200).json({
+      success: true,
+      count: contracts.length,
+      data: contracts
+    });
+  } catch (error) {
+    console.error('Error fetching tenant contracts:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
 export default {
   createTenant,
   getAllTenants,
@@ -277,5 +298,6 @@ export default {
   getFloorsByBuilding,
   getApartmentsByFloor,
   getAvailableApartments,
-  getAvailableTenantsForAssignment
+  getAvailableTenantsForAssignment,
+  getTenantContracts
 };

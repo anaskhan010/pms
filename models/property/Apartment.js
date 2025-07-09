@@ -142,7 +142,7 @@ const getApartmentById = async (apartmentId) => {
 
 const getAllApartments = async (page = 1, limit = 25, filters = {}) => {
   const offset = (page - 1) * limit;
-  
+
   let query = `
     SELECT a.*, f.floorName, b.buildingName, b.buildingAddress,
            t.firstName as tenantFirstName,
@@ -155,17 +155,26 @@ const getAllApartments = async (page = 1, limit = 25, filters = {}) => {
     LEFT JOIN user t ON ten.userId = t.userId
     WHERE 1=1
   `;
-  
+
   let countQuery = `
-    SELECT COUNT(DISTINCT a.apartmentId) as total 
+    SELECT COUNT(DISTINCT a.apartmentId) as total
     FROM apartment a
     INNER JOIN floor f ON a.floorId = f.floorId
     INNER JOIN building b ON f.buildingId = b.buildingId
     WHERE 1=1
   `;
-  
+
   const values = [];
   const countValues = [];
+
+  // Add owner building filtering
+  if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
+    const placeholders = filters.ownerBuildings.map(() => '?').join(',');
+    query += ` AND b.buildingId IN (${placeholders})`;
+    countQuery += ` AND b.buildingId IN (${placeholders})`;
+    values.push(...filters.ownerBuildings);
+    countValues.push(...filters.ownerBuildings);
+  }
 
   if (filters.buildingId) {
     query += ' AND b.buildingId = ?';

@@ -44,11 +44,22 @@ const getAllUsers = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const roleId = req.query.roleId ? parseInt(req.query.roleId) : null;
 
-    console.log('Fetching users with params:', { page, limit, offset });
+    console.log('Fetching users with params:', { page, limit, offset, roleId });
 
-    const users = await userModel.getAllUsers(limit, offset);
-    const totalUsers = await userModel.getUsersCount();
+    let users, totalUsers;
+
+    if (roleId) {
+      // Get users by specific role
+      users = await userModel.getUsersByRoleId(roleId, limit, offset);
+      totalUsers = await userModel.getUsersCountByRole(roleId);
+    } else {
+      // Get all users
+      users = await userModel.getAllUsers(limit, offset);
+      totalUsers = await userModel.getUsersCount();
+    }
+
     const totalPages = Math.ceil(totalUsers / limit);
 
     res.status(200).json({

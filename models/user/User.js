@@ -259,6 +259,44 @@ const getUsersByRole = async (roleName, limit = 50, offset = 0) => {
   return rows;
 };
 
+const getUsersByRoleId = async (roleId, limit = 50, offset = 0) => {
+  // Ensure parameters are integers
+  const roleIdInt = parseInt(roleId);
+  const limitInt = parseInt(limit) || 50;
+  const offsetInt = parseInt(offset) || 0;
+
+  const query = `
+    SELECT u.userId, u.firstName, u.lastName, u.email, u.phoneNumber,
+           u.address, u.gender, u.nationality, u.dateOfBirth, u.image,
+           u.created_at, r.roleName, r.roleId
+    FROM user u
+    INNER JOIN userRole ur ON u.userId = ur.userId
+    INNER JOIN role r ON ur.roleId = r.roleId
+    WHERE r.roleId = ${roleIdInt}
+    ORDER BY u.created_at DESC
+    LIMIT ${limitInt} OFFSET ${offsetInt}
+  `;
+
+  const [rows] = await db.execute(query);
+  return rows;
+};
+
+const getUsersCountByRole = async (roleId) => {
+  // Ensure parameter is integer
+  const roleIdInt = parseInt(roleId);
+
+  const query = `
+    SELECT COUNT(*) as count
+    FROM user u
+    INNER JOIN userRole ur ON u.userId = ur.userId
+    INNER JOIN role r ON ur.roleId = r.roleId
+    WHERE r.roleId = ${roleIdInt}
+  `;
+
+  const [rows] = await db.execute(query);
+  return rows[0].count;
+};
+
 const searchUsers = async (searchTerm, limit = 50, offset = 0) => {
   const query = `
     SELECT u.userId, u.firstName, u.lastName, u.email, u.phoneNumber,
@@ -403,6 +441,8 @@ export default {
   updateUserRole,
   comparePassword,
   getUsersByRole,
+  getUsersByRoleId,
+  getUsersCountByRole,
   searchUsers,
   getUserRole,
   isEmailTaken,

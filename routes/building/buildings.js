@@ -1,6 +1,6 @@
 import express from 'express';
 import buildingController from '../../controllers/building/buildingController.js';
-import { protect, adminOnly } from '../../middleware/auth.js';
+import { protect, adminOnly, adminAndOwner, getOwnerBuildings } from '../../middleware/auth.js';
 import { handleUploadError } from '../../middleware/upload.js';
 import {
   validateId,
@@ -54,7 +54,7 @@ router.use(protect);
 router.get('/getBuildingStatistics', adminOnly, buildingController.getBuildingStatistics);
 
 // Main CRUD routes
-router.get('/getBuildings', adminOnly, buildingController.getAllBuildings);
+router.get('/getBuildings', adminAndOwner, getOwnerBuildings, buildingController.getAllBuildings);
 
 router.post(
   '/createBuilding',
@@ -119,7 +119,9 @@ router.post(
   buildingController.createComprehensiveBuilding
 );
 
-router.get('/getBuilding/:id', validateId, handleValidationErrors, buildingController.getBuildingById);
+router.get('/getBuilding/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingById);
+
+router.get('/getComprehensiveBuilding/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, buildingController.getComprehensiveBuildingById);
 
 router.put(
   '/updateBuilding/:id',
@@ -131,10 +133,20 @@ router.put(
   buildingController.updateBuilding
 );
 
+router.put(
+  '/updateComprehensiveBuilding/:id',
+  adminOnly,
+  validateId,
+  handleValidationErrors,
+  uploadComprehensiveBuilding,
+  handleUploadError,
+  buildingController.updateComprehensiveBuilding
+);
+
 router.delete('/deleteBuilding/:id', adminOnly, validateId, handleValidationErrors, buildingController.deleteBuilding);
 
 // Building floors route
-router.get('/getBuildingFloors/:id', validateId, handleValidationErrors, buildingController.getBuildingFloors);
+router.get('/getBuildingFloors/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingFloors);
 
 // Building image management routes
 router.post(
@@ -153,6 +165,35 @@ router.delete(
   validateId,
   handleValidationErrors,
   buildingController.deleteBuildingImage
+);
+
+// Building assignment routes for super admin
+router.post(
+  '/assignBuildingToOwner',
+  adminOnly,
+  buildingController.assignBuildingToOwner
+);
+
+router.delete(
+  '/removeBuildingFromOwner',
+  adminOnly,
+  buildingController.removeBuildingFromOwner
+);
+
+router.get(
+  '/getBuildingAssignments/:id',
+  adminOnly,
+  validateId,
+  handleValidationErrors,
+  buildingController.getBuildingAssignments
+);
+
+router.get(
+  '/getUserAssignedBuildings/:id',
+  adminOnly,
+  validateId,
+  handleValidationErrors,
+  buildingController.getUserAssignedBuildings
 );
 
 export default router;

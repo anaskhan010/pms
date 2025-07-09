@@ -1,11 +1,11 @@
-const Contract = require('../../models/contract/Contract');
-const Unit = require('../../models/property/Unit');
-const Tenant = require('../../models/tenant/Tenant');
-const Owner = require('../../models/owner/Owner');
-const ErrorResponse = require('../../utils/errorResponse');
-const asyncHandler = require('../../utils/asyncHandler');
+import Contract from '../../models/contract/Contract.js';
+import Unit from '../../models/property/Unit.js';
+import Tenant from '../../models/tenant/Tenant.js';
+import Owner from '../../models/owner/Owner.js';
+import ErrorResponse from '../../utils/errorResponse.js';
+import asyncHandler from '../../utils/asyncHandler.js';
 
-exports.getContracts = asyncHandler(async (req, res, next) => {
+export const getContracts = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   
@@ -27,7 +27,7 @@ exports.getContracts = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getContract = asyncHandler(async (req, res, next) => {
+export const getContract = asyncHandler(async (req, res, next) => {
   const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -40,7 +40,7 @@ exports.getContract = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.createContract = asyncHandler(async (req, res, next) => {
+export const createContract = asyncHandler(async (req, res, next) => {
   const unit = await Unit.findUnitById(req.body.unit_id);
   console.log(unit,"check unit======")
   if (!unit) {
@@ -70,7 +70,7 @@ exports.createContract = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.updateContract = asyncHandler(async (req, res, next) => {
+export const updateContract = asyncHandler(async (req, res, next) => {
   let contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -85,7 +85,7 @@ exports.updateContract = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.deleteContract = asyncHandler(async (req, res, next) => {
+export const deleteContract = asyncHandler(async (req, res, next) => {
   const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -100,7 +100,7 @@ exports.deleteContract = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getContractDetails = asyncHandler(async (req, res, next) => {
+export const getContractDetails = asyncHandler(async (req, res, next) => {
   const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -115,7 +115,7 @@ exports.getContractDetails = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getContractInvoices = asyncHandler(async (req, res, next) => {
+export const getContractInvoices = asyncHandler(async (req, res, next) => {
   const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -131,7 +131,7 @@ exports.getContractInvoices = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getContractPayments = asyncHandler(async (req, res, next) => {
+export const getContractPayments = asyncHandler(async (req, res, next) => {
   const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -147,9 +147,9 @@ exports.getContractPayments = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.updateContractStatus = asyncHandler(async (req, res, next) => {
+export const updateContractStatus = asyncHandler(async (req, res, next) => {
   const { contract_status } = req.body;
-  
+
   if (!contract_status) {
     return next(new ErrorResponse('Contract status is required', 400));
   }
@@ -173,7 +173,7 @@ exports.updateContractStatus = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.renewContract = asyncHandler(async (req, res, next) => {
+export const renewContract = asyncHandler(async (req, res, next) => {
   const contract = await Contract.findContractById(req.params.id);
 
   if (!contract) {
@@ -202,4 +202,21 @@ exports.renewContract = asyncHandler(async (req, res, next) => {
     message: 'Contract renewed successfully',
     data: renewedContract
   });
+});
+
+export const getContractsByTenantId = asyncHandler(async (req, res, next) => {
+  const tenantId = req.params.tenantId;
+
+  try {
+    const contracts = await Contract.findContractsByTenantId(tenantId);
+
+    res.status(200).json({
+      success: true,
+      count: contracts.length,
+      data: contracts
+    });
+  } catch (error) {
+    console.error('Error fetching contracts for tenant:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
 });

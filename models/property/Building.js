@@ -38,7 +38,7 @@ const getAllBuildings = async (page = 1, limit = 25, filters = {}) => {
   const limitInt  = parseInt(limit, 10);
 
   let query = `
-    SELECT 
+    SELECT
       b.*,
       COUNT(DISTINCT f.floorId)      AS totalFloors,
       COUNT(DISTINCT a.apartmentId)  AS totalApartments
@@ -56,6 +56,15 @@ const getAllBuildings = async (page = 1, limit = 25, filters = {}) => {
 
   const values      = [];
   const countValues = [];
+
+  // Add owner building filtering
+  if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
+    const placeholders = filters.ownerBuildings.map(() => '?').join(',');
+    query += ` AND b.buildingId IN (${placeholders})`;
+    countQuery += ` AND b.buildingId IN (${placeholders})`;
+    values.push(...filters.ownerBuildings);
+    countValues.push(...filters.ownerBuildings);
+  }
 
   if (filters.buildingName) {
     query      += ' AND b.buildingName LIKE ?';
@@ -199,8 +208,21 @@ const getBuildingAssignments = async (buildingId) => {
     LEFT JOIN role r ON ur.roleId = r.roleId
     WHERE ba.buildingId = ?
   `;
-  
+
   const [rows] = await db.execute(query, [buildingId]);
+  return rows;
+};
+
+const getUserAssignedBuildings = async (userId) => {
+  const query = `
+    SELECT b.*, ba.buildingAssignedId, ba.userId
+    FROM building b
+    INNER JOIN buildingAssigned ba ON b.buildingId = ba.buildingId
+    WHERE ba.userId = ?
+    ORDER BY b.buildingName ASC
+  `;
+
+  const [rows] = await db.execute(query, [userId]);
   return rows;
 };
 
@@ -279,6 +301,7 @@ export default {
   assignBuildingToUser,
   removeBuildingAssignment,
   getBuildingAssignments,
+  getUserAssignedBuildings,
   getBuildingCount,
   getBuildingStatistics,
   getBuildingImages,

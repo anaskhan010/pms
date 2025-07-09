@@ -1,4 +1,4 @@
-const db = require('../../config/db');
+import db from '../../config/db.js';
 
 const createContract = async (contractData) => {
  
@@ -167,10 +167,41 @@ const getContractRemainingDays = (contract) => {
   return diffDays;
 };
 
-module.exports = {
+const findContractsByTenantId = async (tenantId) => {
+  const sql = `
+    SELECT
+      c.contractId as contract_id,
+      c.SecurityFee as security_fee,
+      c.tenantId as tenant_id,
+      DATE_FORMAT(c.startDate, '%Y-%m-%d') as start_date,
+      DATE_FORMAT(c.endDate, '%Y-%m-%d') as end_date,
+      c.createdAt as created_at,
+      'Active' as contract_status,
+      'Residential' as contract_type,
+      a.rentPrice as monthly_rent_amount,
+      'AED' as currency,
+      CONCAT(b.buildingName, ' - ', f.floorName, ' - Apt ', a.apartmentId) as property_info,
+      b.buildingAddress as property_address,
+      a.bedrooms,
+      a.bathrooms
+    FROM Contract c
+    INNER JOIN ContractDetails cd ON c.contractId = cd.contractId
+    INNER JOIN apartment a ON cd.apartmentId = a.apartmentId
+    INNER JOIN floor f ON a.floorId = f.floorId
+    INNER JOIN building b ON f.buildingId = b.buildingId
+    WHERE c.tenantId = ?
+    ORDER BY c.createdAt DESC
+  `;
+
+  const [contracts] = await db.query(sql, [tenantId]);
+  return contracts;
+};
+
+export default {
   createContract,
   findContractById,
   findAllContracts,
+  findContractsByTenantId,
   updateContract,
   deleteContract,
   getContractDetails,

@@ -178,27 +178,51 @@ const getAllTenants = async (page = 1, limit = 25, filters = {}) => {
   const offset = (pageNum - 1) * limitNum;
 
   try {
-    // Simple query without complex filtering for now
-    const query = `
+    let query = `
       SELECT t.*, u.firstName, u.lastName, u.email, u.phoneNumber,
-             u.address, u.gender, u.nationality, u.dateOfBirth, u.image, u.created_at
+             u.address, u.gender, u.nationality, u.dateOfBirth, u.image, u.created_at,
+             aa.apartmentId, a.bedrooms, a.bathrooms, a.rentPrice,
+             f.floorName, b.buildingName, b.buildingAddress, b.buildingId
       FROM tenant t
       INNER JOIN user u ON t.userId = u.userId
-      ORDER BY u.created_at DESC
-      LIMIT ${limitNum} OFFSET ${offset}
+      LEFT JOIN ApartmentAssigned aa ON t.tenantId = aa.tenantId
+      LEFT JOIN apartment a ON aa.apartmentId = a.apartmentId
+      LEFT JOIN floor f ON a.floorId = f.floorId
+      LEFT JOIN building b ON f.buildingId = b.buildingId
+      WHERE 1 = 1
     `;
 
-    const countQuery = `
-      SELECT COUNT(*) as total
+    let countQuery = `
+      SELECT COUNT(DISTINCT t.tenantId) as total
       FROM tenant t
       INNER JOIN user u ON t.userId = u.userId
+      LEFT JOIN ApartmentAssigned aa ON t.tenantId = aa.tenantId
+      LEFT JOIN apartment a ON aa.apartmentId = a.apartmentId
+      LEFT JOIN floor f ON a.floorId = f.floorId
+      LEFT JOIN building b ON f.buildingId = b.buildingId
+      WHERE 1 = 1
     `;
+
+    const values = [];
+    const countValues = [];
+
+    // Add owner building filtering
+    if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
+      const placeholders = filters.ownerBuildings.map(() => '?').join(',');
+      query += ` AND (b.buildingId IN (${placeholders}) OR aa.apartmentId IS NULL)`;
+      countQuery += ` AND (b.buildingId IN (${placeholders}) OR aa.apartmentId IS NULL)`;
+      values.push(...filters.ownerBuildings);
+      countValues.push(...filters.ownerBuildings);
+    }
+
+    query += ` ORDER BY u.created_at DESC LIMIT ${limitNum} OFFSET ${offset}`;
 
     console.log('Executing getAllTenants with limit:', limitNum, 'offset:', offset);
     console.log('Query:', query);
+    console.log('Values:', values);
 
-    const [totalResult] = await db.execute(countQuery);
-    const [tenants] = await db.execute(query);
+    const [totalResult] = await db.execute(countQuery, countValues);
+    const [tenants] = await db.execute(query, values);
 
     console.log('Query results - Total:', totalResult[0].total, 'Tenants:', tenants.length);
 
@@ -485,6 +509,36 @@ const getAvailableTenantsForAssignment = async () => {
   return rows;
 };
 
+const getTenantContracts = async (tenantId) => {
+  const query = `
+    SELECT
+      c.contractId as contract_id,
+      c.SecurityFee as security_fee,
+      c.tenantId as tenant_id,
+      DATE_FORMAT(c.startDate, '%Y-%m-%d') as start_date,
+      DATE_FORMAT(c.endDate, '%Y-%m-%d') as end_date,
+      c.createdAt as created_at,
+      'Active' as contract_status,
+      'Residential' as contract_type,
+      a.rentPrice as monthly_rent_amount,
+      'AED' as currency,
+      CONCAT(b.buildingName, ' - ', f.floorName, ' - Apt ', a.apartmentId) as property_info,
+      b.buildingAddress as property_address,
+      a.bedrooms,
+      a.bathrooms
+    FROM Contract c
+    INNER JOIN ContractDetails cd ON c.contractId = cd.contractId
+    INNER JOIN apartment a ON cd.apartmentId = a.apartmentId
+    INNER JOIN floor f ON a.floorId = f.floorId
+    INNER JOIN building b ON f.buildingId = b.buildingId
+    WHERE c.tenantId = ?
+    ORDER BY c.createdAt DESC
+  `;
+
+  const [contracts] = await db.execute(query, [tenantId]);
+  return contracts;
+};
+
 export default {
   createTenant,
   getTenantById,
@@ -502,5 +556,6 @@ export default {
   getFloorsByBuilding,
   getApartmentsByFloor,
   getAvailableApartments,
-  getAvailableTenantsForAssignment
+  getAvailableTenantsForAssignment,
+  getTenantContracts
 };

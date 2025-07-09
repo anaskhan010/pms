@@ -1,4 +1,5 @@
 import buildingModel from '../../models/property/Building.js';
+import User from '../../models/user/User.js';
 import asyncHandler from '../../utils/asyncHandler.js';
 import ErrorResponse from '../../utils/errorResponse.js';
 import path from 'path';
@@ -12,6 +13,11 @@ const getAllBuildings = asyncHandler(async (req, res, next) => {
       buildingName: req.query.buildingName,
       buildingAddress: req.query.buildingAddress
     };
+
+    // Add owner building filtering if user is owner
+    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
+      filters.ownerBuildings = req.ownerBuildings;
+    }
 
     const result = await buildingModel.getAllBuildings(page, limit, filters);
 
@@ -34,6 +40,13 @@ const getAllBuildings = asyncHandler(async (req, res, next) => {
 
 const getBuildingById = asyncHandler(async (req, res, next) => {
   try {
+    const buildingId = parseInt(req.params.id);
+
+    // Check if owner has access to this building
+    if (req.ownerBuildings && !req.ownerBuildings.includes(buildingId)) {
+      return next(new ErrorResponse('Access denied to this building', 403));
+    }
+
     const building = await buildingModel.getBuildingById(req.params.id);
 
     if (!building) {
@@ -221,6 +234,123 @@ const updateBuilding = asyncHandler(async (req, res, next) => {
   }
 });
 
+const updateComprehensiveBuilding = asyncHandler(async (req, res, next) => {
+  try {
+    const buildingId = req.params.id;
+    const { buildingData, floorsData, apartmentsData } = req.body;
+
+    // Parse JSON data if it comes as strings (from FormData)
+    const parsedBuildingData = typeof buildingData === 'string' ? JSON.parse(buildingData) : buildingData;
+    const parsedFloorsData = typeof floorsData === 'string' ? JSON.parse(floorsData) : floorsData || [];
+    const parsedApartmentsData = typeof apartmentsData === 'string' ? JSON.parse(apartmentsData) : apartmentsData || [];
+
+    // Step 1: Update the building
+    const building = await buildingModel.updateBuilding(buildingId, {
+      buildingName: parsedBuildingData.buildingName,
+      buildingAddress: parsedBuildingData.buildingAddress
+    });
+
+    // Step 2: Handle building images
+    const buildingImageFiles = req.files ? req.files.filter(file => file.fieldname === 'buildingImages') : [];
+    if (buildingImageFiles.length > 0) {
+      const buildingImagePromises = buildingImageFiles.map(file => {
+        const imageUrl = `/public/uploads/buildings/${file.filename}`;
+        return buildingModel.addBuildingImage(buildingId, imageUrl);
+      });
+      await Promise.all(buildingImagePromises);
+    }
+
+    // Step 3: Update floors (for now, we'll keep existing floors and add new ones)
+    const floorModel = (await import('../../models/property/Floor.js')).default;
+    const apartmentModel = (await import('../../models/property/Apartment.js')).default;
+
+    const updatedFloors = [];
+    for (const floorData of parsedFloorsData) {
+      let floor;
+      if (floorData.floorId) {
+        // Update existing floor
+        floor = await floorModel.updateFloor(floorData.floorId, {
+          floorName: floorData.floorName
+        });
+      } else {
+        // Create new floor
+        floor = await floorModel.createFloor(buildingId, floorData.floorName);
+      }
+      updatedFloors.push(floor);
+    }
+
+    // Step 4: Update apartments
+    const updatedApartments = [];
+    for (const apartmentData of parsedApartmentsData) {
+      let apartment;
+      if (apartmentData.apartmentId) {
+        // Update existing apartment
+        apartment = await apartmentModel.updateApartment(apartmentData.apartmentId, {
+          bedrooms: apartmentData.bedrooms,
+          bathrooms: apartmentData.bathrooms,
+          length: apartmentData.length,
+          width: apartmentData.width,
+          rentPrice: apartmentData.rentPrice,
+          description: apartmentData.description
+        });
+      } else {
+        // Create new apartment
+        apartment = await apartmentModel.createApartment(
+          apartmentData.floorId,
+          apartmentData.bedrooms,
+          apartmentData.bathrooms,
+          apartmentData.length,
+          apartmentData.width,
+          apartmentData.rentPrice,
+          apartmentData.description
+        );
+      }
+      updatedApartments.push(apartment);
+
+      // Handle apartment images
+      const apartmentImageFiles = req.files ? req.files.filter(file => file.fieldname === `apartmentImages_${apartmentData.id}`) : [];
+      if (apartmentImageFiles.length > 0) {
+        const apartmentImagePromises = apartmentImageFiles.map(file => {
+          const imageUrl = `/public/uploads/apartments/${file.filename}`;
+          return apartmentModel.addApartmentImage(apartment.apartmentId, imageUrl);
+        });
+        await Promise.all(apartmentImagePromises);
+      }
+
+      // Handle apartment amenities
+      if (apartmentData.amenities && apartmentData.amenities.length > 0) {
+        await apartmentModel.updateApartmentAmenities(apartment.apartmentId, apartmentData.amenities);
+      }
+    }
+
+    // Step 5: Return comprehensive response
+    const response = {
+      building: {
+        ...building,
+        images: await buildingModel.getBuildingImages(buildingId)
+      },
+      floors: updatedFloors,
+      apartments: updatedApartments,
+      summary: {
+        buildingId: building.buildingId,
+        buildingName: building.buildingName,
+        totalFloors: updatedFloors.length,
+        totalApartments: updatedApartments.length
+      }
+    };
+
+    res.status(200).json({
+      success: true,
+      data: response,
+      message: `Building "${building.buildingName}" updated successfully with ${updatedFloors.length} floors and ${updatedApartments.length} apartments`
+    });
+
+  } catch (error) {
+    console.error('Error updating comprehensive building:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
 const deleteBuilding = asyncHandler(async (req, res, next) => {
   try {
     // Get building images before deletion to clean up files
@@ -326,15 +456,218 @@ const deleteBuildingImage = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Building assignment controllers for super admin
+const assignBuildingToOwner = asyncHandler(async (req, res, next) => {
+  try {
+    console.log('assignBuildingToOwner called with body:', req.body);
+    const { buildingId, userId } = req.body;
+
+    if (!buildingId || !userId) {
+      console.log('Missing buildingId or userId');
+      return next(new ErrorResponse('Building ID and User ID are required', 400));
+    }
+
+    // Verify building exists
+    const building = await buildingModel.getBuildingById(buildingId);
+    if (!building) {
+      return next(new ErrorResponse('Building not found', 404));
+    }
+
+    // Verify user exists and has owner role
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return next(new ErrorResponse('User not found', 404));
+    }
+
+    if (user.roleName !== 'owner') {
+      return next(new ErrorResponse('User must have owner role to be assigned buildings', 400));
+    }
+
+    // Assign building to owner
+    const assignmentId = await buildingModel.assignBuildingToUser(buildingId, userId);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        assignmentId,
+        buildingId,
+        userId,
+        buildingName: building.buildingName,
+        ownerName: `${user.firstName} ${user.lastName}`
+      },
+      message: 'Building assigned to owner successfully'
+    });
+  } catch (error) {
+    console.error('Error assigning building to owner:', error);
+    if (error.message.includes('already assigned')) {
+      return next(new ErrorResponse(error.message, 409));
+    }
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
+const removeBuildingFromOwner = asyncHandler(async (req, res, next) => {
+  try {
+    const { buildingId, userId } = req.body;
+
+    if (!buildingId || !userId) {
+      return next(new ErrorResponse('Building ID and User ID are required', 400));
+    }
+
+    const removed = await buildingModel.removeBuildingAssignment(buildingId, userId);
+
+    if (!removed) {
+      return next(new ErrorResponse('Building assignment not found', 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Building assignment removed successfully'
+    });
+  } catch (error) {
+    console.error('Error removing building assignment:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
+const getBuildingAssignments = asyncHandler(async (req, res, next) => {
+  try {
+    const { id: buildingId } = req.params;
+
+    const assignments = await buildingModel.getBuildingAssignments(buildingId);
+
+    res.status(200).json({
+      success: true,
+      count: assignments.length,
+      data: assignments
+    });
+  } catch (error) {
+    console.error('Error fetching building assignments:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
+const getUserAssignedBuildings = asyncHandler(async (req, res, next) => {
+  try {
+    const { id: userId } = req.params;
+
+    const buildings = await buildingModel.getUserAssignedBuildings(userId);
+
+    res.status(200).json({
+      success: true,
+      count: buildings.length,
+      data: buildings
+    });
+  } catch (error) {
+    console.error('Error fetching user assigned buildings:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
+const getComprehensiveBuildingById = asyncHandler(async (req, res, next) => {
+  try {
+    const buildingId = parseInt(req.params.id);
+
+    // Check if owner has access to this building
+    if (req.ownerBuildings && !req.ownerBuildings.includes(buildingId)) {
+      return next(new ErrorResponse('Access denied to this building', 403));
+    }
+
+    // Get building details
+    const building = await buildingModel.getBuildingById(req.params.id);
+    if (!building) {
+      return next(new ErrorResponse(`Building not found with id of ${req.params.id}`, 404));
+    }
+
+    // Get building images
+    const buildingImages = await buildingModel.getBuildingImages(req.params.id);
+
+    // Get floors with their details
+    const floors = await buildingModel.getBuildingFloors(req.params.id);
+
+    // Get apartments for each floor
+    const apartmentModel = (await import('../../models/property/Apartment.js')).default;
+    const apartments = [];
+
+    for (const floor of floors) {
+      const floorApartments = await apartmentModel.getApartmentsByFloorId(floor.floorId);
+
+      // Get images and amenities for each apartment
+      for (const apartment of floorApartments) {
+        const apartmentImages = await apartmentModel.getApartmentImages(apartment.apartmentId);
+        const apartmentAmenities = await apartmentModel.getApartmentAmenities(apartment.apartmentId);
+
+        // Convert amenities objects to simple strings
+        const amenitiesStrings = apartmentAmenities ? apartmentAmenities.map(amenity => amenity.amenityName || amenity) : [];
+
+        apartments.push({
+          ...apartment,
+          floorId: floor.floorId,
+          floorName: floor.floorName,
+          apartmentImages: apartmentImages || [],
+          amenities: amenitiesStrings
+        });
+      }
+    }
+
+    // Format response data for the edit modal
+    const response = {
+      // Building Info Tab
+      buildingId: building.buildingId,
+      buildingName: building.buildingName,
+      buildingAddress: building.buildingAddress,
+      buildingImages: buildingImages || [],
+
+      // Floors Tab
+      floors: floors.map(floor => ({
+        id: floor.floorId,
+        floorId: floor.floorId,
+        floorName: floor.floorName
+      })),
+
+      // Apartments Tab
+      apartments: apartments.map(apartment => ({
+        id: apartment.apartmentId,
+        apartmentId: apartment.apartmentId,
+        apartmentName: apartment.apartmentName || `Apartment ${apartment.apartmentId}`,
+        description: apartment.description || '',
+        bedrooms: apartment.bedrooms || 1,
+        bathrooms: apartment.bathrooms || 1,
+        length: apartment.length || '',
+        width: apartment.width || '',
+        rentPrice: apartment.rentPrice || '',
+        floorId: apartment.floorId,
+        floorName: apartment.floorName,
+        apartmentImages: apartment.apartmentImages,
+        amenities: apartment.amenities
+      }))
+    };
+
+    res.status(200).json({
+      success: true,
+      data: response
+    });
+  } catch (error) {
+    console.error('Error fetching comprehensive building details:', error);
+    return next(new ErrorResponse(error.message, 400));
+  }
+});
+
 export default {
   getAllBuildings,
   getBuildingById,
   createBuilding,
   createComprehensiveBuilding,
   updateBuilding,
+  updateComprehensiveBuilding,
   deleteBuilding,
   getBuildingFloors,
   getBuildingStatistics,
   addBuildingImage,
-  deleteBuildingImage
+  deleteBuildingImage,
+  assignBuildingToOwner,
+  removeBuildingFromOwner,
+  getBuildingAssignments,
+  getUserAssignedBuildings,
+  getComprehensiveBuildingById
 };

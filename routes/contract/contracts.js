@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   getContracts,
   getContract,
   createContract,
@@ -10,14 +10,14 @@ const {
   getContractPayments,
   updateContractStatus,
   renewContract
-} = require('../../controllers/contract/contractController');
+} from '../../controllers/contract/contractController.js';
 
-const { protect, authorize } = require('../../middleware/auth');
-const { 
+import { protect, authorize } from '../../middleware/auth.js';
+import {
   validateContract,
-  validateId, 
-  handleValidationErrors 
-} = require('../../middleware/validation');
+  validateId,
+  handleValidationErrors
+} from '../../middleware/validation.js';
 
 const router = express.Router();
 
@@ -55,4 +55,4 @@ router
   .route('/:id/renew')
   .post(authorize('admin', 'manager'), validateId, handleValidationErrors, renewContract);
 
-module.exports = router;
+export default router;

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user/User.js';
 import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import db from '../config/db.js';
 
 export const protect = asyncHandler(async (req, res, next) => {
   let token;
@@ -93,9 +94,35 @@ const checkManagerAccess = async (managerId, resource) => {
   return true;
 };
 
+// Middleware to get buildings assigned to owner
+export const getOwnerBuildings = asyncHandler(async (req, res, next) => {
+  if (req.user.roleName === 'admin' || req.user.roleName === 'super_admin') {
+    // Admin can see all buildings
+    req.ownerBuildings = null; // null means no filtering
+    return next();
+  }
+
+  if (req.user.roleName === 'owner') {
+    // Get buildings assigned to this owner
+    const query = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
+    const [rows] = await db.execute(query, [req.user.userId]);
+    req.ownerBuildings = rows.map(row => row.buildingId);
+
+    if (req.ownerBuildings.length === 0) {
+      return next(new ErrorResponse('No buildings assigned to this owner', 403));
+    }
+  }
+
+  next();
+});
+
 export const adminOnly = authorize('admin');
 
 export const adminAndManager = authorize('admin', 'manager');
+
+export const adminAndOwner = authorize('admin', 'owner');
+
+export const adminOwnerAndManager = authorize('admin', 'owner', 'manager');
 
 export const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {

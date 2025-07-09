@@ -12,6 +12,11 @@ const getApartmentById = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponse(`Apartment not found with id of ${req.params.id}`, 404));
     }
 
+    // Check if owner has access to this apartment's building
+    if (req.ownerBuildings && apartment.buildingId && !req.ownerBuildings.includes(apartment.buildingId)) {
+      return next(new ErrorResponse('Access denied to this apartment', 403));
+    }
+
     // Get apartment images
     const images = await apartmentModel.getApartmentImages(req.params.id);
     apartment.images = images;
@@ -36,6 +41,11 @@ const getAllApartments = asyncHandler(async (req, res, next) => {
       status: req.query.status,
       bedrooms: req.query.bedrooms
     };
+
+    // Add owner building filtering if user is owner
+    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
+      filters.ownerBuildings = req.ownerBuildings;
+    }
 
     const result = await apartmentModel.getAllApartments(page, limit, filters);
 

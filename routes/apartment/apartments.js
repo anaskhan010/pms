@@ -1,6 +1,6 @@
 import express from 'express';
 import apartmentController from '../../controllers/apartment/apartmentController.js';
-import { protect, adminOnly } from '../../middleware/auth.js';
+import { protect, adminOnly, adminAndOwner, getOwnerBuildings } from '../../middleware/auth.js';
 import { handleUploadError } from '../../middleware/upload.js';
 import {
   validateId,
@@ -54,7 +54,7 @@ router.use(protect);
 router.get('/getApartmentStatistics', adminOnly, apartmentController.getApartmentStatistics);
 
 // Main CRUD routes
-router.get('/getApartments', adminOnly, apartmentController.getAllApartments);
+router.get('/getApartments', adminAndOwner, getOwnerBuildings, apartmentController.getAllApartments);
 
 router.post(
   '/createApartment',
@@ -64,7 +64,7 @@ router.post(
   apartmentController.createApartment
 );
 
-router.get('/getApartment/:id', validateId, handleValidationErrors, apartmentController.getApartmentById);
+router.get('/getApartment/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, apartmentController.getApartmentById);
 
 router.put(
   '/updateApartment/:id',
