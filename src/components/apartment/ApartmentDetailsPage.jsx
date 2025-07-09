@@ -37,9 +37,9 @@ const ApartmentDetailsPage = () => {
           floor: apartmentData.floorId,
           bedrooms: apartmentData.bedrooms,
           bathrooms: apartmentData.bathrooms,
-          area: `${apartmentData.length * apartmentData.width} sq ft`,
+          area: `${apartmentData.length} X ${ apartmentData.width} sq ft`,
           rent: `$${apartmentData.rentPrice}`,
-          status: apartmentData.status === 'occupied' ? 'Rented' : 'Vacant',
+          status: apartmentData.status || 'Vacant',
           tenantId: apartmentData.tenantId || null,
           description: apartmentData.description || '',
           amenities: apartmentData.amenities || [],
@@ -73,6 +73,8 @@ const ApartmentDetailsPage = () => {
     try {
       const response = await adminApiService.getTenant(tenantId);
 
+      console.log(response,"-----check tenant response-------")
+
       if (response.success) {
         const tenantData = response.data;
 
@@ -84,8 +86,8 @@ const ApartmentDetailsPage = () => {
           phone: tenantData.phoneNumber,
           nationality: tenantData.nationality,
           occupation: tenantData.occupation,
-          contractStart: tenantData.contractStartDate,
-          contractEnd: tenantData.contractEndDate,
+          contractStart: tenantData.startDate,
+          contractEnd : tenantData.endDate,
           ejariNumber: tenantData.registrationNumber,
           ejariExpiry: tenantData.registrationExpiry,
           ejariDocument: ejari, // Default document

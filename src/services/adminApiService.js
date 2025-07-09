@@ -838,6 +838,74 @@ export const adminApiService = {
   },
 
   /**
+   * Get available tenants for apartment assignment
+   * @returns {Promise<Object>} API response
+   */
+  async getAvailableTenantsForAssignment() {
+    try {
+      const response = await api.get("/tenants/available-for-assignment");
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error("Error fetching available tenants:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch available tenants",
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Assign apartment to tenant with contract creation
+   * @param {string} tenantId - Tenant ID
+   * @param {string} apartmentId - Apartment ID
+   * @param {Object} contractData - Contract details
+   * @returns {Promise<Object>} API response
+   */
+  async assignApartmentToTenant(tenantId, apartmentId, contractData) {
+    try {
+      const response = await api.post(`/tenants/${tenantId}/apartments/${apartmentId}`, contractData);
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.message || "Apartment assigned successfully"
+      };
+    } catch (error) {
+      console.error("Error assigning apartment:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to assign apartment"
+      };
+    }
+  },
+
+  /**
+   * Remove apartment assignment from tenant
+   * @param {string} tenantId - Tenant ID
+   * @param {string} apartmentId - Apartment ID
+   * @returns {Promise<Object>} API response
+   */
+  async removeApartmentAssignment(tenantId, apartmentId) {
+    try {
+      const response = await api.delete(`/tenants/${tenantId}/apartments/${apartmentId}`);
+      return {
+        success: true,
+        data: response.data.data,
+        message: "Apartment assignment removed successfully"
+      };
+    } catch (error) {
+      console.error("Error removing apartment assignment:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to remove apartment assignment"
+      };
+    }
+  },
+
+  /**
    * Get apartment statistics
    * @returns {Promise<Object>} API response
    */

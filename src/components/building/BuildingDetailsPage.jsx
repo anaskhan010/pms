@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import adminApiService from "../../services/adminApiService";
+import AssignApartmentModal from "../apartment/AssignApartmentModal";
+import notificationService from "../../services/notificationService";
 
 const BuildingDetailsPage = () => {
   const { id } = useParams();
@@ -12,6 +14,10 @@ const BuildingDetailsPage = () => {
   const [loadingApartments, setLoadingApartments] = useState(false);
   const [error, setError] = useState(null);
   const [activeFloor, setActiveFloor] = useState(null);
+
+  // Assignment modal state
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [selectedApartmentForAssignment, setSelectedApartmentForAssignment] = useState(null);
 
   // Fetch building details
   const fetchBuildingDetails = async () => {
@@ -84,14 +90,17 @@ const BuildingDetailsPage = () => {
       if (response.success) {
         const mapped = response.data.map(a => ({
           id: a.apartmentId,
+          apartmentId: a.apartmentId, // Add this for the assignment modal
           number: a.apartmentId.toString(),
           bedrooms: a.bedrooms,
           bathrooms: a.bathrooms,
           area: `${a.length} X ${a.width} sq ft`,
           rent: `$${a.rentPrice}`,
+          rentPrice: a.rentPrice, // Add this for the assignment modal
           status: a.status,
           description: a.description || '',
           amenities: Array.isArray(a.amenities) ? a.amenities : [],
+          floor: a.floorName || `Floor ${a.floorId}`, // Add floor info for the modal
         }));
         setApartments(mapped);
       } else {
@@ -108,6 +117,26 @@ const BuildingDetailsPage = () => {
   const handleFloorSelect = async (floor) => {
     setActiveFloor(floor);
     await fetchApartments(floor.floorId);
+  };
+
+  // Handle apartment assignment
+  const handleAssignApartment = (apartment) => {
+    console.log('Selected apartment for assignment:', apartment);
+    setSelectedApartmentForAssignment(apartment);
+    setIsAssignModalOpen(true);
+  };
+
+  const handleAssignmentSuccess = () => {
+    // Refresh apartments list to show updated status
+    if (activeFloor) {
+      fetchApartments(activeFloor.floorId);
+    }
+    notificationService.success('Apartment assigned successfully!');
+  };
+
+  const handleCloseAssignModal = () => {
+    setIsAssignModalOpen(false);
+    setSelectedApartmentForAssignment(null);
   };
 
   useEffect(() => {
@@ -199,7 +228,13 @@ const BuildingDetailsPage = () => {
                   <div key={apartment.id} className="bg-white rounded-lg shadow-md p-6">
                     <div className="flex justify-between mb-4">
                       <h3 className="text-lg font-bold">Apartment {apartment.number}</h3>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full`} >{apartment.status}</span>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        apartment.status === 'Rented'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {apartment.status}
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-4">
@@ -218,9 +253,30 @@ const BuildingDetailsPage = () => {
                       </ul>
                     )}
 
-                    <Link to={`/admin/buildings/${building.id}/apartments/${apartment.id}`} className="block text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-                      View Details
-                    </Link>
+                    <div className="space-y-2">
+                      <Link
+                        to={`/admin/buildings/${building.id}/apartments/${apartment.id}`}
+                        className="block text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors"
+                      >
+                        View Details
+                      </Link>
+
+                      {apartment.status === 'Vacant' ? (
+                        <button
+                          onClick={() => handleAssignApartment(apartment)}
+                          className="w-full text-center bg-teal-600 hover:bg-teal-700 text-white py-2 rounded transition-colors"
+                        >
+                          Assign Apartment
+                        </button>
+                      ) : (
+                        <button
+                          className="w-full text-center bg-gray-400 text-white py-2 rounded cursor-not-allowed"
+                          disabled
+                        >
+                          Currently Rented
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -230,6 +286,14 @@ const BuildingDetailsPage = () => {
           )}
         </div>
       )}
+
+      {/* Assignment Modal */}
+      <AssignApartmentModal
+        isOpen={isAssignModalOpen}
+        onClose={handleCloseAssignModal}
+        apartment={selectedApartmentForAssignment}
+        onAssignmentSuccess={handleAssignmentSuccess}
+      />
     </div>
   );
 };
