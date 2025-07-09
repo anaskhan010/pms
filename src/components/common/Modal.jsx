@@ -126,7 +126,7 @@ const Modal = ({
           {/* Modal Header */}
           {(title || showCloseButton) && (
             <div
-              className={`bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 ${headerClassName}`}
+              className={`bg-gradient-to-r from-slate-900 to-teal-800 text-white px-6 py-4 ${headerClassName}`}
             >
               <div className="flex justify-between items-center">
                 {title && (

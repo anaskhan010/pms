@@ -13,12 +13,9 @@ const ApartmentDetailsPage = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("details");
 
-  // Default apartment images
+  // Default apartment images (fallback when no images are available)
   const defaultApartmentImages = [
-    // "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
-    // "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
-    // "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
-    // "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+    "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
   ];
 
   // Fetch apartment details from API
@@ -46,7 +43,9 @@ const ApartmentDetailsPage = () => {
           tenantId: apartmentData.tenantId || null,
           description: apartmentData.description || '',
           amenities: apartmentData.amenities || [],
-          images: defaultApartmentImages,
+          images: apartmentData.images && apartmentData.images.length > 0
+            ? apartmentData.images.map(img => `http://localhost:5000${img.imageUrl}`)
+            : defaultApartmentImages,
         };
 
         setApartment(mappedApartment);

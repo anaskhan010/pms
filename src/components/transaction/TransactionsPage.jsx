@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import notificationService from "../../services/notificationService";
+import { DeleteConfirmationModal } from "../common";
 import TransactionFilters from "./TransactionFilters";
 import TransactionTable from "./TransactionTable";
 import TransactionModal from "./TransactionModal";
@@ -135,6 +137,14 @@ const TransactionsPage = () => {
     amountRange: { min: "", max: "" },
   });
 
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    transactionId: null,
+    transactionDescription: '',
+    loading: false
+  });
+
   // Transaction types
   const transactionTypes = [
     "Rent Payment",
@@ -220,11 +230,39 @@ const TransactionsPage = () => {
 
   // Handle delete transaction
   const handleDeleteTransaction = (id) => {
-    if (window.confirm("Are you sure you want to delete this transaction?")) {
+    const transaction = transactions.find(t => t.id === id);
+    const description = transaction ? `${transaction.type} - ${transaction.amount} SAR` : '';
+
+    setDeleteModal({
+      isOpen: true,
+      transactionId: id,
+      transactionDescription: description,
+      loading: false
+    });
+  };
+
+  const confirmDeleteTransaction = async () => {
+    try {
+      setDeleteModal(prev => ({ ...prev, loading: true }));
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       setTransactions(
-        transactions.filter((transaction) => transaction.id !== id)
+        transactions.filter((transaction) => transaction.id !== deleteModal.transactionId)
       );
+
+      notificationService.success('Transaction deleted successfully');
+      setDeleteModal({ isOpen: false, transactionId: null, transactionDescription: '', loading: false });
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      notificationService.error('An error occurred while deleting the transaction');
+      setDeleteModal(prev => ({ ...prev, loading: false }));
     }
+  };
+
+  const cancelDeleteTransaction = () => {
+    setDeleteModal({ isOpen: false, transactionId: null, transactionDescription: '', loading: false });
   };
 
   // Handle save transaction
@@ -234,11 +272,14 @@ const TransactionsPage = () => {
       setTransactions(
         transactions.map((t) => (t.id === transaction.id ? transaction : t))
       );
+      notificationService.success('Transaction updated successfully');
     } else {
       // Add new transaction
       setTransactions([...transactions, transaction]);
+      notificationService.success('Transaction created successfully');
     }
 
+    setIsModalOpen(false);
     setCurrentTransaction(null);
   };
 
@@ -304,6 +345,17 @@ const TransactionsPage = () => {
         buildings={buildings}
         apartments={apartments}
         tenants={tenants}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={cancelDeleteTransaction}
+        onConfirm={confirmDeleteTransaction}
+        title="Delete Transaction"
+        message="Are you sure you want to delete this transaction? This action cannot be undone."
+        itemName={deleteModal.transactionDescription}
+        loading={deleteModal.loading}
       />
     </div>
   );

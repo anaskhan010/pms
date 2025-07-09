@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminApiService } from "../../services/adminApiService";
-import { Card, Button, LoadingSpinner, Alert } from "../common";
+import notificationService from "../../services/notificationService";
+import { Card, Button, LoadingSpinner, Alert, DeleteConfirmationModal } from "../common";
 
 
 
@@ -17,6 +18,14 @@ const TenantsPage = () => {
   const [selectedTenants, setSelectedTenants] = useState([]);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [statistics, setStatistics] = useState(null);
+
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    tenantId: null,
+    tenantName: '',
+    loading: false
+  });
 
   // Pagination and filtering state
   const [currentPage, setCurrentPage] = useState(1);
@@ -128,7 +137,7 @@ const TenantsPage = () => {
 
   const handleBulkOperation = async (operation, reason = '') => {
     if (selectedTenants.length === 0) {
-      alert('Please select tenants first');
+      notificationService.warning('Please select tenants first');
       return;
     }
 
@@ -146,16 +155,16 @@ const TenantsPage = () => {
       });
 
       if (response.success) {
-        alert(`Bulk ${operation} completed successfully`);
+        notificationService.success(`Bulk ${operation} completed successfully`);
         setSelectedTenants([]);
         fetchTenants(currentPage);
         fetchTenantStatistics(); // Refresh statistics after bulk operation
       } else {
-        alert(`Bulk operation failed: ${response.error}`);
+        notificationService.error(`Bulk operation failed: ${response.error}`);
       }
     } catch (error) {
       console.error('Bulk operation error:', error);
-      alert('An error occurred during bulk operation');
+      notificationService.error('An error occurred during bulk operation');
     } finally {
       setBulkLoading(false);
     }
@@ -165,13 +174,13 @@ const TenantsPage = () => {
     try {
       const response = await adminApiService.exportTenants(filters);
       if (response.success) {
-        alert('Tenants exported successfully');
+        notificationService.success('Tenants exported successfully');
       } else {
-        alert(`Export failed: ${response.error}`);
+        notificationService.error(`Export failed: ${response.error}`);
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert('An error occurred during export');
+      notificationService.error('An error occurred during export');
     }
   };
 
@@ -187,39 +196,49 @@ const TenantsPage = () => {
       if (response.success) {
         // You can implement an edit modal or navigate to edit page
         console.log('Edit tenant:', response.data);
-        // For now, just show an alert - you can replace this with actual edit functionality
-        alert(`Edit functionality for tenant: ${response.data.first_name} ${response.data.last_name}\n(This would open an edit modal/form)`);
+        // For now, just show a notification - you can replace this with actual edit functionality
+        notificationService.info(`Edit functionality for tenant: ${response.data.first_name} ${response.data.last_name}\n(This would open an edit modal/form)`);
       } else {
-        alert(`Failed to fetch tenant for editing: ${response.error}`);
+        notificationService.error(`Failed to fetch tenant for editing: ${response.error}`);
       }
     } catch (error) {
       console.error('Error preparing tenant edit:', error);
-      alert('An error occurred while preparing tenant for editing');
+      notificationService.error('An error occurred while preparing tenant for editing');
     }
   };
 
-  const handleDeleteTenant = async (tenantId) => {
-    if (!window.confirm('Are you sure you want to delete this tenant? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteTenant = (tenantId, tenantName = '') => {
+    setDeleteModal({
+      isOpen: true,
+      tenantId,
+      tenantName,
+      loading: false
+    });
+  };
 
+  const confirmDeleteTenant = async () => {
     try {
-      setLoading(true);
-      const response = await adminApiService.deleteTenant(tenantId);
+      setDeleteModal(prev => ({ ...prev, loading: true }));
+      const response = await adminApiService.deleteTenant(deleteModal.tenantId);
       if (response.success) {
-        alert('Tenant deleted successfully');
+        notificationService.success('Tenant deleted successfully');
         // Refresh the tenant list and statistics
         fetchTenants(currentPage);
         fetchTenantStatistics();
+        setDeleteModal({ isOpen: false, tenantId: null, tenantName: '', loading: false });
       } else {
-        alert(`Failed to delete tenant: ${response.error}`);
+        notificationService.error(`Failed to delete tenant: ${response.error}`);
+        setDeleteModal(prev => ({ ...prev, loading: false }));
       }
     } catch (error) {
       console.error('Error deleting tenant:', error);
-      alert('An error occurred while deleting the tenant');
-    } finally {
-      setLoading(false);
+      notificationService.error('An error occurred while deleting the tenant');
+      setDeleteModal(prev => ({ ...prev, loading: false }));
     }
+  };
+
+  const cancelDeleteTenant = () => {
+    setDeleteModal({ isOpen: false, tenantId: null, tenantName: '', loading: false });
   };
 
   // Handle tenant creation
@@ -228,20 +247,20 @@ const TenantsPage = () => {
       setLoading(true);
       const response = await adminApiService.createTenant(tenantData);
       if (response.success) {
-        alert('Tenant created successfully');
+        notificationService.success('Tenant created successfully');
         setIsModalOpen(false);
         // Refresh the tenant list and statistics
         fetchTenants(1); // Go to first page to see the new tenant
         fetchTenantStatistics();
       } else {
-        alert(`Failed to create tenant: ${response.error}`);
+        notificationService.error(`Failed to create tenant: ${response.error}`);
         if (response.details && response.details.length > 0) {
           console.error('Validation errors:', response.details);
         }
       }
     } catch (error) {
       console.error('Error creating tenant:', error);
-      alert('An error occurred while creating the tenant');
+      notificationService.error('An error occurred while creating the tenant');
     } finally {
       setLoading(false);
     }
@@ -405,7 +424,7 @@ const TenantsPage = () => {
 
     // Validate Ejari document if Ejari number is provided
     if (formData.ejariNumber && !formData.ejariDocument) {
-      alert("Please upload the Ejari document to verify the Ejari number.");
+      notificationService.warning("Please upload the Ejari document to verify the Ejari number.");
       return;
     }
 
@@ -469,9 +488,7 @@ const TenantsPage = () => {
     setApartments([]);
   };
 
-  const handleDelete = (id) => {
-    setTenants(tenants.filter((tenant) => tenant.id !== id));
-  };
+
 
   // Loading state
   if (loading && tenants.length === 0) {
@@ -787,7 +804,7 @@ const TenantsPage = () => {
                         <Button
                           variant="danger"
                           size="sm"
-                          onClick={() => handleDeleteTenant(tenant.tenantId)}
+                          onClick={() => handleDeleteTenant(tenant.tenantId, `${tenant.firstName} ${tenant.lastName}`)}
                           disabled={loading}
                         >
                           Delete
@@ -1385,6 +1402,17 @@ const TenantsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={cancelDeleteTenant}
+        onConfirm={confirmDeleteTenant}
+        title="Delete Tenant"
+        message="Are you sure you want to delete this tenant? This action cannot be undone and will remove all associated data."
+        itemName={deleteModal.tenantName}
+        loading={deleteModal.loading}
+      />
     </div>
   );
 };

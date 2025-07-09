@@ -522,7 +522,8 @@ const ApartmentsTab = ({ formData, setFormData, errors, imagePreviewUrls, setIma
       width: '',
       rentPrice: '',
       floorId: '', // Will be selected from available floors
-      apartmentImages: []
+      apartmentImages: [],
+      amenities: [] // Add amenities array
     };
 
     setFormData(prev => ({
@@ -565,6 +566,31 @@ const ApartmentsTab = ({ formData, setFormData, errors, imagePreviewUrls, setIma
       ...prev,
       apartments: prev.apartments.map(apartment =>
         apartment.id === apartmentId ? { ...apartment, [field]: value } : apartment
+      )
+    }));
+  };
+
+  // Amenities management functions
+  const addAmenity = (apartmentId, amenityName) => {
+    if (!amenityName.trim()) return;
+
+    setFormData(prev => ({
+      ...prev,
+      apartments: prev.apartments.map(apartment =>
+        apartment.id === apartmentId
+          ? { ...apartment, amenities: [...apartment.amenities, amenityName.trim()] }
+          : apartment
+      )
+    }));
+  };
+
+  const removeAmenity = (apartmentId, amenityIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      apartments: prev.apartments.map(apartment =>
+        apartment.id === apartmentId
+          ? { ...apartment, amenities: apartment.amenities.filter((_, index) => index !== amenityIndex) }
+          : apartment
       )
     }));
   };
@@ -832,6 +858,67 @@ const ApartmentsTab = ({ formData, setFormData, errors, imagePreviewUrls, setIma
                 {errors[`apartment_${index}_rentPrice`] && (
                   <p className="mt-1 text-sm text-red-600">{errors[`apartment_${index}_rentPrice`]}</p>
                 )}
+              </div>
+
+              {/* Amenities */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Amenities
+                </label>
+                <div className="space-y-3">
+                  {/* Add Amenity Input */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter amenity (e.g., High Speed Internet, Balcony, etc.)"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addAmenity(apartment.id, e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const input = e.target.parentElement.querySelector('input');
+                        addAmenity(apartment.id, input.value);
+                        input.value = '';
+                      }}
+                      className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  {/* Amenities List */}
+                  {apartment.amenities && apartment.amenities.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">Added Amenities:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {apartment.amenities.map((amenity, amenityIndex) => (
+                          <div
+                            key={amenityIndex}
+                            className="flex items-center gap-2 px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm"
+                          >
+                            <span>{amenity}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeAmenity(apartment.id, amenityIndex)}
+                              className="text-teal-600 hover:text-teal-800 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Apartment Images */}

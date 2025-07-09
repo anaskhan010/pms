@@ -1210,6 +1210,174 @@ export const adminApiService = {
       };
     }
   },
+
+  // ==================== USER MANAGEMENT API ====================
+
+  /**
+   * Get all users with pagination
+   * @param {number} page - Page number
+   * @param {number} limit - Items per page
+   * @returns {Promise<Object>} API response
+   */
+  async getAllUsers(page = 1, limit = 10) {
+    try {
+      const response = await api.get(`/users?page=${page}&limit=${limit}`);
+      return {
+        success: true,
+        data: response.data.data || {},
+        pagination: response.data.data?.pagination || {}
+      };
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch users',
+        data: { users: [], pagination: {} }
+      };
+    }
+  },
+
+  /**
+   * Get user by ID
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async getUserById(userId) {
+    try {
+      const response = await api.get(`/users/${userId}`);
+      return {
+        success: true,
+        data: response.data.data
+      };
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch user'
+      };
+    }
+  },
+
+  /**
+   * Create new user
+   * @param {Object} userData - User data
+   * @returns {Promise<Object>} API response
+   */
+  async createUser(userData) {
+    try {
+      const formData = new FormData();
+
+      // Append all user data to FormData
+      Object.keys(userData).forEach(key => {
+        if (userData[key] !== null && userData[key] !== undefined) {
+          if (key === 'image' && userData[key] instanceof File) {
+            formData.append(key, userData[key]);
+          } else {
+            formData.append(key, userData[key]);
+          }
+        }
+      });
+
+      const response = await api.post('/users', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.message || 'User created successfully'
+      };
+    } catch (error) {
+      console.error('Error creating user:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to create user'
+      };
+    }
+  },
+
+  /**
+   * Update user
+   * @param {number} userId - User ID
+   * @param {Object} userData - Updated user data
+   * @returns {Promise<Object>} API response
+   */
+  async updateUser(userId, userData) {
+    try {
+      const formData = new FormData();
+
+      // Append all user data to FormData
+      Object.keys(userData).forEach(key => {
+        if (userData[key] !== null && userData[key] !== undefined) {
+          if (key === 'image' && userData[key] instanceof File) {
+            formData.append(key, userData[key]);
+          } else {
+            formData.append(key, userData[key]);
+          }
+        }
+      });
+
+      const response = await api.put(`/users/${userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.message || 'User updated successfully'
+      };
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to update user'
+      };
+    }
+  },
+
+  /**
+   * Delete user
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async deleteUser(userId) {
+    try {
+      const response = await api.delete(`/users/${userId}`);
+      return {
+        success: true,
+        message: response.data.message || 'User deleted successfully'
+      };
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to delete user'
+      };
+    }
+  },
+
+  /**
+   * Get all roles for user creation/editing
+   * @returns {Promise<Object>} API response
+   */
+  async getUserRoles() {
+    try {
+      const response = await api.get('/users/roles');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch user roles',
+        data: []
+      };
+    }
+  },
 };
 
 export default adminApiService;

@@ -17,6 +17,8 @@ import VirtualDemoPage from "./components/virtual/VirtualDemoPage";
 import VillasPage from "./components/villa/VillasPage";
 import VillaDetailsPage from "./components/villa/VillaDetailsPage";
 import MessagingPage from "./components/messaging/MessagingPage";
+import UserManagementPage from "./components/user/UserManagementPage";
+import UserDetailsPage from "./components/user/UserDetailsPage";
 import NotificationContainer from "./components/common/NotificationContainer";
 import "./App.css";
 
@@ -53,6 +55,8 @@ function App() {
           <Route path="virtual-demo" element={<VirtualDemoPage />} />
           <Route path="villas" element={<VillasPage />} />
           <Route path="villas/:id" element={<VillaDetailsPage />} />
+          <Route path="user-management" element={<UserManagementPage />} />
+          <Route path="user-management/:id" element={<UserDetailsPage />} />
           <Route path="messages" element={<MessagingPage />} />
         </Route>
 

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import notificationService from "../../services/notificationService";
+import { DeleteConfirmationModal } from "../common";
 
 const VendorsPage = () => {
   // Sample vendor data
@@ -42,6 +44,14 @@ const VendorsPage = () => {
     status: "Active",
   });
 
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    vendorId: null,
+    vendorName: '',
+    loading: false
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -57,6 +67,7 @@ const VendorsPage = () => {
       ...formData,
     };
     setVendors([...vendors, newVendor]);
+    notificationService.success('Vendor added successfully');
     setIsModalOpen(false);
     setFormData({
       name: "",
@@ -69,7 +80,36 @@ const VendorsPage = () => {
   };
 
   const handleDelete = (id) => {
-    setVendors(vendors.filter((vendor) => vendor.id !== id));
+    const vendor = vendors.find(v => v.id === id);
+    const vendorName = vendor ? vendor.name : '';
+
+    setDeleteModal({
+      isOpen: true,
+      vendorId: id,
+      vendorName,
+      loading: false
+    });
+  };
+
+  const confirmDeleteVendor = async () => {
+    try {
+      setDeleteModal(prev => ({ ...prev, loading: true }));
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setVendors(vendors.filter((vendor) => vendor.id !== deleteModal.vendorId));
+      notificationService.success('Vendor deleted successfully');
+      setDeleteModal({ isOpen: false, vendorId: null, vendorName: '', loading: false });
+    } catch (error) {
+      console.error('Error deleting vendor:', error);
+      notificationService.error('An error occurred while deleting the vendor');
+      setDeleteModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const cancelDeleteVendor = () => {
+    setDeleteModal({ isOpen: false, vendorId: null, vendorName: '', loading: false });
   };
 
   return (
@@ -324,6 +364,17 @@ const VendorsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={cancelDeleteVendor}
+        onConfirm={confirmDeleteVendor}
+        title="Delete Vendor"
+        message="Are you sure you want to delete this vendor? This action cannot be undone."
+        itemName={deleteModal.vendorName}
+        loading={deleteModal.loading}
+      />
     </div>
   );
 };

@@ -169,9 +169,20 @@ const TenantDetailsPage = () => {
               <div className="flex items-center space-x-6">
                 {/* Professional Avatar */}
                 <div className="relative">
-                  <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center shadow-sm border border-slate-200">
-                    <span className="text-2xl font-bold text-slate-700">
-                      {tenant.first_name?.charAt(0)?.toUpperCase()}{tenant.last_name?.charAt(0)?.toUpperCase()}
+                  <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden">
+                    {tenant.image ? (
+                      <img
+                        src={`${import.meta.env.VITE_APP_IMAGE_URL}${tenant.image}`}
+                        alt={`${tenant.firstName} ${tenant.lastName}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <span className={`text-2xl font-bold text-slate-700 ${tenant.image ? 'hidden' : 'flex'} items-center justify-center w-full h-full`}>
+                      {tenant.firstName?.charAt(0)?.toUpperCase()}{tenant.lastName?.charAt(0)?.toUpperCase()}
                     </span>
                   </div>
                   {/* Status Indicator */}
@@ -182,11 +193,11 @@ const TenantDetailsPage = () => {
 
                 <div className="space-y-1">
                   <h1 className="text-2xl font-bold text-white">
-                    {tenant.first_name} {tenant.last_name}
+                    {tenant.firstName} {tenant.lastName}
                   </h1>
                   <div className="flex items-center space-x-4 text-sm">
                     <span className="text-slate-300">
-                      ID: {tenant.tenant_id}
+                      ID: {tenant.tenantId}
                     </span>
                     <span className="text-slate-400">•</span>
                     <span className="text-slate-300">
@@ -310,7 +321,7 @@ const OverviewTab = ({ tenant }) => (
             <div className="space-y-1">
               <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Full Name</label>
               <p className="text-sm font-medium text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200">
-                {tenant.first_name} {tenant.last_name}
+                {tenant.firstName} {tenant.lastName}
               </p>
             </div>
 
@@ -331,7 +342,7 @@ const OverviewTab = ({ tenant }) => (
                 <svg className="w-4 h-4 text-teal-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                {tenant.phone_number || 'N/A'}
+                {tenant.phoneNumber || 'N/A'}
               </p>
             </div>
 
@@ -348,15 +359,65 @@ const OverviewTab = ({ tenant }) => (
                 <svg className="w-4 h-4 text-teal-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                 </svg>
-                {tenant.date_of_birth ? formatDate(tenant.date_of_birth) : 'N/A'}
+                {tenant.dateOfBirth ? formatDate(tenant.dateOfBirth) : 'N/A'}
               </p>
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Document Type</label>
+              <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Gender</label>
               <p className="text-sm text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200 capitalize">
-                {tenant.id_document_type || 'N/A'}
+                {tenant.gender || 'N/A'}
               </p>
+            </div>
+
+            <div className="space-y-1 md:col-span-2">
+              <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Address</label>
+              <p className="text-sm text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200 flex items-center">
+                <svg className="w-4 h-4 text-teal-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                {tenant.address || 'N/A'}
+              </p>
+            </div>
+          </div>
+
+          {/* Additional Tenant Information */}
+          <div className="mt-6 pt-6 border-t border-slate-200">
+            <h4 className="text-md font-semibold text-slate-900 mb-4">Registration & Professional Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Registration Number</label>
+                <p className="text-sm text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200">
+                  {tenant.registrationNumber || 'N/A'}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Registration Expiry</label>
+                <p className="text-sm text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200 flex items-center">
+                  <svg className="w-4 h-4 text-teal-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  </svg>
+                  {tenant.registrationExpiry ? formatDate(tenant.registrationExpiry) : 'N/A'}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Occupation</label>
+                <p className="text-sm text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200">
+                  {tenant.occupation || 'N/A'}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Ejari Document</label>
+                <p className="text-sm text-slate-900 bg-slate-50 p-3 rounded-md border border-slate-200 flex items-center">
+                  <svg className="w-4 h-4 text-teal-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                  </svg>
+                  {tenant.ejariPdfPath ? 'Available' : 'Not uploaded'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -390,7 +451,7 @@ const OverviewTab = ({ tenant }) => (
 
             <div className="flex justify-between items-center py-2 border-b border-slate-100">
               <span className="text-sm text-slate-600">Tenant ID</span>
-              <span className="text-sm font-medium text-slate-900">{tenant.tenant_id}</span>
+              <span className="text-sm font-medium text-slate-900">{tenant.tenantId}</span>
             </div>
 
             <div className="flex justify-between items-center py-2 border-b border-slate-100">
@@ -398,48 +459,155 @@ const OverviewTab = ({ tenant }) => (
               <span className="text-sm text-slate-900">{formatDate(tenant.created_at)}</span>
             </div>
 
-            <div className="flex justify-between items-center py-2">
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
               <span className="text-sm text-slate-600">Last Updated</span>
               <span className="text-sm text-slate-900">{formatDate(tenant.updated_at)}</span>
             </div>
+
+            {/* Apartment Information */}
+            <div className="flex justify-between items-center py-2 border-b border-slate-100">
+              <span className="text-sm text-slate-600">Apartment Status</span>
+              <span className={`text-sm font-medium ${
+                tenant.buildingName ? 'text-teal-600' : 'text-slate-500'
+              }`}>
+                {tenant.buildingName ? 'Assigned' : 'Not Assigned'}
+              </span>
+            </div>
+
+            {tenant.buildingName && (
+              <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                <span className="text-sm text-slate-600">Building</span>
+                <span className="text-sm font-medium text-slate-900">{tenant.buildingName}</span>
+              </div>
+            )}
+
+            {tenant.floorName && (
+              <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                <span className="text-sm text-slate-600">Floor</span>
+                <span className="text-sm text-slate-900">{tenant.floorName}</span>
+              </div>
+            )}
+
+            {tenant.rentPrice && (
+              <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                <span className="text-sm text-slate-600">Monthly Rent</span>
+                <span className="text-sm font-medium text-slate-900">SAR {tenant.rentPrice?.toLocaleString()}</span>
+              </div>
+            )}
+
+            {tenant.contractId ? (
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-slate-600">Contract Period</span>
+                <span className="text-sm text-slate-900">
+                  {tenant.startDate && tenant.endDate
+                    ? `${formatDate(tenant.startDate)} - ${formatDate(tenant.endDate)}`
+                    : 'N/A'
+                  }
+                </span>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-slate-600">Contract Status</span>
+                <span className="text-sm text-slate-500">No Contract</span>
+              </div>
+            )}
           </div>
         </div>
       </Card>
 
-      {/* Emergency Contact */}
-      {(tenant.emergency_contact_name || tenant.emergency_contact_phone) && (
-        <Card className="bg-white border border-slate-200 shadow-sm">
-          <div className="p-6">
-            <div className="flex items-center mb-4">
-              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      {/* Apartment Details */}
+      <Card className="bg-white border border-slate-200 shadow-sm">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                tenant.apartmentId || tenant.buildingName
+                  ? 'bg-teal-100'
+                  : 'bg-slate-100'
+              }`}>
+                <svg className={`w-5 h-5 ${
+                  tenant.apartmentId || tenant.buildingName
+                    ? 'text-teal-600'
+                    : 'text-slate-400'
+                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-900">Emergency Contact</h3>
+              <h3 className="text-lg font-semibold text-slate-900">Current Apartment</h3>
             </div>
-
-            <div className="space-y-3">
-              {tenant.emergency_contact_name && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Name</label>
-                  <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
-                    {tenant.emergency_contact_name}
-                  </p>
-                </div>
-              )}
-              {tenant.emergency_contact_phone && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Phone</label>
-                  <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
-                    {tenant.emergency_contact_phone}
-                  </p>
-                </div>
-              )}
-            </div>
+            {!(tenant.apartmentId || tenant.buildingName) && (
+              <button className="px-3 py-1 bg-teal-600 text-white text-xs rounded-md hover:bg-teal-700 transition-colors">
+                Assign Apartment
+              </button>
+            )}
           </div>
-        </Card>
-      )}
+
+          {tenant.apartmentId || tenant.buildingName ? (
+            <div className="space-y-3">
+              {tenant.buildingName && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Building</label>
+                  <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
+                    {tenant.buildingName}
+                  </p>
+                </div>
+              )}
+              {tenant.buildingAddress && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Address</label>
+                  <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
+                    {tenant.buildingAddress}
+                  </p>
+                </div>
+              )}
+              {tenant.floorName && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Floor</label>
+                  <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
+                    {tenant.floorName}
+                  </p>
+                </div>
+              )}
+              {(tenant.bedrooms || tenant.bathrooms) && (
+                <div className="grid grid-cols-2 gap-3">
+                  {tenant.bedrooms && (
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Bedrooms</label>
+                      <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
+                        {tenant.bedrooms}
+                      </p>
+                    </div>
+                  )}
+                  {tenant.bathrooms && (
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Bathrooms</label>
+                      <p className="text-sm text-slate-900 bg-slate-50 p-2 rounded border border-slate-200">
+                        {tenant.bathrooms}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h4 className="text-lg font-medium text-slate-900 mb-2">No Apartment Assigned</h4>
+              <p className="text-slate-500 mb-4">This tenant is not currently assigned to any apartment.</p>
+              <button className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">
+                <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Assign Apartment
+              </button>
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   </div>
 );

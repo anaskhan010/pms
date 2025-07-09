@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import adminApiService from "../../services/adminApiService";
+import notificationService from "../../services/notificationService";
+import { DeleteConfirmationModal } from "../common";
 import AddBuildingModal from "./AddBuildingModal";
 
 const BuildingsPage = () => {
@@ -52,6 +54,14 @@ const BuildingsPage = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [useComprehensiveModal, setUseComprehensiveModal] = useState(false);
 
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    buildingId: null,
+    buildingName: '',
+    loading: false
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -98,14 +108,17 @@ const BuildingsPage = () => {
       const response = await adminApiService.createComprehensiveBuilding(comprehensiveData);
 
       if (response.success) {
+        notificationService.success('Building created successfully with all floors and apartments');
         await fetchBuildings(); // Refresh the buildings list
         setIsModalOpen(false);
         setError(null);
       } else {
+        notificationService.error(response.error || 'Failed to create building');
         setError(response.error || 'Failed to create building');
       }
     } catch (err) {
       console.error('Error creating comprehensive building:', err);
+      notificationService.error('An unexpected error occurred while creating building');
       setError('An unexpected error occurred while creating building');
     } finally {
       setLoading(false);
@@ -122,20 +135,38 @@ const BuildingsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this building?')) {
-      try {
-        const response = await adminApiService.deleteBuilding(id);
-        if (response.success) {
-          await fetchBuildings(); // Refresh the buildings list
-        } else {
-          setError(response.error || 'Failed to delete building');
-        }
-      } catch (err) {
-        console.error('Error deleting building:', err);
-        setError('An unexpected error occurred while deleting building');
+  const handleDelete = (id, buildingName = '') => {
+    setDeleteModal({
+      isOpen: true,
+      buildingId: id,
+      buildingName,
+      loading: false
+    });
+  };
+
+  const confirmDeleteBuilding = async () => {
+    try {
+      setDeleteModal(prev => ({ ...prev, loading: true }));
+      const response = await adminApiService.deleteBuilding(deleteModal.buildingId);
+      if (response.success) {
+        notificationService.success('Building deleted successfully');
+        await fetchBuildings(); // Refresh the buildings list
+        setDeleteModal({ isOpen: false, buildingId: null, buildingName: '', loading: false });
+      } else {
+        notificationService.error(response.error || 'Failed to delete building');
+        setDeleteModal(prev => ({ ...prev, loading: false }));
+        setError(response.error || 'Failed to delete building');
       }
+    } catch (err) {
+      console.error('Error deleting building:', err);
+      notificationService.error('An unexpected error occurred while deleting building');
+      setDeleteModal(prev => ({ ...prev, loading: false }));
+      setError('An unexpected error occurred while deleting building');
     }
+  };
+
+  const cancelDeleteBuilding = () => {
+    setDeleteModal({ isOpen: false, buildingId: null, buildingName: '', loading: false });
   };
 
   const resetForm = () => {
@@ -153,6 +184,14 @@ const BuildingsPage = () => {
     resetForm();
   };
 
+
+  const truncateWords = (text, maxWords = 90) => {
+    if (!text) return '';
+    const words = text.split(/\s+/);
+    return words.length <= maxWords
+      ? text
+      : words.slice(0, maxWords).join(' ') + '…';
+  };
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -236,7 +275,7 @@ const BuildingsPage = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {building.address}
+                  {building.address.length > 90 ? building.address.slice(0, 60) + '...' : building.address}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {building.units}
@@ -273,7 +312,7 @@ const BuildingsPage = () => {
                     </button>
                     <button
                       className="text-red-600 hover:text-red-900"
-                      onClick={() => handleDelete(building.id)}
+                      onClick={() => handleDelete(building.id, building.name)}
                     >
                       Delete
                     </button>
@@ -296,7 +335,17 @@ const BuildingsPage = () => {
         />
       )}
 
-     
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={cancelDeleteBuilding}
+        onConfirm={confirmDeleteBuilding}
+        title="Delete Building"
+        message="Are you sure you want to delete this building? This action cannot be undone and will remove all associated floors, apartments, and tenant data."
+        itemName={deleteModal.buildingName}
+        loading={deleteModal.loading}
+      />
+
     </div>
   );
 };

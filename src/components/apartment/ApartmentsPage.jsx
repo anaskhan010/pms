@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import notificationService from "../../services/notificationService";
+import { DeleteConfirmationModal } from "../common";
 
 /**
  * ApartmentsPage Component
@@ -64,6 +66,14 @@ const ApartmentsPage = () => {
     status: 'Vacant',
   });
 
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    apartmentId: null,
+    apartmentNumber: '',
+    loading: false
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -82,6 +92,7 @@ const ApartmentsPage = () => {
       bathrooms: parseInt(formData.bathrooms),
     };
     setApartments([...apartments, newApartment]);
+    notificationService.success('Apartment added successfully');
     setIsModalOpen(false);
     setFormData({
       number: '',
@@ -96,7 +107,36 @@ const ApartmentsPage = () => {
   };
 
   const handleDelete = (id) => {
-    setApartments(apartments.filter(apartment => apartment.id !== id));
+    const apartment = apartments.find(a => a.id === id);
+    const apartmentNumber = apartment ? apartment.number : '';
+
+    setDeleteModal({
+      isOpen: true,
+      apartmentId: id,
+      apartmentNumber,
+      loading: false
+    });
+  };
+
+  const confirmDeleteApartment = async () => {
+    try {
+      setDeleteModal(prev => ({ ...prev, loading: true }));
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setApartments(apartments.filter(apartment => apartment.id !== deleteModal.apartmentId));
+      notificationService.success('Apartment deleted successfully');
+      setDeleteModal({ isOpen: false, apartmentId: null, apartmentNumber: '', loading: false });
+    } catch (error) {
+      console.error('Error deleting apartment:', error);
+      notificationService.error('An error occurred while deleting the apartment');
+      setDeleteModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const cancelDeleteApartment = () => {
+    setDeleteModal({ isOpen: false, apartmentId: null, apartmentNumber: '', loading: false });
   };
 
   return (
@@ -380,6 +420,17 @@ const ApartmentsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={cancelDeleteApartment}
+        onConfirm={confirmDeleteApartment}
+        title="Delete Apartment"
+        message="Are you sure you want to delete this apartment? This action cannot be undone."
+        itemName={deleteModal.apartmentNumber}
+        loading={deleteModal.loading}
+      />
     </div>
   );
 };

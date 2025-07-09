@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.jsx";
+import notificationService from "../../services/notificationService";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -114,9 +115,11 @@ const LoginPage = () => {
         }
       }
 
+      notificationService.success(`Welcome back! Redirecting to ${user.role} dashboard...`);
       navigate(redirectPath, { replace: true });
     } catch (error) {
       console.error("Login failed:", error);
+      notificationService.error(error.message || 'Login failed. Please check your credentials and try again.');
       // Error is handled by the auth context
     }
   };

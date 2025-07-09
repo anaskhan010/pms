@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
+import notificationService from '../../services/notificationService';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -112,12 +113,14 @@ const RegisterPage = () => {
       const { confirmPassword, ...registrationData } = formData;
       
       await register(registrationData);
-      
+
+      notificationService.success(`Registration successful! Welcome to the platform.`);
       // Navigate to dashboard based on role
       const dashboardRoute = formData.role === 'tenant' ? '/home' : '/admin/dashboard';
       navigate(dashboardRoute);
     } catch (error) {
       console.error('Registration failed:', error);
+      notificationService.error(error.message || 'Registration failed. Please try again.');
       // Error is handled by the auth context
     }
   };
