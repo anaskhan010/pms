@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import { testConnection } from './config/db.js';
 
 import auth from './routes/user/auth.js';
+import users from './routes/user/userRoutes.js';
 import roles from './routes/role/roles.js';
 import tenants from './routes/tenant/tenants.js';
 import apartments from './routes/apartment/apartments.js';
@@ -66,6 +67,7 @@ app.use('/api/', limiter);
 app.use('/api/', speedLimiter);
 
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
 app.use('/api/v1/roles', roles);
 app.use('/api/v1/tenants', tenants);
 app.use('/api/v1/apartments', apartments);

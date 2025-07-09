@@ -92,35 +92,46 @@ const createUserWithConnection = async (connection, firstName, lastName, email, 
 };
 
 const getUserById = async (userId) => {
-  const query = `
-    SELECT u.*, r.roleName
-    FROM user u
-    LEFT JOIN userRole ur ON u.userId = ur.userId
-    LEFT JOIN role r ON ur.roleId = r.roleId
-    WHERE u.userId = ?
-  `;
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      const query = `SELECT u.*, r.roleName FROM user u LEFT JOIN userRole ur ON u.userId = ur.userId LEFT JOIN role r ON ur.roleId = r.roleId WHERE u.userId = ?`;
 
-  const [rows] = await db.execute(query, [userId]);
-  return rows[0] || null;
+      const [rows] = await db.execute(query, [userId]);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error in getUserById:', error);
+      retries--;
+      if (retries === 0 || error.code !== 'ECONNRESET') {
+        throw error;
+      }
+      console.log(`Retrying getUserById, attempts left: ${retries}`);
+      // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
 };
 
 const getUserByEmail = async (email) => {
-  try {
-    console.log('Getting user by email:', email);
-    const query = `
-      SELECT u.*, r.roleName
-      FROM user u
-      LEFT JOIN userRole ur ON u.userId = ur.userId
-      LEFT JOIN role r ON ur.roleId = r.roleId
-      WHERE u.email = ?
-    `;
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      console.log('Getting user by email:', email);
+      const query = `SELECT u.*, r.roleName FROM user u LEFT JOIN userRole ur ON u.userId = ur.userId LEFT JOIN role r ON ur.roleId = r.roleId WHERE u.email = ?`;
 
-    const [rows] = await db.execute(query, [email]);
-    console.log('Query executed successfully, rows found:', rows.length);
-    return rows[0] || null;
-  } catch (error) {
-    console.error('Error in getUserByEmail:', error);
-    throw error;
+      const [rows] = await db.execute(query, [email]);
+      console.log('Query executed successfully, rows found:', rows.length);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error in getUserByEmail:', error);
+      retries--;
+      if (retries === 0 || error.code !== 'ECONNRESET') {
+        throw error;
+      }
+      console.log(`Retrying getUserByEmail, attempts left: ${retries}`);
+      // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 };
 
@@ -156,25 +167,55 @@ const deleteUser = async (userId) => {
 };
 
 const getAllUsers = async (limit = 50, offset = 0) => {
-  const query = `
-    SELECT u.userId, u.firstName, u.lastName, u.email, u.phoneNumber,
-           u.address, u.gender, u.nationality, u.dateOfBirth, u.image,
-           u.created_at, r.roleName
-    FROM user u
-    LEFT JOIN userRole ur ON u.userId = ur.userId
-    LEFT JOIN role r ON ur.roleId = r.roleId
-    ORDER BY u.created_at DESC
-    LIMIT ? OFFSET ?
-  `;
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      // Ensure parameters are integers
+      const limitInt = parseInt(limit) || 50;
+      const offsetInt = parseInt(offset) || 0;
 
-  const [rows] = await db.execute(query, [limit, offset]);
-  return rows;
+      console.log('getAllUsers called with:', { limit, offset, limitInt, offsetInt });
+
+      // Only show users that have assigned roles (INNER JOIN instead of LEFT JOIN)
+      const query = `SELECT u.userId, u.firstName, u.lastName, u.email, u.phoneNumber, u.address, u.gender, u.nationality, u.dateOfBirth, u.image, u.created_at, r.roleName, r.roleId FROM user u INNER JOIN userRole ur ON u.userId = ur.userId INNER JOIN role r ON ur.roleId = r.roleId ORDER BY u.created_at DESC LIMIT ${limitInt} OFFSET ${offsetInt}`;
+
+      console.log('Executing query:', query);
+      const [rows] = await db.execute(query);
+      console.log('Query executed successfully, rows:', rows.length);
+      return rows;
+    } catch (error) {
+      console.error('Error in getAllUsers:', error);
+      retries--;
+      if (retries === 0 || error.code !== 'ECONNRESET') {
+        console.error('Query parameters were:', { limit, offset });
+        throw error;
+      }
+      console.log(`Retrying getAllUsers, attempts left: ${retries}`);
+      // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
 };
 
 const getUsersCount = async () => {
-  const query = 'SELECT COUNT(*) as count FROM user';
-  const [rows] = await db.execute(query);
-  return rows[0].count;
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      // Only count users that have assigned roles
+      const query = 'SELECT COUNT(*) as count FROM user u INNER JOIN userRole ur ON u.userId = ur.userId';
+      const [rows] = await db.execute(query);
+      return parseInt(rows[0].count) || 0;
+    } catch (error) {
+      console.error('Error in getUsersCount:', error);
+      retries--;
+      if (retries === 0 || error.code !== 'ECONNRESET') {
+        throw error;
+      }
+      console.log(`Retrying getUsersCount, attempts left: ${retries}`);
+      // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
 };
 
 const updateUserRole = async (userId, roleId) => {
@@ -271,13 +312,92 @@ const updateUserPassword = async (userId, newPassword) => {
   return result[0].affectedRows > 0;
 };
 
+// Update user information
+const updateUserInfo = async (userId, userData) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      address,
+      gender,
+      nationality,
+      dateOfBirth,
+      image
+    } = userData;
+
+    const query = `
+      UPDATE user SET
+        firstName = ?,
+        lastName = ?,
+        email = ?,
+        phoneNumber = ?,
+        address = ?,
+        gender = ?,
+        nationality = ?,
+        dateOfBirth = ?,
+        image = ?
+      WHERE userId = ?
+    `;
+
+    const values = [
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      address,
+      gender,
+      nationality,
+      dateOfBirth,
+      image,
+      userId
+    ];
+
+    const result = await db.execute(query, values);
+    return result[0].affectedRows > 0;
+  } catch (error) {
+    console.error('Error in updateUserInfo:', error);
+    throw error;
+  }
+};
+
+// Delete user and associated records
+const deleteUserById = async (userId) => {
+  try {
+    // Start transaction
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+      // Delete from userRole table first (foreign key constraint)
+      await connection.execute('DELETE FROM userRole WHERE userId = ?', [userId]);
+
+      // Delete from user table
+      const result = await connection.execute('DELETE FROM user WHERE userId = ?', [userId]);
+
+      await connection.commit();
+      connection.release();
+
+      return result[0].affectedRows > 0;
+    } catch (error) {
+      await connection.rollback();
+      connection.release();
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error in deleteUserById:', error);
+    throw error;
+  }
+};
+
 export default {
   createUser,
   createUserWithConnection,
   getUserById,
   getUserByEmail,
-  updateUser,
-  deleteUser,
+  updateUser: updateUserInfo,
+  deleteUser: deleteUserById,
   getAllUsers,
   getUsersCount,
   updateUserRole,

@@ -162,6 +162,11 @@ const createComprehensiveBuilding = asyncHandler(async (req, res, next) => {
         });
         await Promise.all(apartmentImagePromises);
       }
+
+      // Handle apartment amenities
+      if (apartmentData.amenities && apartmentData.amenities.length > 0) {
+        await apartmentModel.updateApartmentAmenities(apartment.apartmentId, apartmentData.amenities);
+      }
     }
 
     // Step 5: Return comprehensive response

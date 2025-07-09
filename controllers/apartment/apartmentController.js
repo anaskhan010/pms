@@ -12,6 +12,10 @@ const getApartmentById = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponse(`Apartment not found with id of ${req.params.id}`, 404));
     }
 
+    // Get apartment images
+    const images = await apartmentModel.getApartmentImages(req.params.id);
+    apartment.images = images;
+
     res.status(200).json({
       success: true,
       data: apartment
