@@ -139,6 +139,7 @@ export const useAuthUtils = () => {
         { name: 'Dashboard', href: '/admin/dashboard', icon: 'home' },
         { name: 'My Tenants', href: '/admin/tenants', icon: 'users' },
         { name: 'My Buildings', href: '/admin/buildings', icon: 'building' },
+        { name: 'My Villas', href: '/admin/villas', icon: 'home' },
         { name: 'Messages', href: '/admin/messages', icon: 'chat' },
       ];
     }

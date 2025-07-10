@@ -43,10 +43,14 @@ const AssignApartmentModal = ({
   const loadAvailableTenants = async () => {
     try {
       setLoadingTenants(true);
+      console.log('Loading available tenants...');
       const response = await adminApiService.getAvailableTenantsForAssignment();
+      console.log('Available tenants response:', response);
       if (response.success) {
         setAvailableTenants(response.data);
+        console.log('Available tenants set:', response.data);
       } else {
+        console.error('Failed to load tenants:', response.error);
         notificationService.error('Failed to load available tenants');
       }
     } catch (error) {

@@ -1644,6 +1644,100 @@ export const adminApiService = {
   },
 
   /**
+   * Assign villa to owner
+   * @param {number} villaId - Villa ID
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async assignVillaToOwner(villaId, userId) {
+    try {
+      const response = await api.post('/villas/assignVillaToOwner', {
+        villaId,
+        userId
+      });
+      return {
+        success: true,
+        data: response.data.data || {},
+        message: response.data.message || 'Villa assigned successfully'
+      };
+    } catch (error) {
+      console.error('Error assigning villa to owner:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to assign villa to owner'
+      };
+    }
+  },
+
+  /**
+   * Remove villa from owner
+   * @param {number} villaId - Villa ID
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async removeVillaFromOwner(villaId, userId) {
+    try {
+      const response = await api.delete('/villas/removeVillaFromOwner', {
+        data: { villaId, userId }
+      });
+      return {
+        success: true,
+        message: response.data.message || 'Villa removed from owner successfully'
+      };
+    } catch (error) {
+      console.error('Error removing villa from owner:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to remove villa from owner'
+      };
+    }
+  },
+
+  /**
+   * Get villa assignments
+   * @param {number} villaId - Villa ID
+   * @returns {Promise<Object>} API response
+   */
+  async getVillaAssignments(villaId) {
+    try {
+      const response = await api.get(`/villas/getVillaAssignments/${villaId}`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching villa assignments:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch villa assignments',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get user assigned villas
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async getUserAssignedVillas(userId) {
+    try {
+      const response = await api.get(`/villas/getUserAssignedVillas/${userId}`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching user assigned villas:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch user assigned villas',
+        data: []
+      };
+    }
+  },
+
+  /**
    * Get buildings assigned to a user
    * @param {number} userId - User ID
    * @returns {Promise<Object>} API response

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Button, Select } from '../common';
 import { propertyService } from '../../services/propertyService';
 import { useAuth } from '../../contexts/AuthContext';
+import notificationService from '../../services/notificationService';
 
 const PropertyCreateForm = ({ onSuccess, onCancel }) => {
   const { user } = useAuth();
@@ -130,14 +131,19 @@ const PropertyCreateForm = ({ onSuccess, onCancel }) => {
       };
 
       const response = await propertyService.createProperty(propertyData);
-      
+
       if (response.success) {
+        notificationService.success('Property created successfully!');
         onSuccess?.(response.data);
       } else {
-        setErrors({ submit: response.error });
+        const errorMessage = response.error || 'Failed to create property';
+        notificationService.error(errorMessage);
+        setErrors({ submit: errorMessage });
       }
     } catch (error) {
-      setErrors({ submit: 'Failed to create property. Please try again.' });
+      const errorMessage = 'Failed to create property. Please try again.';
+      notificationService.error(errorMessage);
+      setErrors({ submit: errorMessage });
     } finally {
       setLoading(false);
     }

@@ -96,15 +96,21 @@ const BuildingsPage = () => {
       }
 
       if (response.success) {
+        notificationService.success(isEditMode ? 'Building updated successfully!' : 'Building created successfully!');
         await fetchBuildings(); // Refresh the buildings list
         setIsModalOpen(false);
         resetForm();
+        setError(null);
       } else {
-        setError(response.error || 'Failed to save building');
+        const errorMessage = response.error || 'Failed to save building';
+        notificationService.error(errorMessage);
+        setError(errorMessage);
       }
     } catch (err) {
       console.error('Error saving building:', err);
-      setError('An unexpected error occurred while saving building');
+      const errorMessage = 'An unexpected error occurred while saving building';
+      notificationService.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -39,6 +39,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         { path: "/admin/dashboard", icon: "grid", label: "Dashboard" },
         { path: "/admin/tenants", icon: "users", label: "My Tenants" },
         { path: "/admin/buildings", icon: "building", label: "My Buildings" },
+        { path: "/admin/villas", icon: "home", label: "My Villas" },
         { path: "/admin/messages", icon: "chat", label: "Messages" },
       ];
     }
