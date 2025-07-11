@@ -1,0 +1,249 @@
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:36:31'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:36:32'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'p.property_type' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOccupancyAnalytics',
+  timestamp: '2025-06-29 00:36:32'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 00:36:32'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 00:36:32'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:36:44'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:02'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:06'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:11'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:17'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:21'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:25'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:28'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'where clause'",
+  sql: 'SELECT * FROM Tenants WHERE 1=1 AND nationality = ? AND status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+  values: [ 'Pakistani', 'active', 10, 0 ],
+  level: 'error',
+  message: 'Database query failed in findAll',
+  timestamp: '2025-06-29 00:37:28'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'where clause'",
+  sql: 'SELECT * FROM Tenants WHERE 1=1 AND nationality = ? AND status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+  values: [ 'Pakistani', 'active', 10, 0 ],
+  level: 'error',
+  message: 'Database query failed in findAll',
+  timestamp: '2025-06-29 00:37:28'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:35'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:39'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:37:42'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:46:08'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:46:52'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getStatistics',
+  timestamp: '2025-06-29 00:46:56'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:02:22'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'p.property_type' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOccupancyAnalytics',
+  timestamp: '2025-06-29 01:02:22'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'p.property_type' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOccupancyAnalytics',
+  timestamp: '2025-06-29 01:07:11'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:07:11'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:07:11'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:07:21'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'p.property_type' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOccupancyAnalytics',
+  timestamp: '2025-06-29 01:07:21'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:07:21'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:07:30'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'p.property_type' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOccupancyAnalytics',
+  timestamp: '2025-06-29 01:07:30'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:07:31'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'p.property_type' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOccupancyAnalytics',
+  timestamp: '2025-06-29 01:08:03'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:08:03'
+}
+{
+  service: 'pms-api',
+  error: "Unknown column 'status' in 'field list'",
+  level: 'error',
+  message: 'Database query failed in getOverallStatistics',
+  timestamp: '2025-06-29 01:08:03'
+}

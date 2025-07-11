@@ -1,0 +1,208 @@
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/statistics',
+    method: 'GET',
+    requestId: 'd266837a-58ef-45e0-a513-c58017690205'
+  },
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '182ms',
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  event: 'Authentication Failed',
+  details: {
+    ip: '::1',
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+    url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+    method: 'GET',
+    requestId: '658ee578-8a6c-4add-a2c9-edf3757bfb00'
+  },
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'Security Event'
+}
+{
+  service: 'pms-api',
+  method: 'GET',
+  url: '/api/v1/tenants/get-all-tenants?page=1&limit=10&sortBy=created_at&sortOrder=desc',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 401,
+  responseTime: '192ms',
+  timestamp: '2025-07-01 07:00:39',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  userId: undefined,
+  userRole: undefined,
+  statusCode: 500,
+  responseTime: '182ms',
+  timestamp: '2025-07-01 07:00:41',
+  level: 'warn',
+  message: 'API Request Failed'
+}
+{
+  service: 'pms-api',
+  requestId: '1daf4520-7fbf-4f0c-af98-ef9791b95ebb',
+  method: 'POST',
+  url: '/api/v1/auth/login',
+  duration: '1339.65ms',
+  userId: undefined,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-01 07:37:16'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: undefined,
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-01 07:37:22',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenant_statistics',
+  details: {},
+  timestamp: '2025-07-01 07:37:23',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  requestId: 'e1f5d241-6831-46b0-88a9-664ad46d4863',
+  method: 'GET',
+  url: '/api/v1/tenants/statistics',
+  duration: '1674.78ms',
+  userId: 12,
+  statusCode: 200,
+  level: 'warn',
+  message: 'Slow request detected',
+  timestamp: '2025-07-01 07:37:23'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Egyptian',
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 0
+  },
+  timestamp: '2025-07-01 07:41:17',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: undefined,
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-01 07:41:20',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: 'active',
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 2
+  },
+  timestamp: '2025-07-01 07:41:24',
+  level: 'info',
+  message: 'User Action'
+}
+{
+  service: 'pms-api',
+  userId: 12,
+  action: 'view_tenants_list',
+  details: {
+    page: 1,
+    limit: 10,
+    filters: {
+      nationality: 'Pakistani',
+      search: undefined,
+      status: 'inactive',
+      id_document_type: undefined,
+      created_from: undefined,
+      created_to: undefined
+    },
+    resultCount: 0
+  },
+  timestamp: '2025-07-01 07:41:26',
+  level: 'info',
+  message: 'User Action'
+}

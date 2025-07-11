@@ -1,0 +1,598 @@
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:20:10'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:20:10'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 73601024,
+    heapTotal: 36089856,
+    heapUsed: 18944304,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:20:10'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:20:48'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:20:48'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 75919360,
+    heapTotal: 53653504,
+    heapUsed: 21119560,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:20:48'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:21:12'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:21:12'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 74960896,
+    heapTotal: 53915648,
+    heapUsed: 21100312,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:21:12'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:22:15'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:22:15'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 75444224,
+    heapTotal: 53391360,
+    heapUsed: 21160760,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:22:15'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:22:53'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:22:53'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77287424,
+    heapTotal: 35041280,
+    heapUsed: 21944776,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:22:53'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:24:04'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:24:04'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 75612160,
+    heapTotal: 54177792,
+    heapUsed: 21140136,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:24:04'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:25:12'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:25:12'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77750272,
+    heapTotal: 35303424,
+    heapUsed: 21754352,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:25:12'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:25:50'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:25:50'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 75427840,
+    heapTotal: 53915648,
+    heapUsed: 21218456,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:25:50'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:26:04'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:26:04'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 74854400,
+    heapTotal: 53129216,
+    heapUsed: 21240400,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:26:04'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:26:47'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:26:47'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77594624,
+    heapTotal: 35041280,
+    heapUsed: 22070176,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:26:47'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:27:04'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:27:04'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 76230656,
+    heapTotal: 53653504,
+    heapUsed: 21057248,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:27:04'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:30:34'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:30:34'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77512704,
+    heapTotal: 35303424,
+    heapUsed: 21511792,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:30:34'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:30:59'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:30:59'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 75579392,
+    heapTotal: 54177792,
+    heapUsed: 21366032,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:30:59'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:31:49'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:31:49'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77737984,
+    heapTotal: 35565568,
+    heapUsed: 21519816,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:31:49'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:32:33'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:32:33'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 76984320,
+    heapTotal: 35041280,
+    heapUsed: 21891072,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:32:33'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:33:37'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:33:37'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77975552,
+    heapTotal: 35041280,
+    heapUsed: 21825848,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:33:37'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:34:35'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:34:35'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 75718656,
+    heapTotal: 35041280,
+    heapUsed: 22191608,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:34:35'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:34:51'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:34:51'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77729792,
+    heapTotal: 35565568,
+    heapUsed: 21527592,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:34:51'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:35:04'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:35:04'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77709312,
+    heapTotal: 35303424,
+    heapUsed: 22207656,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:35:04'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:35:21'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:35:21'
+}
+{
+  service: 'pms-api',
+  port: '5000',
+  environment: 'production',
+  nodeVersion: 'v22.14.0',
+  platform: 'darwin',
+  memory: {
+    rss: 77807616,
+    heapTotal: 35041280,
+    heapUsed: 22196024,
+    external: 2189340,
+    arrayBuffers: 17499
+  },
+  level: 'info',
+  message: 'Server startup completed',
+  timestamp: '2025-06-28 23:35:21'
+}
+{
+  message: 'Server running in production mode on port 5000',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:53:02'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:53:03'
+}
+{
+  message: 'Database connection successful',
+  level: 'info',
+  service: 'pms-api',
+  timestamp: '2025-06-28 23:53:18'
+}
