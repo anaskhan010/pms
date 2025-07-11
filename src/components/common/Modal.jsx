@@ -61,7 +61,7 @@ const Modal = ({
         "1540px_to_1640": "1540px_to_1640:w-4/12 1540px_to_1640:max-w-3xl",
       },
       default: {
-        base: "w-11/12 max-w-lg",
+        base: "w-11/12 max-w-7xl",
         "300_to_768": "300_to_768:w-11/12 300_to_768:max-w-lg",
         "768_to_1024": "768_to_1024:w-10/12 768_to_1024:max-w-xl",
         "1024_to_1280": "1024_to_1280:w-8/12 1024_to_1280:max-w-2xl",

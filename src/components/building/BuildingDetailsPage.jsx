@@ -95,7 +95,7 @@ const BuildingDetailsPage = () => {
           bedrooms: a.bedrooms,
           bathrooms: a.bathrooms,
           area: `${a.length} X ${a.width} sq ft`,
-          rent: `$${a.rentPrice}`,
+          rent: `AED ${a.rentPrice}`,
           rentPrice: a.rentPrice, // Add this for the assignment modal
           status: a.status,
           description: a.description || '',
@@ -192,7 +192,7 @@ const BuildingDetailsPage = () => {
           )}
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div><p className="text-sm text-gray-500">Units</p><p className="text-lg font-semibold">{building.units}</p></div>
+            <div><p className="text-sm text-gray-500">Apartments</p><p className="text-lg font-semibold">{building.units}</p></div>
             <div><p className="text-sm text-gray-500">Floors</p><p className="text-lg font-semibold">{building.floors}</p></div>
             <div><p className="text-sm text-gray-500">Year Built</p><p className="text-lg font-semibold">{building.yearBuilt || 'N/A'}</p></div>
             <div><p className="text-sm text-gray-500">Occupancy Rate</p><p className="text-lg font-semibold">{Math.floor(Math.random() * 30) + 70}%</p></div>

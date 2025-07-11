@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+import { PermissionProvider } from "./contexts/PermissionContext.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import RoleBasedRedirect from "./components/auth/RoleBasedRedirect.jsx";
 import LoginPage from "./components/auth/LoginPage";
@@ -18,6 +19,7 @@ import VillasPage from "./components/villa/VillasPage";
 import VillaDetailsPage from "./components/villa/VillaDetailsPage";
 import MessagingPage from "./components/messaging/MessagingPage";
 import UserManagementPage from "./components/user/UserManagementPage";
+import PermissionManagementPage from "./components/permission/PermissionManagementPage";
 import UserDetailsPage from "./components/user/UserDetailsPage";
 import NotificationContainer from "./components/common/NotificationContainer";
 import "./App.css";
@@ -25,7 +27,8 @@ import "./App.css";
 function App() {
   return (
     <AuthProvider>
-      <NotificationContainer />
+      <PermissionProvider>
+        <NotificationContainer />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -57,12 +60,14 @@ function App() {
           <Route path="villas/:id" element={<VillaDetailsPage />} />
           <Route path="user-management" element={<UserManagementPage />} />
           <Route path="user-management/:id" element={<UserDetailsPage />} />
+          <Route path="permissions" element={<PermissionManagementPage />} />
           <Route path="messages" element={<MessagingPage />} />
         </Route>
 
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      </PermissionProvider>
     </AuthProvider>
   );
 }

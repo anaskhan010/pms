@@ -904,7 +904,7 @@ export const adminApiService = {
    */
   async getApartmentsByFloor(floorId) {
     try {
-      const response = await api.get(`/tenants/floors/${floorId}/apartments`);
+      const response = await api.get(`/apartments/getApartments?floorId=${floorId}&limit=100`);
       return {
         success: true,
         data: response.data.data || []
@@ -1732,6 +1732,226 @@ export const adminApiService = {
       return {
         success: false,
         error: error.response?.data?.error || error.message || 'Failed to fetch user assigned villas',
+        data: []
+      };
+    }
+  },
+
+  // ==================== PERMISSION MANAGEMENT ====================
+
+  /**
+   * Get all permissions
+   * @returns {Promise<Object>} API response
+   */
+  async getAllPermissions() {
+    try {
+      const response = await api.get('/permissions/getAllPermissions');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch permissions',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get permissions grouped by resource
+   * @returns {Promise<Object>} API response
+   */
+  async getPermissionsGrouped() {
+    try {
+      const response = await api.get('/permissions/getPermissionsGrouped');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching grouped permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch grouped permissions',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get permissions by role
+   * @param {number} roleId - Role ID
+   * @returns {Promise<Object>} API response
+   */
+  async getPermissionsByRole(roleId) {
+    try {
+      const response = await api.get(`/permissions/getPermissionsByRole/${roleId}`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching permissions by role:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch permissions by role',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get user permissions (admin only)
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} API response
+   */
+  async getUserPermissions(userId) {
+    try {
+      const response = await api.get(`/permissions/getUserPermissions/${userId}`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching user permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch user permissions',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get current user's permissions
+   * @returns {Promise<Object>} API response
+   */
+  async getMyPermissions() {
+    try {
+      const response = await api.get('/permissions/getMyPermissions');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching my permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch permissions',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Create new permission
+   * @param {Object} permissionData - Permission data
+   * @returns {Promise<Object>} API response
+   */
+  async createPermission(permissionData) {
+    try {
+      const response = await api.post('/permissions/createPermission', permissionData);
+      return {
+        success: true,
+        data: response.data.data || {},
+        message: response.data.message || 'Permission created successfully'
+      };
+    } catch (error) {
+      console.error('Error creating permission:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to create permission'
+      };
+    }
+  },
+
+  /**
+   * Update permission
+   * @param {number} permissionId - Permission ID
+   * @param {Object} permissionData - Permission data
+   * @returns {Promise<Object>} API response
+   */
+  async updatePermission(permissionId, permissionData) {
+    try {
+      const response = await api.put(`/permissions/updatePermission/${permissionId}`, permissionData);
+      return {
+        success: true,
+        data: response.data.data || {},
+        message: response.data.message || 'Permission updated successfully'
+      };
+    } catch (error) {
+      console.error('Error updating permission:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to update permission'
+      };
+    }
+  },
+
+  /**
+   * Delete permission
+   * @param {number} permissionId - Permission ID
+   * @returns {Promise<Object>} API response
+   */
+  async deletePermission(permissionId) {
+    try {
+      const response = await api.delete(`/permissions/deletePermission/${permissionId}`);
+      return {
+        success: true,
+        message: response.data.message || 'Permission deleted successfully'
+      };
+    } catch (error) {
+      console.error('Error deleting permission:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to delete permission'
+      };
+    }
+  },
+
+  /**
+   * Assign permissions to role
+   * @param {number} roleId - Role ID
+   * @param {Array} permissionIds - Array of permission IDs
+   * @returns {Promise<Object>} API response
+   */
+  async assignPermissionsToRole(roleId, permissionIds) {
+    try {
+      const response = await api.post(`/permissions/assignPermissionsToRole/${roleId}`, {
+        permissionIds
+      });
+      return {
+        success: true,
+        message: response.data.message || 'Permissions assigned successfully'
+      };
+    } catch (error) {
+      console.error('Error assigning permissions to role:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to assign permissions to role'
+      };
+    }
+  },
+
+  /**
+   * Get all roles with their permissions
+   * @returns {Promise<Object>} API response
+   */
+  async getRolesWithPermissions() {
+    try {
+      const response = await api.get('/permissions/getRolesWithPermissions');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching roles with permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch roles with permissions',
         data: []
       };
     }

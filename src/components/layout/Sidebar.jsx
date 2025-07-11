@@ -1,50 +1,103 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePermissions } from "../../contexts/PermissionContext";
 import SidebarPattern from "./SidebarPattern";
 
 const Sidebar = ({ isOpen, onToggle }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { hasPermission, getFilteredMenuItems } = usePermissions();
 
   const toggleSidebar = () => {
     onToggle && onToggle(!isOpen);
   };
 
-  // Define menu items - Admin and Owner
+  // Define menu items with permission-based access control
   const getMenuItems = () => {
+    // Define all possible menu items with their required permissions
+    const allMenuItems = [
+      {
+        path: "/admin/dashboard",
+        icon: "grid",
+        label: "Dashboard",
+        requiredPermission: "dashboard.view"
+      },
+      {
+        path: "/admin/tenants",
+        icon: "users",
+        label: user?.role === 'owner' ? "My Tenants" : "Tenants",
+        requiredPermission: ["tenants.view", "tenants.view_own"]
+      },
+      {
+        path: "/admin/buildings",
+        icon: "building",
+        label: user?.role === 'owner' ? "My Buildings" : "Buildings",
+        requiredPermission: ["buildings.view", "buildings.view_own"]
+      },
+      {
+        path: "/admin/villas",
+        icon: "home",
+        label: user?.role === 'owner' ? "My Villas" : "Villas",
+        requiredPermission: ["villas.view", "villas.view_own"]
+      },
+      {
+        path: "/admin/virtual-demo",
+        icon: "video",
+        label: "Virtual Tour",
+        requiredPermission: "dashboard.view" // Basic permission for demo
+      },
+      {
+        path: "/admin/vendors",
+        icon: "briefcase",
+        label: "Vendors",
+        requiredPermission: "vendors.view"
+      },
+      {
+        path: "/admin/transactions",
+        icon: "credit-card",
+        label: "Financial Transactions",
+        requiredPermission: ["transactions.view", "transactions.view_own"]
+      },
+      {
+        path: "/admin/user-management",
+        icon: "user-group",
+        label: "User Management",
+        requiredPermission: "users.view"
+      },
+      {
+        path: "/admin/messages",
+        icon: "chat",
+        label: "Messages",
+        requiredPermission: "messages.view"
+      },
+      {
+        path: "/admin/permissions",
+        icon: "shield",
+        label: "Permissions & Roles",
+        requiredPermission: "permissions.view"
+      }
+    ];
 
-    if (user?.role === 'admin' || user?.role === 'super_admin') {
-      // Full admin menu items
-      return [
-        { path: "/admin/dashboard", icon: "grid", label: "Dashboard" },
-        { path: "/admin/tenants", icon: "users", label: "Tenants" },
-        { path: "/admin/buildings", icon: "building", label: "Buildings" },
-        { path: "/admin/villas", icon: "home", label: "Villas" },
-        { path: "/admin/virtual-demo", icon: "video", label: "Virtual Tour" },
-        { path: "/admin/vendors", icon: "briefcase", label: "Vendors" },
-        {
-          path: "/admin/transactions",
-          icon: "credit-card",
-          label: "Financial Transactions",
-        },
-        { path: "/admin/user-management", icon: "user-group", label: "User Management" },
-        { path: "/admin/messages", icon: "chat", label: "Messages" },
-      ];
+    // Filter menu items based on user permissions
+    if (!getFilteredMenuItems) {
+      // Fallback: show basic menu items based on role if permission system is not ready
+      if (user?.role === 'admin') {
+        return allMenuItems; // Admin gets all items
+      } else if (user?.role === 'owner') {
+        return allMenuItems.filter(item =>
+          item.path.includes('dashboard') ||
+          item.path.includes('tenants') ||
+          item.path.includes('buildings') ||
+          item.path.includes('villas') ||
+          item.path.includes('messages')
+        );
+      }
+      return [allMenuItems[0]]; // Just dashboard for others
     }
 
-    if (user?.role === 'owner') {
-      // Limited owner menu items
-      return [
-        { path: "/admin/dashboard", icon: "grid", label: "Dashboard" },
-        { path: "/admin/tenants", icon: "users", label: "My Tenants" },
-        { path: "/admin/buildings", icon: "building", label: "My Buildings" },
-        { path: "/admin/villas", icon: "home", label: "My Villas" },
-        { path: "/admin/messages", icon: "chat", label: "Messages" },
-      ];
-    }
-
-    return [];
+    const filteredItems = getFilteredMenuItems(allMenuItems);
+    return filteredItems;
   };
 
   const menuItems = getMenuItems();
@@ -248,6 +301,14 @@ const Sidebar = ({ isOpen, onToggle }) => {
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    )}
+                    {item.icon === "shield" && (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                       />
                     )}
                   </svg>

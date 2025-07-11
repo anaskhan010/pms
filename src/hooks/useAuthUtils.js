@@ -1,4 +1,5 @@
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { usePermissions } from '../contexts/PermissionContext';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -7,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
  */
 export const useAuthUtils = () => {
   const auth = useAuth();
+  const { getFilteredMenuItems } = usePermissions();
   const navigate = useNavigate();
 
   /**
@@ -117,34 +119,76 @@ export const useAuthUtils = () => {
   // Removed manager, owner, tenant role checks - Admin only system
 
   /**
-   * Get navigation items - Admin and Owner
-   * @returns {Array} Navigation items based on user role
+   * Get navigation items - Permission-based filtering
+   * @returns {Array} Navigation items based on user permissions
    */
   const getNavigationItems = () => {
-    if (isAdmin()) {
-      return [
-        { name: 'Dashboard', href: '/admin/dashboard', icon: 'home' },
-        { name: 'Tenants', href: '/admin/tenants', icon: 'users' },
-        { name: 'Buildings', href: '/admin/buildings', icon: 'building' },
-        { name: 'Villas', href: '/admin/villas', icon: 'home' },
-        { name: 'Virtual Tour', href: '/admin/virtual-demo', icon: 'video' },
-        { name: 'Vendors', href: '/admin/vendors', icon: 'briefcase' },
-        { name: 'Transactions', href: '/admin/transactions', icon: 'credit-card' },
-        { name: 'Messages', href: '/admin/messages', icon: 'chat' },
-      ];
-    }
+    // Define all possible navigation items with their required permissions
+    const allNavigationItems = [
+      {
+        name: 'Dashboard',
+        href: '/admin/dashboard',
+        icon: 'home',
+        requiredPermission: 'dashboard.view'
+      },
+      {
+        name: auth.user?.role === 'owner' ? 'My Tenants' : 'Tenants',
+        href: '/admin/tenants',
+        icon: 'users',
+        requiredPermission: ['tenants.view', 'tenants.view_own']
+      },
+      {
+        name: auth.user?.role === 'owner' ? 'My Buildings' : 'Buildings',
+        href: '/admin/buildings',
+        icon: 'building',
+        requiredPermission: ['buildings.view', 'buildings.view_own']
+      },
+      {
+        name: auth.user?.role === 'owner' ? 'My Villas' : 'Villas',
+        href: '/admin/villas',
+        icon: 'home',
+        requiredPermission: ['villas.view', 'villas.view_own']
+      },
+      {
+        name: 'Virtual Tour',
+        href: '/admin/virtual-demo',
+        icon: 'video',
+        requiredPermission: 'dashboard.view'
+      },
+      {
+        name: 'Vendors',
+        href: '/admin/vendors',
+        icon: 'briefcase',
+        requiredPermission: 'vendors.view'
+      },
+      {
+        name: 'Transactions',
+        href: '/admin/transactions',
+        icon: 'credit-card',
+        requiredPermission: ['transactions.view', 'transactions.view_own']
+      },
+      {
+        name: 'Messages',
+        href: '/admin/messages',
+        icon: 'chat',
+        requiredPermission: 'messages.view'
+      },
+      {
+        name: 'User Management',
+        href: '/admin/user-management',
+        icon: 'user-group',
+        requiredPermission: 'users.view'
+      },
+      {
+        name: 'Permissions & Roles',
+        href: '/admin/permissions',
+        icon: 'shield',
+        requiredPermission: 'permissions.view'
+      }
+    ];
 
-    if (auth.user?.role === 'owner') {
-      return [
-        { name: 'Dashboard', href: '/admin/dashboard', icon: 'home' },
-        { name: 'My Tenants', href: '/admin/tenants', icon: 'users' },
-        { name: 'My Buildings', href: '/admin/buildings', icon: 'building' },
-        { name: 'My Villas', href: '/admin/villas', icon: 'home' },
-        { name: 'Messages', href: '/admin/messages', icon: 'chat' },
-      ];
-    }
-
-    return [];
+    // Filter navigation items based on user permissions
+    return getFilteredMenuItems ? getFilteredMenuItems(allNavigationItems) : [];
   };
 
   /**
