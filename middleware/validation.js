@@ -276,3 +276,33 @@ export const validateId = [
     .notEmpty()
     .withMessage('ID cannot be empty')
 ];
+
+export const validateRoleId = [
+  param('roleId')
+    .isLength({ min: 1 })
+    .withMessage('Role ID is required')
+    .notEmpty()
+    .withMessage('Role ID cannot be empty')
+    .isNumeric()
+    .withMessage('Role ID must be a number')
+];
+
+export const validateUserId = [
+  param('userId')
+    .isLength({ min: 1 })
+    .withMessage('User ID is required')
+    .notEmpty()
+    .withMessage('User ID cannot be empty')
+    .isNumeric()
+    .withMessage('User ID must be a number')
+];
+
+export const validatePermissionId = [
+  param('permissionId')
+    .isLength({ min: 1 })
+    .withMessage('Permission ID is required')
+    .notEmpty()
+    .withMessage('Permission ID cannot be empty')
+    .isNumeric()
+    .withMessage('Permission ID must be a number')
+];

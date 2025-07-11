@@ -3,6 +3,7 @@ import User from '../models/user/User.js';
 import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import db from '../config/db.js';
+import permissionModel from '../models/permission/Permission.js';
 
 export const protect = asyncHandler(async (req, res, next) => {
   let token;
@@ -123,6 +124,87 @@ export const adminAndManager = authorize('admin', 'manager');
 export const adminAndOwner = authorize('admin', 'owner');
 
 export const adminOwnerAndManager = authorize('admin', 'owner', 'manager');
+
+// Dynamic permission-based authorization
+export const requirePermission = (permissionName) => {
+  return asyncHandler(async (req, res, next) => {
+    if (!req.user || !req.user.userId) {
+      return next(new ErrorResponse('User not authenticated', 401));
+    }
+
+    const hasPermission = await permissionModel.hasPermission(req.user.userId, permissionName);
+
+    if (!hasPermission) {
+      return next(
+        new ErrorResponse(
+          `Access denied. Required permission: ${permissionName}`,
+          403
+        )
+      );
+    }
+
+    next();
+  });
+};
+
+// Resource-action based authorization
+export const requireResourcePermission = (resource, action) => {
+  return asyncHandler(async (req, res, next) => {
+    if (!req.user || !req.user.userId) {
+      return next(new ErrorResponse('User not authenticated', 401));
+    }
+
+    const hasPermission = await permissionModel.hasResourcePermission(req.user.userId, resource, action);
+
+    if (!hasPermission) {
+      return next(
+        new ErrorResponse(
+          `Access denied. Required permission: ${resource}.${action}`,
+          403
+        )
+      );
+    }
+
+    next();
+  });
+};
+
+// Smart authorization that checks both general and ownership-based permissions
+export const smartAuthorize = (resource, action) => {
+  return asyncHandler(async (req, res, next) => {
+    if (!req.user || !req.user.userId) {
+      return next(new ErrorResponse('User not authenticated', 401));
+    }
+
+    try {
+      // Check if user has general permission for this resource/action
+      const hasGeneralPermission = await permissionModel.hasResourcePermission(req.user.userId, resource, action);
+
+      if (hasGeneralPermission) {
+        return next();
+      }
+
+      // Check if user has ownership-based permission (e.g., update_own)
+      const hasOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, resource, `${action}_own`);
+
+      if (hasOwnPermission) {
+        // Set a flag to indicate this is ownership-based access
+        req.isOwnershipAccess = true;
+        return next();
+      }
+
+      return next(
+        new ErrorResponse(
+          `Access denied. Required permission: ${resource}.${action} or ${resource}.${action}_own`,
+          403
+        )
+      );
+    } catch (error) {
+      console.error('SmartAuthorize: Error checking permissions:', error);
+      return next(new ErrorResponse('Error checking permissions', 500));
+    }
+  });
+};
 
 export const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {

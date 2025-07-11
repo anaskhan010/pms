@@ -17,6 +17,7 @@ import apartments from './routes/apartment/apartments.js';
 import buildings from './routes/building/buildings.js';
 import floors from './routes/floor/floors.js';
 import villas from './routes/villa/villas.js';
+import permissions from './routes/permission/permissions.js';
 
 
 
@@ -75,6 +76,7 @@ app.use('/api/v1/apartments', apartments);
 app.use('/api/v1/buildings', buildings);
 app.use('/api/v1/floors', floors);
 app.use('/api/v1/villas', villas);
+app.use('/api/v1/permissions', permissions);
 
 
 

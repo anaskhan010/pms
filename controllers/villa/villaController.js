@@ -15,8 +15,9 @@ const getAllVillas = asyncHandler(async (req, res, next) => {
 
     let result;
 
-    // If user is owner, only show assigned villas
-    if (req.user.roleName === 'owner') {
+    // Check if this is ownership-based access (set by smartAuthorize middleware)
+    if (req.isOwnershipAccess) {
+      // User has view_own permission, show only assigned villas
       const assignedVillas = await villaModel.getUserAssignedVillas(req.user.userId);
       result = {
         villas: assignedVillas,
@@ -25,7 +26,7 @@ const getAllVillas = asyncHandler(async (req, res, next) => {
         pages: 1
       };
     } else {
-      // Admin can see all villas
+      // User has general view permission, show all villas
       result = await villaModel.getAllVillas(page, limit, filters);
     }
 
@@ -67,10 +68,20 @@ const getVillaById = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponse(`Villa not found with id of ${req.params.id}`, 404));
     }
 
+    // If this is ownership-based access, verify the user owns this villa
+    if (req.isOwnershipAccess) {
+      const userVillas = await villaModel.getUserAssignedVillas(req.user.userId);
+      const isOwner = userVillas.some(userVilla => userVilla.villasId == req.params.id);
+
+      if (!isOwner) {
+        return next(new ErrorResponse('Access denied. You can only view your assigned villas.', 403));
+      }
+    }
+
     // Get villa images and features
     const images = await villaModel.getVillaImages(req.params.id);
     const features = await villaModel.getVillaFeatures(req.params.id);
-    
+
     villa.images = images;
     villa.features = features.map(f => f.features);
 
@@ -151,6 +162,16 @@ const createVilla = asyncHandler(async (req, res, next) => {
 
 const updateVilla = asyncHandler(async (req, res, next) => {
   try {
+    // If this is ownership-based access, verify the user owns this villa
+    if (req.isOwnershipAccess) {
+      const userVillas = await villaModel.getUserAssignedVillas(req.user.userId);
+      const isOwner = userVillas.some(villa => villa.villasId == req.params.id);
+
+      if (!isOwner) {
+        return next(new ErrorResponse('Access denied. You can only update your assigned villas.', 403));
+      }
+    }
+
     const {
       Name,
       Address,

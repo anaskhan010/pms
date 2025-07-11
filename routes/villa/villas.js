@@ -1,6 +1,6 @@
 import express from 'express';
 import villaController from '../../controllers/villa/villaController.js';
-import { protect, adminOnly, adminAndOwner } from '../../middleware/auth.js';
+import { protect, adminOnly, adminAndOwner, smartAuthorize, requirePermission } from '../../middleware/auth.js';
 import { handleUploadError } from '../../middleware/upload.js';
 import {
   validateId,
@@ -57,24 +57,24 @@ const uploadSingleVillaImage = multer({
 router.use(protect);
 
 // Statistics route
-router.get('/getVillaStatistics', adminOnly, villaController.getVillaStatistics);
+router.get('/getVillaStatistics', requirePermission('villas.view'), villaController.getVillaStatistics);
 
 // Main CRUD routes
-router.get('/getVillas', adminAndOwner, villaController.getAllVillas);
+router.get('/getVillas', smartAuthorize('villas', 'view'), villaController.getAllVillas);
 
 router.post(
   '/createVilla',
-  adminOnly,
+  requirePermission('villas.create'),
   uploadVillaImages,
   handleUploadError,
   villaController.createVilla
 );
 
-router.get('/getVilla/:id', adminAndOwner, validateId, handleValidationErrors, villaController.getVillaById);
+router.get('/getVilla/:id', smartAuthorize('villas', 'view'), validateId, handleValidationErrors, villaController.getVillaById);
 
 router.put(
   '/updateVilla/:id',
-  adminOnly,
+  smartAuthorize('villas', 'update'),
   validateId,
   handleValidationErrors,
   uploadVillaImages,
@@ -82,14 +82,14 @@ router.put(
   villaController.updateVilla
 );
 
-router.delete('/deleteVilla/:id', adminOnly, validateId, handleValidationErrors, villaController.deleteVilla);
+router.delete('/deleteVilla/:id', requirePermission('villas.delete'), validateId, handleValidationErrors, villaController.deleteVilla);
 
 // Villa image management routes
-router.get('/getVillaImages/:id', adminAndOwner, validateId, handleValidationErrors, villaController.getVillaImages);
+router.get('/getVillaImages/:id', smartAuthorize('villas', 'view'), validateId, handleValidationErrors, villaController.getVillaImages);
 
 router.post(
   '/addVillaImage/:id',
-  adminOnly,
+  smartAuthorize('villas', 'update'),
   validateId,
   handleValidationErrors,
   uploadSingleVillaImage,
@@ -99,7 +99,7 @@ router.post(
 
 router.delete(
   '/deleteVillaImage/:id/:imageId',
-  adminOnly,
+  smartAuthorize('villas', 'update'),
   validateId,
   handleValidationErrors,
   villaController.deleteVillaImage

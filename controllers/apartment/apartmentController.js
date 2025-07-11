@@ -36,10 +36,10 @@ const getAllApartments = asyncHandler(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 25;
     const filters = {
-      buildingId: req.query.buildingId,
-      floorId: req.query.floorId,
+      buildingId: req.query.buildingId ? parseInt(req.query.buildingId) : undefined,
+      floorId: req.query.floorId ? parseInt(req.query.floorId) : undefined,
       status: req.query.status,
-      bedrooms: req.query.bedrooms
+      bedrooms: req.query.bedrooms ? parseInt(req.query.bedrooms) : undefined
     };
 
     // Add owner building filtering if user is owner

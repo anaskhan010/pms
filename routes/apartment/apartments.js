@@ -1,6 +1,6 @@
 import express from 'express';
 import apartmentController from '../../controllers/apartment/apartmentController.js';
-import { protect, adminOnly, adminAndOwner, getOwnerBuildings } from '../../middleware/auth.js';
+import { protect, adminOnly, adminAndOwner, getOwnerBuildings, smartAuthorize } from '../../middleware/auth.js';
 import { handleUploadError } from '../../middleware/upload.js';
 import {
   validateId,

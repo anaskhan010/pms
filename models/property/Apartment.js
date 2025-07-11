@@ -141,7 +141,17 @@ const getApartmentById = async (apartmentId) => {
 };
 
 const getAllApartments = async (page = 1, limit = 25, filters = {}) => {
+
+
+  // Ensure page and limit are integers
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 25;
   const offset = (page - 1) * limit;
+
+  // Validate that limit and offset are positive integers
+  if (limit <= 0 || offset < 0) {
+    throw new Error('Invalid pagination parameters');
+  }
 
   let query = `
     SELECT a.*, f.floorName, b.buildingName, b.buildingAddress,
@@ -177,51 +187,72 @@ const getAllApartments = async (page = 1, limit = 25, filters = {}) => {
   }
 
   if (filters.buildingId) {
-    query += ' AND b.buildingId = ?';
-    countQuery += ' AND b.buildingId = ?';
-    values.push(filters.buildingId);
-    countValues.push(filters.buildingId);
+    const buildingId = parseInt(filters.buildingId);
+    if (!isNaN(buildingId)) {
+      query += ' AND b.buildingId = ?';
+      countQuery += ' AND b.buildingId = ?';
+      values.push(buildingId);
+      countValues.push(buildingId);
+    }
   }
 
   if (filters.floorId) {
-    query += ' AND f.floorId = ?';
-    countQuery += ' AND f.floorId = ?';
-    values.push(filters.floorId);
-    countValues.push(filters.floorId);
+    const floorId = parseInt(filters.floorId);
+    if (!isNaN(floorId)) {
+      query += ' AND f.floorId = ?';
+      countQuery += ' AND f.floorId = ?';
+      values.push(floorId);
+      countValues.push(floorId);
+    }
   }
 
  
 
   if (filters.minBedrooms) {
-    query += ' AND a.bedrooms >= ?';
-    countQuery += ' AND a.bedrooms >= ?';
-    values.push(filters.minBedrooms);
-    countValues.push(filters.minBedrooms);
+    const minBedrooms = parseInt(filters.minBedrooms);
+    if (!isNaN(minBedrooms)) {
+      query += ' AND a.bedrooms >= ?';
+      countQuery += ' AND a.bedrooms >= ?';
+      values.push(minBedrooms);
+      countValues.push(minBedrooms);
+    }
   }
 
   if (filters.maxBedrooms) {
-    query += ' AND a.bedrooms <= ?';
-    countQuery += ' AND a.bedrooms <= ?';
-    values.push(filters.maxBedrooms);
-    countValues.push(filters.maxBedrooms);
+    const maxBedrooms = parseInt(filters.maxBedrooms);
+    if (!isNaN(maxBedrooms)) {
+      query += ' AND a.bedrooms <= ?';
+      countQuery += ' AND a.bedrooms <= ?';
+      values.push(maxBedrooms);
+      countValues.push(maxBedrooms);
+    }
   }
 
   if (filters.minRent) {
-    query += ' AND a.rentPrice >= ?';
-    countQuery += ' AND a.rentPrice >= ?';
-    values.push(filters.minRent);
-    countValues.push(filters.minRent);
+    const minRent = parseFloat(filters.minRent);
+    if (!isNaN(minRent)) {
+      query += ' AND a.rentPrice >= ?';
+      countQuery += ' AND a.rentPrice >= ?';
+      values.push(minRent);
+      countValues.push(minRent);
+    }
   }
 
   if (filters.maxRent) {
-    query += ' AND a.rentPrice <= ?';
-    countQuery += ' AND a.rentPrice <= ?';
-    values.push(filters.maxRent);
-    countValues.push(filters.maxRent);
+    const maxRent = parseFloat(filters.maxRent);
+    if (!isNaN(maxRent)) {
+      query += ' AND a.rentPrice <= ?';
+      countQuery += ' AND a.rentPrice <= ?';
+      values.push(maxRent);
+      countValues.push(maxRent);
+    }
   }
 
-  query += ' ORDER BY b.buildingName ASC, f.floorName ASC, a.apartmentId ASC LIMIT ? OFFSET ?';
-  values.push(parseInt(limit), parseInt(offset));
+  // Ensure limit and offset are valid integers
+  const finalLimit = Math.max(1, Math.min(parseInt(limit) || 25, 100)); // Cap at 100
+  const finalOffset = Math.max(0, parseInt(offset) || 0);
+
+  query += ` ORDER BY b.buildingName ASC, f.floorName ASC, a.apartmentId ASC LIMIT ${finalLimit} OFFSET ${finalOffset}`;
 
   try {
     const [totalResult] = await db.execute(countQuery, countValues);
@@ -231,7 +262,8 @@ const getAllApartments = async (page = 1, limit = 25, filters = {}) => {
       apartments,
       total: totalResult[0].total,
       page,
-      pages: Math.ceil(totalResult[0].total / limit)
+      pages: Math.ceil(totalResult[0].total / limit),
+      limit
     };
   } catch (error) {
     throw error;
