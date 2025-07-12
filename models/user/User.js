@@ -95,7 +95,7 @@ const getUserById = async (userId) => {
   let retries = 3;
   while (retries > 0) {
     try {
-      const query = `SELECT u.*, r.roleName FROM user u LEFT JOIN userRole ur ON u.userId = ur.userId LEFT JOIN role r ON ur.roleId = r.roleId WHERE u.userId = ?`;
+      const query = `SELECT u.*, r.roleName, r.roleId FROM user u LEFT JOIN userRole ur ON u.userId = ur.userId LEFT JOIN role r ON ur.roleId = r.roleId WHERE u.userId = ?`;
 
       const [rows] = await db.execute(query, [userId]);
       return rows[0] || null;
@@ -117,7 +117,7 @@ const getUserByEmail = async (email) => {
   while (retries > 0) {
     try {
       console.log('Getting user by email:', email);
-      const query = `SELECT u.*, r.roleName FROM user u LEFT JOIN userRole ur ON u.userId = ur.userId LEFT JOIN role r ON ur.roleId = r.roleId WHERE u.email = ?`;
+      const query = `SELECT u.*, r.roleName, r.roleId FROM user u LEFT JOIN userRole ur ON u.userId = ur.userId LEFT JOIN role r ON ur.roleId = r.roleId WHERE u.email = ?`;
 
       const [rows] = await db.execute(query, [email]);
       console.log('Query executed successfully, rows found:', rows.length);

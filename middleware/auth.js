@@ -259,7 +259,8 @@ export const sendTokenResponse = (user, statusCode, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.roleName
+        role: user.roleName,
+        roleId: user.roleId
       }
     });
 };
