@@ -38,7 +38,11 @@ app.use(cookieParser());
 
 app.use('/public', express.static('public'));
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false
+}));
+// or specifically:
+app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 
 app.use(cors({
   origin: ['https://sentrixproperty.research-hero.xyz', 'http://localhost:5173','http://localhost:5174'],
