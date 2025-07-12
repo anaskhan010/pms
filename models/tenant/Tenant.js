@@ -67,11 +67,18 @@ const createTenant = async (tenantData) => {
 
     // 3. Assign apartment if provided
     if (apartmentId) {
+      // Convert apartmentId to number to ensure proper data type
+      const apartmentIdNum = parseInt(apartmentId);
+
       const apartmentAssignQuery = `
         INSERT INTO ApartmentAssigned (tenantId, apartmentId)
         VALUES (?, ?)
       `;
-      await connection.execute(apartmentAssignQuery, [tenantId, apartmentId]);
+      await connection.execute(apartmentAssignQuery, [tenantId, apartmentIdNum]);
+
+      // Update apartment status to 'Rented'
+      const statusUpdateQuery = 'UPDATE apartment SET status = ? WHERE apartmentId = ?';
+      await connection.execute(statusUpdateQuery, ['Rented', apartmentIdNum]);
     }
 
     // 4. Create contract if contract details provided
@@ -94,11 +101,12 @@ const createTenant = async (tenantData) => {
 
       // 5. Create contract details if apartment is assigned
       if (apartmentId && contractId) {
+        const apartmentIdNum = parseInt(apartmentId);
         const contractDetailsQuery = `
           INSERT INTO ContractDetails (contractId, apartmentId)
           VALUES (?, ?)
         `;
-        await connection.execute(contractDetailsQuery, [contractId, apartmentId]);
+        await connection.execute(contractDetailsQuery, [contractId, apartmentIdNum]);
       }
     }
 
@@ -239,45 +247,145 @@ const getAllTenants = async (page = 1, limit = 25, filters = {}) => {
   }
 };
 
-const updateTenant = async (tenantId, updateData) => {
+const updateTenant = async (tenantId, updateData, apartmentAssignmentData = null) => {
   const tenant = await getTenantById(tenantId);
   if (!tenant) {
     throw new Error('Tenant not found');
   }
 
-  const userFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'address', 'gender', 'nationality', 'dateOfBirth', 'image'];
-  const tenantFields = ['registrationNumber', 'registrationExpiry', 'occupation'];
+  const connection = await db.getConnection();
 
-  const userUpdates = {};
-  const tenantUpdates = {};
+  try {
+    await connection.beginTransaction();
 
-  for (const [key, value] of Object.entries(updateData)) {
-    if (userFields.includes(key) && value !== undefined) {
-      userUpdates[key] = value;
-    } else if (tenantFields.includes(key) && value !== undefined) {
-      tenantUpdates[key] = value;
-    }
-  }
+    const userFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'address', 'gender', 'nationality', 'dateOfBirth', 'image'];
+    const tenantFields = ['registrationNumber', 'registrationExpiry', 'occupation'];
 
-  if (Object.keys(userUpdates).length > 0) {
-    await userModel.updateUser(tenant.userId, userUpdates);
-  }
+    const userUpdates = {};
+    const tenantUpdates = {};
 
-  if (Object.keys(tenantUpdates).length > 0) {
-    const updates = [];
-    const values = [];
-
-    for (const [key, value] of Object.entries(tenantUpdates)) {
-      updates.push(`${key} = ?`);
-      values.push(value);
+    for (const [key, value] of Object.entries(updateData)) {
+      if (userFields.includes(key) && value !== undefined) {
+        userUpdates[key] = value;
+      } else if (tenantFields.includes(key) && value !== undefined) {
+        tenantUpdates[key] = value;
+      }
     }
 
-    values.push(tenantId);
-    const query = `UPDATE tenant SET ${updates.join(', ')} WHERE tenantId = ?`;
-    await db.execute(query, values);
-  }
+    if (Object.keys(userUpdates).length > 0) {
+      await userModel.updateUser(tenant.userId, userUpdates);
+    }
 
-  return await getTenantById(tenantId);
+    if (Object.keys(tenantUpdates).length > 0) {
+      const updates = [];
+      const values = [];
+
+      for (const [key, value] of Object.entries(tenantUpdates)) {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
+
+      values.push(tenantId);
+      const query = `UPDATE tenant SET ${updates.join(', ')} WHERE tenantId = ?`;
+      await connection.execute(query, values);
+    }
+
+    // Handle apartment assignment changes
+    if (apartmentAssignmentData && apartmentAssignmentData.apartmentId) {
+      const newApartmentId = parseInt(apartmentAssignmentData.apartmentId);
+
+      // Get current apartment assignment
+      const [currentAssignment] = await connection.execute(
+        'SELECT apartmentId FROM ApartmentAssigned WHERE tenantId = ?',
+        [tenantId]
+      );
+
+      const currentApartmentId = currentAssignment.length > 0 ? currentAssignment[0].apartmentId : null;
+
+      // Only proceed if apartment assignment is changing
+      if (currentApartmentId !== newApartmentId) {
+        // Remove old apartment assignment and reset status to 'Vacant'
+        if (currentApartmentId) {
+          await connection.execute(
+            'DELETE FROM ApartmentAssigned WHERE tenantId = ? AND apartmentId = ?',
+            [tenantId, currentApartmentId]
+          );
+          await connection.execute(
+            'UPDATE apartment SET status = ? WHERE apartmentId = ?',
+            ['Vacant', currentApartmentId]
+          );
+        }
+
+        // Add new apartment assignment and set status to 'Rented'
+        if (newApartmentId) {
+          // Check if new apartment is available
+          const [apartmentCheck] = await connection.execute(
+            'SELECT status FROM apartment WHERE apartmentId = ?',
+            [newApartmentId]
+          );
+
+          if (apartmentCheck.length === 0) {
+            throw new Error('Apartment not found');
+          }
+
+          if (apartmentCheck[0].status === 'Rented') {
+            throw new Error('Apartment is already rented');
+          }
+
+          await connection.execute(
+            'INSERT INTO ApartmentAssigned (tenantId, apartmentId) VALUES (?, ?)',
+            [tenantId, newApartmentId]
+          );
+          await connection.execute(
+            'UPDATE apartment SET status = ? WHERE apartmentId = ?',
+            ['Rented', newApartmentId]
+          );
+
+          // Handle contract updates if contract data is provided
+          if (apartmentAssignmentData.contractStartDate && apartmentAssignmentData.contractEndDate) {
+            // Delete old contract details
+            await connection.execute(
+              'DELETE FROM ContractDetails WHERE contractId IN (SELECT contractId FROM Contract WHERE tenantId = ?)',
+              [tenantId]
+            );
+
+            // Delete old contract
+            await connection.execute('DELETE FROM Contract WHERE tenantId = ?', [tenantId]);
+
+            // Create new contract
+            const contractQuery = `
+              INSERT INTO Contract (SecurityFee, tenantId, startDate, endDate)
+              VALUES (?, ?, ?, ?)
+            `;
+            const contractValues = [
+              apartmentAssignmentData.securityFee || 0,
+              tenantId,
+              apartmentAssignmentData.contractStartDate,
+              apartmentAssignmentData.contractEndDate
+            ];
+
+            const contractResult = await connection.execute(contractQuery, contractValues);
+            const contractId = contractResult[0].insertId;
+
+            // Create new contract details
+            await connection.execute(
+              'INSERT INTO ContractDetails (contractId, apartmentId) VALUES (?, ?)',
+              [contractId, newApartmentId]
+            );
+          }
+        }
+      }
+    }
+
+    await connection.commit();
+    return await getTenantById(tenantId);
+
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 const deleteTenant = async (tenantId) => {

@@ -12,6 +12,7 @@ const createTenant = asyncHandler(async (req, res, next) => {
   } = req.body;
 
   console.log('Creating tenant with data:', req.body);
+  console.log('ApartmentId received:', apartmentId, 'Type:', typeof apartmentId);
 
   const existingTenant = await tenantModel.getTenantByEmail(email);
   if (existingTenant) {
@@ -106,32 +107,41 @@ const getTenantById = asyncHandler(async (req, res, next) => {
 });
 
 const updateTenant = asyncHandler(async (req, res, next) => {
+  const {
+    firstName, lastName, email, phoneNumber, address, gender, nationality,
+    dateOfBirth, registrationNumber, registrationExpiry, occupation,
+    apartmentId, contractStartDate, contractEndDate, securityFee
+  } = req.body;
+
   const fieldsToUpdate = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
-    address: req.body.address,
-    gender: req.body.gender,
-    nationality: req.body.nationality,
-    dateOfBirth: req.body.dateOfBirth,
-    registrationNumber: req.body.registrationNumber,
-    registrationExpiry: req.body.registrationExpiry,
-    occupation: req.body.occupation
+    firstName, lastName, email, phoneNumber, address, gender, nationality,
+    dateOfBirth, registrationNumber, registrationExpiry, occupation
   };
 
   if (req.file) {
     fieldsToUpdate.image = `/public/uploads/tenants/${req.file.filename}`;
   }
 
+  // Include apartment assignment data
+  const apartmentAssignmentData = {
+    apartmentId: apartmentId || null,
+    contractStartDate: contractStartDate || null,
+    contractEndDate: contractEndDate || null,
+    securityFee: securityFee || 0
+  };
+
+  console.log('Updating tenant with apartment data:', apartmentAssignmentData);
+
   try {
-    const tenant = await tenantModel.updateTenant(req.params.id, fieldsToUpdate);
+    const tenant = await tenantModel.updateTenant(req.params.id, fieldsToUpdate, apartmentAssignmentData);
 
     res.status(200).json({
       success: true,
-      data: tenant
+      data: tenant,
+      message: 'Tenant updated successfully'
     });
   } catch (error) {
+    console.error('Error updating tenant:', error);
     return next(new ErrorResponse(error.message, 400));
   }
 });
