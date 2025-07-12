@@ -45,7 +45,7 @@ app.use(helmet({
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 
 app.use(cors({
-  origin: ['https://sentrixproperty.research-hero.xyz', 'http://localhost:5173','http://localhost:5174'],
+  origin: ['https://sentrixproperty.research-hero.xyz', 'http://localhost:5173','http://localhost:5174', 'http://localhost:5000','https://property.research-hero.xyz'],
   credentials: true
 }));
 
