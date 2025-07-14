@@ -10,7 +10,13 @@ import {
   getTenantPaymentHistory,
   getApartmentPaymentHistory
 } from '../../controllers/financial/financialTransactionController.js';
-import { protect, adminOnly, adminAndManager, adminAndOwner, getOwnerBuildings } from '../../middleware/auth.js';
+import {
+  protect,
+  requireResourcePermission,
+  smartAuthorize,
+  getTransactionAccess,
+  validateResourceOwnership
+} from '../../middleware/auth.js';
 
 const router = express.Router();
 
@@ -19,18 +25,18 @@ router.use(protect);
 
 // Basic CRUD routes
 router.route('/')
-  .get(adminAndOwner, getOwnerBuildings, getTransactions)
-  .post(adminAndOwner, getOwnerBuildings, createTransaction);
+  .get(smartAuthorize('transactions', 'view'), getTransactionAccess, getTransactions)
+  .post(smartAuthorize('transactions', 'create'), getTransactionAccess, createTransaction);
 
 router.route('/:id')
-  .get(adminAndOwner, getOwnerBuildings, getTransaction)
-  .put(adminAndOwner, getOwnerBuildings, updateTransaction)
-  .delete(adminOnly, deleteTransaction);
+  .get(smartAuthorize('transactions', 'view'), getTransactionAccess, getTransaction)
+  .put(smartAuthorize('transactions', 'update'), validateResourceOwnership('transactions'), updateTransaction)
+  .delete(requireResourcePermission('transactions', 'delete'), deleteTransaction);
 
 // Special routes
-router.post('/rent-payment', adminAndOwner, getOwnerBuildings, processRentPayment);
-router.get('/statistics', adminAndOwner, getOwnerBuildings, getTransactionStatistics);
-router.get('/tenant/:tenantId/history', adminAndOwner, getOwnerBuildings, getTenantPaymentHistory);
-router.get('/apartment/:apartmentId/history', adminAndOwner, getOwnerBuildings, getApartmentPaymentHistory);
+router.post('/rent-payment', smartAuthorize('transactions', 'create'), getTransactionAccess, processRentPayment);
+router.get('/statistics', smartAuthorize('transactions', 'view'), getTransactionAccess, getTransactionStatistics);
+router.get('/tenant/:tenantId/history', smartAuthorize('transactions', 'view'), getTransactionAccess, getTenantPaymentHistory);
+router.get('/apartment/:apartmentId/history', smartAuthorize('transactions', 'view'), getTransactionAccess, getApartmentPaymentHistory);
 
 export default router;

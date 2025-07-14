@@ -1,6 +1,13 @@
 import express from 'express';
 import villaController from '../../controllers/villa/villaController.js';
-import { protect, adminOnly, adminAndOwner, smartAuthorize, requirePermission, getOwnerVillas } from '../../middleware/auth.js';
+import {
+  protect,
+  requirePermission,
+  requireResourcePermission,
+  smartAuthorize,
+  getOwnerVillas,
+  validateResourceOwnership
+} from '../../middleware/auth.js';
 import { handleUploadError } from '../../middleware/upload.js';
 import {
   validateId,
@@ -57,14 +64,14 @@ const uploadSingleVillaImage = multer({
 router.use(protect);
 
 // Statistics route
-router.get('/getVillaStatistics', requirePermission('villas.view'), villaController.getVillaStatistics);
+router.get('/getVillaStatistics', requireResourcePermission('villas', 'view'), villaController.getVillaStatistics);
 
 // Main CRUD routes
-router.get('/getVillas', adminAndOwner, getOwnerVillas, villaController.getAllVillas);
+router.get('/getVillas', smartAuthorize('villas', 'view'), getOwnerVillas, villaController.getAllVillas);
 
 router.post(
   '/createVilla',
-  requirePermission('villas.create'),
+  requireResourcePermission('villas', 'create'),
   uploadVillaImages,
   handleUploadError,
   villaController.createVilla
@@ -75,6 +82,7 @@ router.get('/getVilla/:id', smartAuthorize('villas', 'view'), validateId, handle
 router.put(
   '/updateVilla/:id',
   smartAuthorize('villas', 'update'),
+  validateResourceOwnership('villas'),
   validateId,
   handleValidationErrors,
   uploadVillaImages,
@@ -82,7 +90,7 @@ router.put(
   villaController.updateVilla
 );
 
-router.delete('/deleteVilla/:id', requirePermission('villas.delete'), validateId, handleValidationErrors, villaController.deleteVilla);
+router.delete('/deleteVilla/:id', requireResourcePermission('villas', 'delete'), validateId, handleValidationErrors, villaController.deleteVilla);
 
 // Villa image management routes
 router.get('/getVillaImages/:id', smartAuthorize('villas', 'view'), validateId, handleValidationErrors, villaController.getVillaImages);
@@ -105,22 +113,22 @@ router.delete(
   villaController.deleteVillaImage
 );
 
-// Villa assignment routes for super admin
+// Villa assignment routes for admin users
 router.post(
   '/assignVillaToOwner',
-  adminOnly,
+  requireResourcePermission('villas', 'assign'),
   villaController.assignVillaToOwner
 );
 
 router.delete(
   '/removeVillaFromOwner',
-  adminOnly,
+  requireResourcePermission('villas', 'assign'),
   villaController.removeVillaFromOwner
 );
 
 router.get(
   '/getVillaAssignments/:id',
-  adminOnly,
+  requireResourcePermission('villas', 'view'),
   validateId,
   handleValidationErrors,
   villaController.getVillaAssignments
@@ -128,7 +136,7 @@ router.get(
 
 router.get(
   '/getUserAssignedVillas/:id',
-  adminOnly,
+  requireResourcePermission('villas', 'view'),
   validateId,
   handleValidationErrors,
   villaController.getUserAssignedVillas

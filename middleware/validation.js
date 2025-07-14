@@ -306,3 +306,13 @@ export const validatePermissionId = [
     .isNumeric()
     .withMessage('Permission ID must be a number')
 ];
+
+export const validatePageId = [
+  param('pageId')
+    .isLength({ min: 1 })
+    .withMessage('Page ID is required')
+    .notEmpty()
+    .withMessage('Page ID cannot be empty')
+    .isNumeric()
+    .withMessage('Page ID must be a number')
+];

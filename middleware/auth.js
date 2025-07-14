@@ -35,8 +35,11 @@ export const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Legacy role-based authorization (deprecated - use requirePermission instead)
 export const authorize = (...roles) => {
   return (req, res, next) => {
+    console.warn('⚠️  DEPRECATED: Using legacy role-based authorization. Please migrate to permission-based authorization.');
+
     if (!req.user || !req.user.roleName) {
       return next(new ErrorResponse('User role not found', 403));
     }
@@ -95,56 +98,78 @@ const checkManagerAccess = async (managerId, resource) => {
   return true;
 };
 
-// Middleware to get buildings assigned to owner
+// Enhanced middleware to get buildings assigned to user based on permissions
 export const getOwnerBuildings = asyncHandler(async (req, res, next) => {
-  if (req.user.roleName === 'admin' || req.user.roleName === 'super_admin') {
-    // Admin can see all buildings
+  // Admin role (roleId = 1) has access to everything
+  if (req.user.roleId === 1) {
     req.ownerBuildings = null; // null means no filtering
     return next();
   }
 
-  if (req.user.roleName === 'owner') {
-    // Get buildings assigned to this owner
+  // Check if user has permission to view all buildings (admin-level access)
+  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'buildings', 'view');
+
+  if (hasViewAllPermission) {
+    // User can see all buildings
+    req.ownerBuildings = null; // null means no filtering
+    return next();
+  }
+
+  // Check if user has permission to view their own buildings
+  const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'buildings', 'view_own');
+
+  if (hasViewOwnPermission) {
+    // Get buildings assigned to this user
     const query = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
     const [rows] = await db.execute(query, [req.user.userId]);
     req.ownerBuildings = rows.map(row => row.buildingId);
 
     if (req.ownerBuildings.length === 0) {
-      return next(new ErrorResponse('No buildings assigned to this owner', 403));
+      return next(new ErrorResponse('No buildings assigned to this user', 403));
     }
+
+    return next();
   }
 
-  next();
+  // User has no building access permissions
+  return next(new ErrorResponse('Access denied. No building permissions found.', 403));
 });
 
-// Middleware to get villas assigned to owner
+// Enhanced middleware to get villas assigned to user based on permissions
 export const getOwnerVillas = asyncHandler(async (req, res, next) => {
-  if (req.user.roleName === 'admin' || req.user.roleName === 'super_admin') {
-    // Admin can see all villas
+  // Check if user has permission to view all villas (admin-level access)
+  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'villas', 'view');
+
+  if (hasViewAllPermission) {
+    // User can see all villas
     req.ownerVillas = null; // null means no filtering
     return next();
   }
 
-  if (req.user.roleName === 'owner') {
-    // Get villas assigned to this owner
+  // Check if user has permission to view their own villas
+  const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'villas', 'view_own');
+
+  if (hasViewOwnPermission) {
+    // Get villas assigned to this user
     const query = 'SELECT villaId FROM villasAssigned WHERE userId = ?';
     const [rows] = await db.execute(query, [req.user.userId]);
     req.ownerVillas = rows.map(row => row.villaId);
 
     if (req.ownerVillas.length === 0) {
-      return next(new ErrorResponse('No villas assigned to this owner', 403));
+      return next(new ErrorResponse('No villas assigned to this user', 403));
     }
+
+    return next();
   }
 
-  next();
+  // User has no villa access permissions
+  return next(new ErrorResponse('Access denied. No villa permissions found.', 403));
 });
 
+// Legacy role-based middleware (deprecated - use permission-based alternatives)
 export const adminOnly = authorize('admin');
-
 export const adminAndManager = authorize('admin', 'manager');
-
 export const adminAndOwner = authorize('admin', 'owner');
-
 export const adminOwnerAndManager = authorize('admin', 'owner', 'manager');
 
 // Dynamic permission-based authorization
@@ -176,6 +201,11 @@ export const requireResourcePermission = (resource, action) => {
       return next(new ErrorResponse('User not authenticated', 401));
     }
 
+    // Admin role (roleId = 1) has access to everything
+    if (req.user.roleId === 1) {
+      return next();
+    }
+
     const hasPermission = await permissionModel.hasResourcePermission(req.user.userId, resource, action);
 
     if (!hasPermission) {
@@ -199,6 +229,11 @@ export const smartAuthorize = (resource, action) => {
     }
 
     try {
+      // Admin role (roleId = 1) has access to everything
+      if (req.user.roleId === 1) {
+        return next();
+      }
+
       // Check if user has general permission for this resource/action
       const hasGeneralPermission = await permissionModel.hasResourcePermission(req.user.userId, resource, action);
 
@@ -225,6 +260,144 @@ export const smartAuthorize = (resource, action) => {
       console.error('SmartAuthorize: Error checking permissions:', error);
       return next(new ErrorResponse('Error checking permissions', 500));
     }
+  });
+};
+
+// Enhanced middleware for tenant access with ownership validation
+export const getTenantAccess = asyncHandler(async (req, res, next) => {
+  // Admin role (roleId = 1) has access to everything
+  if (req.user.roleId === 1) {
+    req.tenantFilter = null; // null means no filtering
+    return next();
+  }
+
+  // Check if user has permission to view all tenants
+  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'tenants', 'view');
+
+  if (hasViewAllPermission) {
+    req.tenantFilter = null; // null means no filtering
+    return next();
+  }
+
+  // Check if user has permission to view their own tenants
+  const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'tenants', 'view_own');
+
+  if (hasViewOwnPermission) {
+    // Get buildings assigned to this user to filter tenants
+    const buildingQuery = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
+    const [buildingRows] = await db.execute(buildingQuery, [req.user.userId]);
+    const buildingIds = buildingRows.map(row => row.buildingId);
+
+    if (buildingIds.length === 0) {
+      return next(new ErrorResponse('No buildings assigned to this user', 403));
+    }
+
+    req.tenantFilter = { buildingIds };
+    return next();
+  }
+
+  return next(new ErrorResponse('Access denied. No tenant permissions found.', 403));
+});
+
+// Enhanced middleware for transaction access with ownership validation
+export const getTransactionAccess = asyncHandler(async (req, res, next) => {
+  // Check if user has permission to view all transactions
+  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'transactions', 'view');
+
+  if (hasViewAllPermission) {
+    req.transactionFilter = null; // null means no filtering
+    return next();
+  }
+
+  // Check if user has permission to view their own transactions
+  const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'transactions', 'view_own');
+
+  if (hasViewOwnPermission) {
+    // Get buildings assigned to this user to filter transactions
+    const buildingQuery = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
+    const [buildingRows] = await db.execute(buildingQuery, [req.user.userId]);
+    const buildingIds = buildingRows.map(row => row.buildingId);
+
+    if (buildingIds.length === 0) {
+      return next(new ErrorResponse('No buildings assigned to this user', 403));
+    }
+
+    req.transactionFilter = { buildingIds };
+    return next();
+  }
+
+  return next(new ErrorResponse('Access denied. No transaction permissions found.', 403));
+});
+
+// Middleware to validate resource ownership for update/delete operations
+export const validateResourceOwnership = (resourceType) => {
+  return asyncHandler(async (req, res, next) => {
+    const resourceId = req.params.id || req.params.resourceId;
+
+    if (!resourceId) {
+      return next(new ErrorResponse('Resource ID is required', 400));
+    }
+
+    // Check if user has general permission (admin-level)
+    const hasGeneralPermission = await permissionModel.hasResourcePermission(
+      req.user.userId,
+      resourceType,
+      'update'
+    );
+
+    if (hasGeneralPermission) {
+      return next();
+    }
+
+    // Check if user has ownership-based permission
+    const hasOwnPermission = await permissionModel.hasResourcePermission(
+      req.user.userId,
+      resourceType,
+      'update_own'
+    );
+
+    if (!hasOwnPermission) {
+      return next(new ErrorResponse('Access denied. Insufficient permissions.', 403));
+    }
+
+    // Validate ownership based on resource type
+    let isOwner = false;
+
+    switch (resourceType) {
+      case 'buildings':
+        const buildingQuery = 'SELECT COUNT(*) as count FROM buildingAssigned WHERE buildingId = ? AND userId = ?';
+        const [buildingRows] = await db.execute(buildingQuery, [resourceId, req.user.userId]);
+        isOwner = buildingRows[0].count > 0;
+        break;
+
+      case 'villas':
+        const villaQuery = 'SELECT COUNT(*) as count FROM villasAssigned WHERE villaId = ? AND userId = ?';
+        const [villaRows] = await db.execute(villaQuery, [resourceId, req.user.userId]);
+        isOwner = villaRows[0].count > 0;
+        break;
+
+      case 'tenants':
+        // Check if tenant is in user's assigned buildings
+        const tenantQuery = `
+          SELECT COUNT(*) as count
+          FROM tenant t
+          INNER JOIN apartment a ON t.apartmentId = a.apartmentId
+          INNER JOIN buildingAssigned ba ON a.buildingId = ba.buildingId
+          WHERE t.tenantId = ? AND ba.userId = ?
+        `;
+        const [tenantRows] = await db.execute(tenantQuery, [resourceId, req.user.userId]);
+        isOwner = tenantRows[0].count > 0;
+        break;
+
+      default:
+        return next(new ErrorResponse('Invalid resource type', 400));
+    }
+
+    if (!isOwner) {
+      return next(new ErrorResponse('Access denied. You do not own this resource.', 403));
+    }
+
+    next();
   });
 };
 
@@ -264,3 +437,5 @@ export const sendTokenResponse = (user, statusCode, res) => {
       }
     });
 };
+
+

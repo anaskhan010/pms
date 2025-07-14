@@ -8,25 +8,24 @@ import {
   getAllRoles,
   upload
 } from '../../controllers/user/userController.js';
-import { protect, adminOnly } from '../../middleware/auth.js';
+import { protect, requireResourcePermission } from '../../middleware/auth.js';
 
 const router = express.Router();
 
 // Apply authentication middleware to all routes
 router.use(protect);
-router.use(adminOnly);
 
 // GET /api/users - Get all users with pagination
-router.get('/', getAllUsers);
+router.get('/', requireResourcePermission('users', 'view'), getAllUsers);
 
 // GET /api/users/roles - Get all roles for dropdown
-router.get('/roles', getAllRoles);
+router.get('/roles', requireResourcePermission('users', 'view'), getAllRoles);
 
 // GET /api/users/:id - Get user by ID
-router.get('/:id', getUserById);
+router.get('/:id', requireResourcePermission('users', 'view'), getUserById);
 
 // POST /api/users - Create new user (with image upload)
-router.post('/', upload.single('image'), createUser);
+router.post('/', requireResourcePermission('users', 'create'), upload.single('image'), createUser);
 
 // PUT /api/users/:id - Update user (with image upload)
 router.put('/:id', upload.single('image'), updateUser);

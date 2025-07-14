@@ -1,6 +1,6 @@
 import express from 'express';
 import roleController from '../../controllers/role/roleController.js';
-import { protect, adminOnly } from '../../middleware/auth.js';
+import { protect, requireResourcePermission, adminOnly } from '../../middleware/auth.js';
 import { body, param, validationResult } from 'express-validator';
 import ErrorResponse from '../../utils/errorResponse.js';
 
@@ -43,18 +43,18 @@ const validateRoleId = [
 
 router.use(protect);
 
-router.get('/statistics', adminOnly, roleController.getRoleStatistics);
+router.get('/statistics', requireResourcePermission('roles', 'view'), roleController.getRoleStatistics);
 
 router.route('/')
-  .get(adminOnly, roleController.getAllRoles)
-  .post(adminOnly, validateRoleCreation, handleValidationErrors, roleController.createRole);
+  .get(requireResourcePermission('roles', 'view'), roleController.getAllRoles)
+  .post(requireResourcePermission('roles', 'create'), validateRoleCreation, handleValidationErrors, roleController.createRole);
 
 router.route('/:id')
-  .get(adminOnly, validateRoleId, handleValidationErrors, roleController.getRoleById)
-  .put(adminOnly, validateRoleId, validateRoleUpdate, handleValidationErrors, roleController.updateRole)
-  .delete(adminOnly, validateRoleId, handleValidationErrors, roleController.deleteRole);
+  .get(requireResourcePermission('roles', 'view'), validateRoleId, handleValidationErrors, roleController.getRoleById)
+  .put(requireResourcePermission('roles', 'update'), validateRoleId, validateRoleUpdate, handleValidationErrors, roleController.updateRole)
+  .delete(requireResourcePermission('roles', 'delete'), validateRoleId, handleValidationErrors, roleController.deleteRole);
 
-router.get('/:id/users', adminOnly, validateRoleId, handleValidationErrors, roleController.getUsersByRole);
+router.get('/:id/users', requireResourcePermission('roles', 'view'), validateRoleId, handleValidationErrors, roleController.getUsersByRole);
 router.get('/:id/validate', validateRoleId, handleValidationErrors, roleController.validateRole);
 
 export default router;

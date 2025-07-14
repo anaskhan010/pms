@@ -1,6 +1,14 @@
 import express from 'express';
 import buildingController from '../../controllers/building/buildingController.js';
-import { protect, adminOnly, adminAndOwner, getOwnerBuildings } from '../../middleware/auth.js';
+import {
+  protect,
+  requireResourcePermission,
+  smartAuthorize,
+  getOwnerBuildings,
+  validateResourceOwnership,
+  adminOnly,
+  adminAndOwner
+} from '../../middleware/auth.js';
 import { handleUploadError } from '../../middleware/upload.js';
 import {
   validateId,
@@ -51,14 +59,14 @@ const uploadSingleBuildingImage = multer({
 router.use(protect);
 
 // Statistics route
-router.get('/getBuildingStatistics', adminOnly, buildingController.getBuildingStatistics);
+router.get('/getBuildingStatistics', requireResourcePermission('buildings', 'view'), buildingController.getBuildingStatistics);
 
 // Main CRUD routes
-router.get('/getBuildings', adminAndOwner, getOwnerBuildings, buildingController.getAllBuildings);
+router.get('/getBuildings', smartAuthorize('buildings', 'view'), getOwnerBuildings, buildingController.getAllBuildings);
 
 router.post(
   '/createBuilding',
-  adminOnly,
+  requireResourcePermission('buildings', 'create'),
   uploadBuildingImages,
   handleUploadError,
   buildingController.createBuilding
@@ -113,19 +121,20 @@ const uploadComprehensiveBuilding = multer({
 
 router.post(
   '/createComprehensiveBuilding',
-  adminOnly,
+  requireResourcePermission('buildings', 'create'),
   uploadComprehensiveBuilding,
   handleUploadError,
   buildingController.createComprehensiveBuilding
 );
 
-router.get('/getBuilding/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingById);
+router.get('/getBuilding/:id', smartAuthorize('buildings', 'view'), getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingById);
 
-router.get('/getComprehensiveBuilding/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, buildingController.getComprehensiveBuildingById);
+router.get('/getComprehensiveBuilding/:id', smartAuthorize('buildings', 'view'), getOwnerBuildings, validateId, handleValidationErrors, buildingController.getComprehensiveBuildingById);
 
 router.put(
   '/updateBuilding/:id',
-  adminOnly,
+  smartAuthorize('buildings', 'update'),
+  validateResourceOwnership('buildings'),
   validateId,
   handleValidationErrors,
   uploadBuildingImages,
@@ -135,7 +144,8 @@ router.put(
 
 router.put(
   '/updateComprehensiveBuilding/:id',
-  adminOnly,
+  smartAuthorize('buildings', 'update'),
+  validateResourceOwnership('buildings'),
   validateId,
   handleValidationErrors,
   uploadComprehensiveBuilding,
@@ -143,7 +153,7 @@ router.put(
   buildingController.updateComprehensiveBuilding
 );
 
-router.delete('/deleteBuilding/:id', adminOnly, validateId, handleValidationErrors, buildingController.deleteBuilding);
+router.delete('/deleteBuilding/:id', requireResourcePermission('buildings', 'delete'), validateId, handleValidationErrors, buildingController.deleteBuilding);
 
 // Building floors route
 router.get('/getBuildingFloors/:id', adminAndOwner, getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingFloors);
@@ -151,7 +161,8 @@ router.get('/getBuildingFloors/:id', adminAndOwner, getOwnerBuildings, validateI
 // Building image management routes
 router.post(
   '/addBuildingImage/:id',
-  adminOnly,
+  smartAuthorize('buildings', 'update'),
+  validateResourceOwnership('buildings'),
   validateId,
   handleValidationErrors,
   uploadSingleBuildingImage,
@@ -161,28 +172,29 @@ router.post(
 
 router.delete(
   '/deleteBuildingImage/:id/:imageId',
-  adminOnly,
+  smartAuthorize('buildings', 'update'),
+  validateResourceOwnership('buildings'),
   validateId,
   handleValidationErrors,
   buildingController.deleteBuildingImage
 );
 
-// Building assignment routes for super admin
+// Building assignment routes for admin users
 router.post(
   '/assignBuildingToOwner',
-  adminOnly,
+  requireResourcePermission('buildings', 'assign'),
   buildingController.assignBuildingToOwner
 );
 
 router.delete(
   '/removeBuildingFromOwner',
-  adminOnly,
+  requireResourcePermission('buildings', 'assign'),
   buildingController.removeBuildingFromOwner
 );
 
 router.get(
   '/getBuildingAssignments/:id',
-  adminOnly,
+  requireResourcePermission('buildings', 'view'),
   validateId,
   handleValidationErrors,
   buildingController.getBuildingAssignments
@@ -190,7 +202,7 @@ router.get(
 
 router.get(
   '/getUserAssignedBuildings/:id',
-  adminOnly,
+  requireResourcePermission('buildings', 'view'),
   validateId,
   handleValidationErrors,
   buildingController.getUserAssignedBuildings

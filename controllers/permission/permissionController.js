@@ -2,6 +2,7 @@ import asyncHandler from '../../utils/asyncHandler.js';
 import ErrorResponse from '../../utils/errorResponse.js';
 import permissionModel from '../../models/permission/Permission.js';
 import roleModel from '../../models/role/Role.js';
+import userModel from '../../models/user/User.js';
 
 // Get all permissions
 const getAllPermissions = asyncHandler(async (req, res, next) => {
@@ -53,7 +54,26 @@ const getPermissionsByRole = asyncHandler(async (req, res, next) => {
 const getUserPermissions = asyncHandler(async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const permissions = await permissionModel.getUserPermissions(userId);
+
+    // First check if the target user is admin
+    const userRole = await userModel.getUserRole(userId);
+    let permissions;
+
+    if (userRole && userRole.roleId === 1) {
+      // Admin users get all permissions automatically
+      permissions = await permissionModel.getAllPermissions();
+      // Transform to match the expected format for user permissions
+      permissions = permissions.map(p => ({
+        permissionId: p.permissionId,
+        permissionName: p.permissionName,
+        resource: p.resource,
+        action: p.action,
+        description: p.description
+      }));
+    } else {
+      // Regular users get their assigned permissions
+      permissions = await permissionModel.getUserPermissions(userId);
+    }
 
     res.status(200).json({
       success: true,
@@ -68,7 +88,23 @@ const getUserPermissions = asyncHandler(async (req, res, next) => {
 // Get current user's permissions (no admin permission required)
 const getMyPermissions = asyncHandler(async (req, res, next) => {
   try {
-    const permissions = await permissionModel.getUserPermissions(req.user.userId);
+    let permissions;
+
+    // Admin users (roleId = 1) get all permissions automatically
+    if (req.user.roleId === 1) {
+      permissions = await permissionModel.getAllPermissions();
+      // Transform to match the expected format for user permissions
+      permissions = permissions.map(p => ({
+        permissionId: p.permissionId,
+        permissionName: p.permissionName,
+        resource: p.resource,
+        action: p.action,
+        description: p.description
+      }));
+    } else {
+      // Regular users get their assigned permissions
+      permissions = await permissionModel.getUserPermissions(req.user.userId);
+    }
 
     res.status(200).json({
       success: true,

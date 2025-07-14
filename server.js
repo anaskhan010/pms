@@ -20,6 +20,7 @@ import villas from './routes/villa/villas.js';
 import permissions from './routes/permission/permissions.js';
 import financialTransactions from './routes/financial/financialTransactions.js';
 import paymentSchedules from './routes/financial/paymentSchedules.js';
+import sidebar from './routes/sidebar/sidebarRoutes.js';
 
 
 
@@ -85,6 +86,7 @@ app.use('/api/v1/villas', villas);
 app.use('/api/v1/permissions', permissions);
 app.use('/api/v1/financial/transactions', financialTransactions);
 app.use('/api/v1/financial/payment-schedules', paymentSchedules);
+app.use('/api/v1/sidebar', sidebar);
 
 
 

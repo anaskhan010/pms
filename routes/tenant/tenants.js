@@ -1,6 +1,12 @@
 import express from 'express';
 import tenantController from '../../controllers/tenant/tenantController.js';
-import { protect, adminOnly, adminAndManager, adminAndOwner, getOwnerBuildings } from '../../middleware/auth.js';
+import {
+  protect,
+  requireResourcePermission,
+  smartAuthorize,
+  getTenantAccess,
+  validateResourceOwnership
+} from '../../middleware/auth.js';
 import { uploadTenantDocument, uploadTenantFiles, handleUploadError } from '../../middleware/upload.js';
 import {
   validateTenant,
@@ -12,32 +18,32 @@ const router = express.Router();
 
 router.use(protect);
 
-router.get('/statistics', adminOnly, tenantController.getTenantStatistics);
-router.get('/count', adminOnly, tenantController.getTenantCount);
+router.get('/statistics', smartAuthorize('tenants', 'view'), tenantController.getTenantStatistics);
+router.get('/count', smartAuthorize('tenants', 'view'), tenantController.getTenantCount);
 
 // Building and apartment routes for tenant creation
-router.get('/buildings', adminAndOwner, getOwnerBuildings, tenantController.getAllBuildings);
-router.get('/buildings/:buildingId/floors', adminAndOwner, getOwnerBuildings, tenantController.getFloorsByBuilding);
-router.get('/floors/:floorId/apartments', adminAndOwner, getOwnerBuildings, tenantController.getApartmentsByFloor);
-router.get('/available-apartments', adminAndOwner, getOwnerBuildings, tenantController.getAvailableApartments);
-router.get('/available-for-assignment', adminOnly, tenantController.getAvailableTenantsForAssignment);
-router.get('/assignments', adminAndOwner, getOwnerBuildings, tenantController.getApartmentAssignments);
+router.get('/buildings', smartAuthorize('buildings', 'view'), getTenantAccess, tenantController.getAllBuildings);
+router.get('/buildings/:buildingId/floors', smartAuthorize('buildings', 'view'), getTenantAccess, tenantController.getFloorsByBuilding);
+router.get('/floors/:floorId/apartments', smartAuthorize('apartments', 'view'), getTenantAccess, tenantController.getApartmentsByFloor);
+router.get('/available-apartments', smartAuthorize('apartments', 'view'), getTenantAccess, tenantController.getAvailableApartments);
+router.get('/available-for-assignment', smartAuthorize('tenants', 'assign'), tenantController.getAvailableTenantsForAssignment);
+router.get('/assignments', smartAuthorize('tenants', 'view'), getTenantAccess, tenantController.getApartmentAssignments);
 
 // Alternative endpoints for frontend compatibility
-router.get('/get-all-tenants', adminAndOwner, getOwnerBuildings, tenantController.getAllTenants);
+router.get('/get-all-tenants', smartAuthorize('tenants', 'view'), getTenantAccess, tenantController.getAllTenants);
 router.post('/create-tenant',
-  adminAndOwner,
-  getOwnerBuildings,
+  smartAuthorize('tenants', 'create'),
+  getTenantAccess,
   uploadTenantFiles,
   handleUploadError,
   tenantController.createTenant
 );
 
 router.route('/')
-  .get(adminAndOwner, getOwnerBuildings, tenantController.getAllTenants)
+  .get(smartAuthorize('tenants', 'view'), getTenantAccess, tenantController.getAllTenants)
   .post(
-    adminAndOwner,
-    getOwnerBuildings,
+    smartAuthorize('tenants', 'create'),
+    getTenantAccess,
     uploadTenantFiles,
     handleUploadError,
     validateTenant,
@@ -48,21 +54,22 @@ router.route('/')
 router.route('/:id')
   .get(validateId, handleValidationErrors, tenantController.getTenantById)
   .put(
-    adminOnly,
+    smartAuthorize('tenants', 'update'),
+    validateResourceOwnership('tenants'),
     validateId,
     uploadTenantDocument,
     handleUploadError,
     handleValidationErrors,
     tenantController.updateTenant
   )
-  .delete(adminOnly, validateId, handleValidationErrors, tenantController.deleteTenant);
+  .delete(smartAuthorize('tenants', 'delete'), validateId, handleValidationErrors, tenantController.deleteTenant);
 
 router.route('/:id/apartments')
   .get(validateId, handleValidationErrors, tenantController.getTenantApartments);
 
 router.route('/:id/apartments/:apartmentId')
-  .post(adminOnly, validateId, handleValidationErrors, tenantController.assignApartment)
-  .delete(adminOnly, validateId, handleValidationErrors, tenantController.removeApartmentAssignment);
+  .post(smartAuthorize('apartments', 'assign'), validateId, handleValidationErrors, tenantController.assignApartment)
+  .delete(smartAuthorize('apartments', 'assign'), validateId, handleValidationErrors, tenantController.removeApartmentAssignment);
 
 router.route('/:id/contracts')
   .get(validateId, handleValidationErrors, tenantController.getTenantContracts);
