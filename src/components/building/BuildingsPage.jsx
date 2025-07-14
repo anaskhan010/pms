@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePermissions } from "../../contexts/PermissionContext";
+import { PermissionGuard } from "../auth/ProtectedRoute";
 import adminApiService from "../../services/adminApiService";
 import notificationService from "../../services/notificationService";
 import { DeleteConfirmationModal } from "../common";
 import AddBuildingModal from "./AddBuildingModal";
 import AssignBuildingModal from "./AssignBuildingModal";
+import PageBanner from "../common/PageBanner";
+import NoDataAssigned from "../common/NoDataAssigned";
 
 const BuildingsPage = () => {
   const { user } = useAuth();
+  const { hasPermission } = usePermissions();
   const [buildings, setBuildings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Check if user is admin or super admin
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   // Fetch buildings on component mount
   useEffect(() => {
@@ -265,22 +267,43 @@ const BuildingsPage = () => {
       : words.slice(0, maxWords).join(' ') + '…';
   };
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Buildings</h1>
-        <div className="flex space-x-3">
-         
-          <button
-            onClick={() => {
+    <div className="space-y-6">
+      {/* Page Banner */}
+      <PageBanner
+        title="Building Management"
+        subtitle="Manage buildings, floors, and apartments with comprehensive controls"
+        icon={
+          <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        }
+        stats={[
+          {
+            value: buildings.length,
+            label: "Total Buildings",
+            icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+          },
+          {
+            value: user?.role === 'owner' ? 'Assigned Buildings' : 'All Buildings',
+            label: "Access Level",
+            icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          }
+        ]}
+        actions={[
+          {
+            label: "Add Building",
+            icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
+            onClick: () => {
               setUseComprehensiveModal(true);
               setIsModalOpen(true);
-            }}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded transition-colors"
-          >
-            Add Building with Floors & Apartments
-          </button>
-        </div>
-      </div>
+            },
+            variant: 'primary'
+          }
+        ]}
+        gradient="from-blue-900 via-blue-800 to-slate-900"
+      />
+
+      <div>
 
       {/* Loading State */}
       {loading && (
@@ -304,39 +327,45 @@ const BuildingsPage = () => {
 
       {/* Buildings Table */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-teal-600 text-white">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Address
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Units
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Floors
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Year Built
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {buildings.map((building) => (
+        buildings.length === 0 ? (
+          <NoDataAssigned
+            type="buildings"
+            userRole={user?.role || 'user'}
+          />
+        ) : (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-teal-600 text-white">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Address
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Units
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Floors
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Year Built
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {buildings.map((building) => (
                 <tr key={building.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {building.id}
@@ -370,25 +399,31 @@ const BuildingsPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Link
-                      to={`/admin/buildings/${building.id}`}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      View
-                    </Link>
-                    <button
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                      onClick={() => handleEdit(building)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-900 mr-3"
-                      onClick={() => handleDelete(building.id, building.name)}
-                    >
-                      Delete
-                    </button>
-                    {isAdmin && (
+                    <PermissionGuard permissions={['buildings.view', 'buildings.view_own']}>
+                      <Link
+                        to={`/admin/buildings/${building.id}`}
+                        className="text-blue-600 hover:text-blue-900 mr-3"
+                      >
+                        View
+                      </Link>
+                    </PermissionGuard>
+                    <PermissionGuard permissions={['buildings.update', 'buildings.update_own']}>
+                      <button
+                        className="text-blue-600 hover:text-blue-900 mr-3"
+                        onClick={() => handleEdit(building)}
+                      >
+                        Edit
+                      </button>
+                    </PermissionGuard>
+                    <PermissionGuard permissions={['buildings.delete']}>
+                      <button
+                        className="text-red-600 hover:text-red-900 mr-3"
+                        onClick={() => handleDelete(building.id, building.name)}
+                      >
+                        Delete
+                      </button>
+                    </PermissionGuard>
+                    {user?.roleId === 1 && (
                       <button
                         className="text-green-600 hover:text-green-900"
                         onClick={() => handleAssignBuilding(building)}
@@ -403,6 +438,7 @@ const BuildingsPage = () => {
           </table>
         </div>
       </div>
+        )
       )}
 
       {/* Modals */}
@@ -435,7 +471,7 @@ const BuildingsPage = () => {
         building={assignModal.building}
         onAssignSuccess={handleAssignSuccess}
       />
-
+      </div>
     </div>
   );
 };

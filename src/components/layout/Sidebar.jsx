@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useState, useEffect } from "react";
+import adminApiService from "../../services/adminApiService";
 import SidebarPattern from "./SidebarPattern";
 
 const Sidebar = ({ isOpen, onToggle }) => {
@@ -8,112 +10,82 @@ const Sidebar = ({ isOpen, onToggle }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { hasPermission, getFilteredMenuItems } = usePermissions();
+  const [sidebarPages, setSidebarPages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const toggleSidebar = () => {
     onToggle && onToggle(!isOpen);
   };
 
-  // Define menu items with permission-based access control
-  const getMenuItems = () => {
-    // Define all possible menu items with their required permissions
-    const allMenuItems = [
-      {
-        path: "/admin/dashboard",
-        icon: "grid",
-        label: "Dashboard",
-        requiredPermission: "dashboard.view"
-      },
-      {
-        path: "/admin/tenants",
-        icon: "users",
-        label: user?.role === 'owner' ? "My Tenants" : "Tenants",
-        requiredPermission: ["tenants.view", "tenants.view_own"]
-      },
-      {
-        path: "/admin/buildings",
-        icon: "building",
-        label: user?.role === 'owner' ? "My Buildings" : "Buildings",
-        requiredPermission: ["buildings.view", "buildings.view_own"]
-      },
-      {
-        path: "/admin/villas",
-        icon: "home",
-        label: user?.role === 'owner' ? "My Villas" : "Villas",
-        requiredPermission: ["villas.view", "villas.view_own"]
-      },
-      {
-        path: "/admin/virtual-demo",
-        icon: "video",
-        label: "Virtual Tour",
-        requiredPermission: "dashboard.view" // Basic permission for demo
-      },
-      {
-        path: "/admin/vendors",
-        icon: "briefcase",
-        label: "Vendors",
-        requiredPermission: "vendors.view"
-      },
-      
-      {
-        path: "/admin/financial-transactions",
-        icon: "credit-card",
-        label: "Financial Transactions",
-        requiredPermission: ["transactions.view", "transactions.view_own"]
-      },
-      {
-        path: "/admin/user-management",
-        icon: "user-group",
-        label: "User Management",
-        requiredPermission: "users.view"
-      },
-      {
-        path: "/admin/messages",
-        icon: "chat",
-        label: "Messages",
-        requiredPermission: "messages.view"
-      },
-      {
-        path: "/admin/permissions",
-        icon: "shield",
-        label: "Permissions & Roles",
-        requiredPermission: "permissions.view"
+  // Fetch sidebar pages from database
+  useEffect(() => {
+    const fetchSidebarPages = async () => {
+      try {
+        setLoading(true);
+        const response = await adminApiService.getMySidebarPages();
+        if (response.success) {
+          setSidebarPages(response.data);
+        } else {
+          console.error('Failed to fetch sidebar pages:', response.error);
+          // Fallback to empty array
+          setSidebarPages([]);
+        }
+      } catch (error) {
+        console.error('Error fetching sidebar pages:', error);
+        setSidebarPages([]);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    // Filter menu items based on user permissions
-    if (!getFilteredMenuItems) {
-      // Fallback: show basic menu items based on role if permission system is not ready
-      if (user?.role === 'admin') {
-        return allMenuItems; // Admin gets all items
-      } else if (user?.role === 'owner') {
-        return allMenuItems.filter(item =>
-          item.path.includes('dashboard') ||
-          item.path.includes('tenants') ||
-          item.path.includes('buildings') ||
-          item.path.includes('villas') ||
-          item.path.includes('financial-transactions') ||
-          item.path.includes('messages')
-        );
-      }
-      return [allMenuItems[0]]; // Just dashboard for others
+    if (user) {
+      fetchSidebarPages();
+    }
+  }, [user]);
+
+  // Get menu items from database pages
+  const getMenuItems = () => {
+    if (loading || !sidebarPages.length) {
+      return [];
     }
 
-    const filteredItems = getFilteredMenuItems(allMenuItems);
-    return filteredItems;
+    // Convert database pages to menu items format
+    const menuItems = sidebarPages.map(page => ({
+      path: page.pageUrl,
+      icon: page.pageIcon,
+      label: user?.role === 'owner' && page.pageName !== 'Dashboard' ?
+        `My ${page.pageName}` : page.pageName,
+      requiredPermission: `${page.pageName.toLowerCase().replace(/\s+/g, '_')}.view`
+    }));
+
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 Dynamic Sidebar Debug:', {
+        userRole: user?.role,
+        userRoleId: user?.roleId,
+        databasePages: sidebarPages.length,
+        menuItems: menuItems.length,
+        menuItemPaths: menuItems.map(item => item.path),
+        loading
+      });
+    }
+
+    return menuItems;
   };
 
   const menuItems = getMenuItems();
 
-  // Debug logging for owner users
-  if (user?.role === 'owner') {
-    console.log('🔍 Owner Sidebar Debug:', {
-      userRole: user?.role,
-      hasGetFilteredMenuItems: !!getFilteredMenuItems,
-      totalMenuItems: menuItems.length,
-      menuItemPaths: menuItems.map(item => item.path),
-      hasFinancialTransactions: menuItems.some(item => item.path.includes('financial-transactions'))
-    });
-  }
+  // Loading indicator for sidebar items
+  const renderLoadingItems = () => {
+    return Array(5).fill(0).map((_, index) => (
+      <div key={index} className="flex items-center px-4 py-3 text-gray-300 border-b border-slate-700/50">
+        <div className="w-8 h-8 rounded-md bg-slate-700/50 animate-pulse mr-3"></div>
+        {isOpen && (
+          <div className="w-32 h-5 bg-slate-700/50 animate-pulse rounded"></div>
+        )}
+      </div>
+    ));
+  };
 
   const handleLogout = async () => {
     try {
@@ -192,7 +164,10 @@ const Sidebar = ({ isOpen, onToggle }) => {
 
       <nav className="mt-6">
         <ul className="space-y-2 px-4">
-          {menuItems.map((item) => (
+          {loading ? (
+            renderLoadingItems()
+          ) : (
+            menuItems.map((item) => (
             <li key={item.path}>
               <Link
                 to={item.path}
@@ -338,7 +313,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 )}
               </Link>
             </li>
-          ))}
+          )))}
         </ul>
       </nav>
 

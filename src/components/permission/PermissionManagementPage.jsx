@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { usePermissions } from '../../contexts/PermissionContext';
+import { useAuth } from '../../contexts/AuthContext';
 import adminApiService from '../../services/adminApiService';
 import notificationService from '../../services/notificationService';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
 import { DeleteConfirmationModal } from '../common';
 import RolePermissionModal from './RolePermissionModal';
+import DynamicPermissionManagement from './DynamicPermissionManagement';
+import { PermissionGuard } from '../auth/ProtectedRoute';
 
 const PermissionManagementPage = () => {
   const { hasPermission } = usePermissions();
-  const [activeTab, setActiveTab] = useState('permissions');
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('dynamic');
   const [permissions, setPermissions] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedResource, setSelectedResource] = useState('all');
 
   // Modal states
   const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
@@ -33,11 +40,12 @@ const PermissionManagementPage = () => {
   const fetchData = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const [permissionsResponse, rolesResponse] = await Promise.all([
+      const [permissionsResponse, rolesResponse, usersResponse] = await Promise.all([
         adminApiService.getAllPermissions(),
-        adminApiService.getRolesWithPermissions()
+        adminApiService.getRolesWithPermissions(),
+        adminApiService.getAllUsers(1, 100) // Get first 100 users
       ]);
 
       if (permissionsResponse.success) {
@@ -50,6 +58,15 @@ const PermissionManagementPage = () => {
         setRoles(rolesResponse.data);
       } else {
         setError(rolesResponse.error);
+      }
+
+      if (usersResponse.success) {
+        // Handle paginated response - extract users array from data
+        const usersData = usersResponse.data?.users || usersResponse.data?.data || usersResponse.data || [];
+        setUsers(Array.isArray(usersData) ? usersData : []);
+      } else {
+        setError(usersResponse.error);
+        setUsers([]); // Set empty array on error
       }
     } catch (error) {
       setError('Failed to fetch data');
@@ -121,50 +138,151 @@ const PermissionManagementPage = () => {
     );
   }
 
+  // Filter permissions based on search and resource
+  const filteredPermissions = permissions.filter(permission => {
+    const matchesSearch = permission.permissionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         permission.resource.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         permission.action.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesResource = selectedResource === 'all' || permission.resource === selectedResource;
+    return matchesSearch && matchesResource;
+  });
+
+  // Get unique resources for filter dropdown
+  const resources = [...new Set(permissions.map(p => p.resource))].sort();
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Permission Management</h1>
-          <p className="text-gray-600">Manage system permissions and role assignments</p>
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-lg p-6 text-white">
+        <div className="flex justify-between items-start">
+          <div>
+            <div className="flex items-center space-x-3">
+              <svg className="w-8 h-8 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <h1 className="text-3xl font-bold">Permission Management</h1>
+            </div>
+            <p className="text-slate-300 mt-2">Enterprise-level access control and authorization system</p>
+            <div className="flex items-center space-x-4 mt-3 text-sm">
+              <span className="bg-teal-600 px-2 py-1 rounded">Total Permissions: {permissions.length}</span>
+              <span className="bg-slate-700 px-2 py-1 rounded">Active Roles: {roles.length}</span>
+              <span className="bg-slate-700 px-2 py-1 rounded">System Users: {users.length}</span>
+            </div>
+          </div>
+          <PermissionGuard permissions={['permissions.create']}>
+            <Button
+              onClick={handleCreatePermission}
+              variant="primary"
+              className="flex items-center bg-teal-600 hover:bg-teal-700"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add Permission
+            </Button>
+          </PermissionGuard>
         </div>
-        {hasPermission('permissions.create') && (
-          <Button
-            onClick={handleCreatePermission}
-            variant="primary"
-            className="flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add Permission
-          </Button>
-        )}
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
+      {/* Search and Filter Controls */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search permissions, resources, or actions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="sm:w-48">
+            <select
+              value={selectedResource}
+              onChange={(e) => setSelectedResource(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            >
+              <option value="all">All Resources</option>
+              {resources.map(resource => (
+                <option key={resource} value={resource}>
+                  {resource.charAt(0).toUpperCase() + resource.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Tabs */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <nav className="flex space-x-0">
           <button
-            onClick={() => setActiveTab('permissions')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'permissions'
-                ? 'border-teal-500 text-teal-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            onClick={() => setActiveTab('dynamic')}
+            className={`flex-1 py-4 px-6 text-center font-medium text-sm transition-all duration-200 ${
+              activeTab === 'dynamic'
+                ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-500'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Permissions
+            <div className="flex items-center justify-center space-x-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+              <span>Dynamic Permissions</span>
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab('permissions')}
+            className={`flex-1 py-4 px-6 text-center font-medium text-sm transition-all duration-200 ${
+              activeTab === 'permissions'
+                ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-500'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>Permissions</span>
+              <span className="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">{filteredPermissions.length}</span>
+            </div>
           </button>
           <button
             onClick={() => setActiveTab('roles')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`flex-1 py-4 px-6 text-center font-medium text-sm transition-all duration-200 ${
               activeTab === 'roles'
-                ? 'border-teal-500 text-teal-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-500'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Role Permissions
+            <div className="flex items-center justify-center space-x-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>Role Permissions</span>
+              <span className="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">{roles.length}</span>
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`flex-1 py-4 px-6 text-center font-medium text-sm transition-all duration-200 ${
+              activeTab === 'users'
+                ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-500'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+              <span>User Access</span>
+              <span className="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">{Array.isArray(users) ? users.length : 0}</span>
+            </div>
           </button>
         </nav>
       </div>
@@ -192,21 +310,37 @@ const PermissionManagementPage = () => {
         </div>
       ) : (
         <>
+          {activeTab === 'dynamic' && (
+            <div className="p-6">
+              <DynamicPermissionManagement />
+            </div>
+          )}
+
           {activeTab === 'permissions' && (
             <PermissionsTab
-              permissions={permissions}
+              permissions={filteredPermissions}
               onEdit={handleEditPermission}
               onDelete={handleDeletePermission}
               hasEditPermission={hasPermission('permissions.update')}
               hasDeletePermission={hasPermission('permissions.delete')}
+              searchTerm={searchTerm}
+              selectedResource={selectedResource}
             />
           )}
-          
+
           {activeTab === 'roles' && (
             <RolePermissionsTab
               roles={roles}
               onManagePermissions={handleManageRolePermissions}
               hasManagePermission={hasPermission('permissions.assign')}
+            />
+          )}
+
+          {activeTab === 'users' && (
+            <UserAccessTab
+              users={users}
+              roles={roles}
+              hasManagePermission={hasPermission('users.update')}
             />
           )}
         </>
@@ -543,6 +677,126 @@ const PermissionModal = ({ isOpen, onClose, permission, onSuccess }) => {
         </div>
       </form>
     </Modal>
+  );
+};
+
+// Enhanced User Access Tab Component
+const UserAccessTab = ({ users = [], roles = [], hasManagePermission = false }) => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userPermissions, setUserPermissions] = useState([]);
+  const [loadingUser, setLoadingUser] = useState(false);
+
+  // Ensure users is always an array
+  const safeUsers = Array.isArray(users) ? users : [];
+
+  const fetchUserPermissions = async (userId) => {
+    setLoadingUser(true);
+    try {
+      const response = await adminApiService.getUserPermissions(userId);
+      if (response.success) {
+        setUserPermissions(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching user permissions:', error);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  const handleUserSelect = (user) => {
+    setSelectedUser(user);
+    fetchUserPermissions(user.userId);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">User Access Overview</h3>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Users List */}
+          <div>
+            <h4 className="text-md font-medium text-gray-700 mb-3">System Users</h4>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {safeUsers.length > 0 ? (
+                safeUsers.map(user => (
+                  <div
+                    key={user.userId}
+                    onClick={() => handleUserSelect(user)}
+                    className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                      selectedUser?.userId === user.userId
+                        ? 'border-teal-500 bg-teal-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-gray-900">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">
+                          {user.roleName}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p>No users found</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* User Permissions */}
+          <div>
+            <h4 className="text-md font-medium text-gray-700 mb-3">
+              {selectedUser ? `Permissions for ${selectedUser.firstName} ${selectedUser.lastName}` : 'Select a user to view permissions'}
+            </h4>
+
+            {selectedUser ? (
+              <div className="border border-gray-200 rounded-lg p-4">
+                {loadingUser ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {userPermissions.length > 0 ? (
+                      userPermissions.map(permission => (
+                        <div key={permission.permissionId} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                          <div>
+                            <span className="font-medium text-gray-900">{permission.permissionName}</span>
+                            <p className="text-sm text-gray-500">{permission.description}</p>
+                          </div>
+                          <span className="px-2 py-1 text-xs bg-teal-100 text-teal-800 rounded">
+                            {permission.resource}.{permission.action}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-center py-8">No permissions found for this user</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="border border-gray-200 rounded-lg p-8 text-center text-gray-500">
+                <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <p>Select a user from the list to view their permissions</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

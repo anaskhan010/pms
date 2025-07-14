@@ -6,8 +6,11 @@ import FinancialTransactionModal from "./FinancialTransactionModal";
 import FinancialTransactionFilters from "./FinancialTransactionFilters";
 import FinancialTransactionTable from "./FinancialTransactionTable";
 import FinancialTransactionSummary from "./FinancialTransactionSummary";
+import PageBanner from "../common/PageBanner";
+import { useAuth } from "../../contexts/AuthContext";
 
 const FinancialTransactionsPage = () => {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -238,40 +241,43 @@ const FinancialTransactionsPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            Financial Transactions
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Manage rent payments, deposits, and other financial transactions
-          </p>
-        </div>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => {
-              setCurrentTransaction(null);
-              setIsModalOpen(true);
-            }}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-md shadow-md transition-all duration-200 flex items-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Add Transaction
-          </button>
-        </div>
-      </div>
+    <div className="mx-auto px-4 py-6 space-y-6">
+      {/* Page Banner */}
+      <PageBanner
+        title="Financial Transaction Management"
+        subtitle="Track and manage all financial transactions with comprehensive reporting"
+        icon={
+          <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        }
+        stats={[
+          {
+            value: transactions.length,
+            label: "Total Transactions",
+            icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+          },
+          {
+            value: filteredTransactions.length,
+            label: "Filtered Results",
+            icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" /></svg>
+          },
+          {
+            value: user?.role === 'owner' ? 'Property Transactions' : 'All Transactions',
+            label: "Access Level",
+            icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          }
+        ]}
+        actions={[
+          {
+            label: "Add Transaction",
+            icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
+            onClick: () => setIsModalOpen(true),
+            variant: 'primary'
+          }
+        ]}
+        gradient="from-green-900 via-green-800 to-slate-900"
+      />
 
       {/* Statistics Summary */}
       {Object.keys(statistics).length > 0 && (

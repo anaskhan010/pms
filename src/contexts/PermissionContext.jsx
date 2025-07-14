@@ -62,27 +62,71 @@ export const PermissionProvider = ({ children }) => {
 
   // Fallback function to set basic permissions based on user role
   const setBasicPermissionsFallback = () => {
-    if (user?.role === 'admin') {
-      // Give admin basic permissions
+    if (user?.role === 'admin' || user?.roleId === 1) {
+      // Admin gets all possible permissions - comprehensive list
       setPermissions([
+        // Dashboard permissions
         { permissionName: 'dashboard.view', resource: 'dashboard', action: 'view' },
+
+        // Villa permissions
         { permissionName: 'villas.view', resource: 'villas', action: 'view' },
+        { permissionName: 'villas.create', resource: 'villas', action: 'create' },
+        { permissionName: 'villas.update', resource: 'villas', action: 'update' },
+        { permissionName: 'villas.delete', resource: 'villas', action: 'delete' },
+
+        // Building permissions
         { permissionName: 'buildings.view', resource: 'buildings', action: 'view' },
+        { permissionName: 'buildings.create', resource: 'buildings', action: 'create' },
+        { permissionName: 'buildings.update', resource: 'buildings', action: 'update' },
+        { permissionName: 'buildings.delete', resource: 'buildings', action: 'delete' },
+
+        // Tenant permissions
         { permissionName: 'tenants.view', resource: 'tenants', action: 'view' },
+        { permissionName: 'tenants.create', resource: 'tenants', action: 'create' },
+        { permissionName: 'tenants.update', resource: 'tenants', action: 'update' },
+        { permissionName: 'tenants.delete', resource: 'tenants', action: 'delete' },
+
+        // User management permissions
         { permissionName: 'users.view', resource: 'users', action: 'view' },
+        { permissionName: 'users.create', resource: 'users', action: 'create' },
+        { permissionName: 'users.update', resource: 'users', action: 'update' },
+        { permissionName: 'users.delete', resource: 'users', action: 'delete' },
+
+        // Permission management
         { permissionName: 'permissions.view', resource: 'permissions', action: 'view' },
+        { permissionName: 'permissions.create', resource: 'permissions', action: 'create' },
+        { permissionName: 'permissions.update', resource: 'permissions', action: 'update' },
+        { permissionName: 'permissions.delete', resource: 'permissions', action: 'delete' },
+        { permissionName: 'permissions.assign', resource: 'permissions', action: 'assign' },
+
+        // Message permissions
         { permissionName: 'messages.view', resource: 'messages', action: 'view' },
+        { permissionName: 'messages.create', resource: 'messages', action: 'create' },
+        { permissionName: 'messages.update', resource: 'messages', action: 'update' },
+        { permissionName: 'messages.delete', resource: 'messages', action: 'delete' },
+
+        // Transaction permissions
+        { permissionName: 'transactions.view', resource: 'transactions', action: 'view' },
+        { permissionName: 'transactions.create', resource: 'transactions', action: 'create' },
+        { permissionName: 'transactions.update', resource: 'transactions', action: 'update' },
+        { permissionName: 'transactions.delete', resource: 'transactions', action: 'delete' },
+
+        // Vendor permissions
         { permissionName: 'vendors.view', resource: 'vendors', action: 'view' },
-        { permissionName: 'transactions.view', resource: 'transactions', action: 'view' }
+        { permissionName: 'vendors.create', resource: 'vendors', action: 'create' },
+        { permissionName: 'vendors.update', resource: 'vendors', action: 'update' },
+        { permissionName: 'vendors.delete', resource: 'vendors', action: 'delete' }
       ]);
-    } else if (user?.role === 'owner') {
-      // Give owner basic permissions
+    } else if (user?.role === 'owner' || user?.roleId === 2) {
+      // Give owner limited permissions
       setPermissions([
         { permissionName: 'dashboard.view', resource: 'dashboard', action: 'view' },
         { permissionName: 'villas.view_own', resource: 'villas', action: 'view_own' },
         { permissionName: 'buildings.view_own', resource: 'buildings', action: 'view_own' },
         { permissionName: 'tenants.view_own', resource: 'tenants', action: 'view_own' },
+        { permissionName: 'tenants.create', resource: 'tenants', action: 'create' },
         { permissionName: 'transactions.view_own', resource: 'transactions', action: 'view_own' },
+        { permissionName: 'transactions.create', resource: 'transactions', action: 'create' },
         { permissionName: 'messages.view', resource: 'messages', action: 'view' }
       ]);
     } else {
@@ -95,14 +139,28 @@ export const PermissionProvider = ({ children }) => {
 
   // Check if user has a specific permission
   const hasPermission = (permissionName) => {
-    if (!permissionName || !permissions.length) return false;
+    if (!permissionName) return false;
+
+    // Admin users have all permissions
+    if (user?.role === 'admin' || user?.roleId === 1) {
+      return true;
+    }
+
+    if (!permissions.length) return false;
     return permissions.some(permission => permission.permissionName === permissionName);
   };
 
   // Check if user has permission for a resource and action
   const hasResourcePermission = (resource, action) => {
-    if (!resource || !action || !permissions.length) return false;
-    return permissions.some(permission => 
+    if (!resource || !action) return false;
+
+    // Admin users have all permissions
+    if (user?.role === 'admin' || user?.roleId === 1) {
+      return true;
+    }
+
+    if (!permissions.length) return false;
+    return permissions.some(permission =>
       permission.resource === resource && permission.action === action
     );
   };
@@ -139,7 +197,7 @@ export const PermissionProvider = ({ children }) => {
 
   // Check if user is admin (has all permissions)
   const isAdmin = () => {
-    return user?.role === 'admin' || hasPermission('permissions.view');
+    return user?.role === 'admin' || user?.roleId === 1 || hasPermission('permissions.view');
   };
 
   // Check if user is owner

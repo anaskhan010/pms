@@ -2275,6 +2275,115 @@ export const adminApiService = {
     }
   },
 
+  // ==================== SIDEBAR PAGES API ====================
+
+  /**
+   * Get all sidebar pages (admin only)
+   * @returns {Promise<Object>} API response
+   */
+  async getAllSidebarPages() {
+    try {
+      const response = await api.get('/sidebar/getAllPages');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching sidebar pages:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch sidebar pages',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get current user's sidebar pages based on permissions
+   * @returns {Promise<Object>} API response
+   */
+  async getMySidebarPages() {
+    try {
+      const response = await api.get('/sidebar/getMyPages');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching my sidebar pages:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch sidebar pages',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get pages with permissions for role management interface
+   * @returns {Promise<Object>} API response
+   */
+  async getPagesWithPermissions() {
+    try {
+      const response = await api.get('/sidebar/getPagesWithPermissions');
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching pages with permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch pages with permissions',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Get role permissions for all pages
+   * @param {number} roleId - Role ID
+   * @returns {Promise<Object>} API response
+   */
+  async getRolePagePermissions(roleId) {
+    try {
+      const response = await api.get(`/sidebar/getRolePagePermissions/${roleId}`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      console.error('Error fetching role page permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch role page permissions',
+        data: []
+      };
+    }
+  },
+
+  /**
+   * Update role permissions for multiple pages
+   * @param {number} roleId - Role ID
+   * @param {Object} permissionData - Permission data
+   * @returns {Promise<Object>} API response
+   */
+  async updateRolePermissions(roleId, permissionData) {
+    try {
+      const response = await api.put(`/sidebar/updateRolePermissions/${roleId}`, permissionData);
+      return {
+        success: true,
+        message: response.data.message || 'Permissions updated successfully'
+      };
+    } catch (error) {
+      console.error('Error updating role permissions:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to update role permissions'
+      };
+    }
+  },
+
   /**
    * Create new permission
    * @param {Object} permissionData - Permission data
