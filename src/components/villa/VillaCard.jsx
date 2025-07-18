@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { PermissionButton } from "../auth/PermissionGuard";
 
 const VillaCard = ({ villa, onEdit, onDelete, onAssign }) => {
   const { user } = useAuth();
@@ -187,10 +188,13 @@ const VillaCard = ({ villa, onEdit, onDelete, onAssign }) => {
             >
               View Details
             </Link>
-            <button
+            <PermissionButton
+              resource="villas"
+              action="update"
               onClick={onEdit}
               className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 rounded-md transition-colors duration-300"
               title="Edit Villa"
+              tooltipText="You don't have permission to edit villas"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -206,7 +210,7 @@ const VillaCard = ({ villa, onEdit, onDelete, onAssign }) => {
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 />
               </svg>
-            </button>
+            </PermissionButton>
           </div>
           {onAssign && user?.role === 'admin' && !villa.assignedUserId && (
             <button

@@ -13,9 +13,11 @@ import BuildingsPage from "./components/building/BuildingsPage";
 import BuildingDetailsPage from "./components/building/BuildingDetailsPage";
 import ApartmentDetailsPage from "./components/apartment/ApartmentDetailsPage";
 import VendorsPage from "./components/vendor/VendorsPage";
+import VendorsManagementPage from "./components/vendor/VendorsManagementPage";
 import TransactionsPage from "./components/transaction/TransactionsPage";
 import FinancialTransactionsPage from "./components/financial/FinancialTransactionsPage";
 import VirtualDemoPage from "./components/virtual/VirtualDemoPage";
+import VirtualToursManagementPage from "./components/virtual/VirtualToursManagementPage";
 import VillasPage from "./components/villa/VillasPage";
 import VillaDetailsPage from "./components/villa/VillaDetailsPage";
 import MessagingPage from "./components/messaging/MessagingPage";
@@ -55,9 +57,11 @@ function App() {
             element={<ApartmentDetailsPage />}
           />
           <Route path="vendors" element={<VendorsPage />} />
+          <Route path="vendors-management" element={<VendorsManagementPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="financial-transactions" element={<FinancialTransactionsPage />} />
           <Route path="virtual-demo" element={<VirtualDemoPage />} />
+          <Route path="virtual-tours" element={<VirtualToursManagementPage />} />
           <Route path="villas" element={<VillasPage />} />
           <Route path="villas/:id" element={<VillaDetailsPage />} />
           <Route path="user-management" element={<UserManagementPage />} />

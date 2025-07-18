@@ -6,6 +6,7 @@ import { Card, Button, LoadingSpinner, Alert, DeleteConfirmationModal } from "..
 import PageBanner from "../common/PageBanner";
 import NoDataAssigned from "../common/NoDataAssigned";
 import { useAuth } from "../../contexts/AuthContext";
+import { PermissionButton } from "../auth/PermissionGuard";
 
 
 
@@ -649,15 +650,18 @@ const TenantsPage = () => {
             >
               Export CSV
             </Button>
-            <Button
+            <PermissionButton
+              resource="tenants"
+              action="create"
               onClick={() => {
                 setIsModalOpen(true);
                 loadBuildings();
               }}
-              variant="primary"
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              tooltipText="You don't have permission to create tenants"
             >
               Add Tenant
-            </Button>
+            </PermissionButton>
           </div>
         </div>
         {/* Error Alert */}
@@ -903,30 +907,36 @@ const TenantsPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <Button
-                            variant="secondary"
-                            size="sm"
+                          <PermissionButton
+                            resource="tenants"
+                            action="view"
                             onClick={() => handleViewTenant(tenant.tenantId)}
+                            className="text-blue-600 hover:text-blue-900 px-2 py-1 rounded hover:bg-blue-50 text-sm"
                             disabled={loading}
+                            tooltipText="You don't have permission to view tenant details"
                           >
                             View
-                          </Button>
-                          <Button
-                            variant="primary"
-                            size="sm"
+                          </PermissionButton>
+                          <PermissionButton
+                            resource="tenants"
+                            action="update"
                             onClick={() => handleEditTenant(tenant.tenantId)}
+                            className="text-green-600 hover:text-green-900 px-2 py-1 rounded hover:bg-green-50 text-sm"
                             disabled={loading}
+                            tooltipText="You don't have permission to edit tenants"
                           >
                             Edit
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
+                          </PermissionButton>
+                          <PermissionButton
+                            resource="tenants"
+                            action="delete"
                             onClick={() => handleDeleteTenant(tenant.tenantId, `${tenant.firstName} ${tenant.lastName}`)}
+                            className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50 text-sm"
                             disabled={loading}
+                            tooltipText="You don't have permission to delete tenants"
                           >
                             Delete
-                          </Button>
+                          </PermissionButton>
                         </div>
                         </td>
                     </tr>

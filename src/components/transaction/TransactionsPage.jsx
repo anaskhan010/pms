@@ -5,6 +5,7 @@ import TransactionFilters from "./TransactionFilters";
 import TransactionTable from "./TransactionTable";
 import TransactionModal from "./TransactionModal";
 import TransactionSummary from "./TransactionSummary";
+import { PermissionButton } from "../auth/PermissionGuard";
 
 const TransactionsPage = () => {
   // Sample data
@@ -289,12 +290,15 @@ const TransactionsPage = () => {
         <h1 className="text-3xl font-bold text-gray-800">
           Financial Transactions
         </h1>
-        <button
+        <PermissionButton
+          resource="financial_transactions"
+          action="create"
           onClick={() => {
             setCurrentTransaction(null);
             setIsModalOpen(true);
           }}
           className="bg-teal-600 hover:from-blue-700 hover:to-indigo-800 text-white font-medium py-2 px-6 rounded-md shadow-md transition-all duration-200 flex items-center"
+          tooltipText="You don't have permission to create financial transactions"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -309,7 +313,7 @@ const TransactionsPage = () => {
             />
           </svg>
           Add New Transaction
-        </button>
+        </PermissionButton>
       </div>
 
       {/* Filters */}

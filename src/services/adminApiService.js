@@ -5,6 +5,265 @@ import api from "./api";
  * Comprehensive service for all admin operations with exact backend API mapping
  */
 export const adminApiService = {
+  // ==================== DYNAMIC ROLES API ====================
+
+  /**
+   * Get role creation template with pages, resources, and permissions
+   * @returns {Promise<Object>} API response
+   */
+  async getRoleCreationTemplate() {
+    try {
+      const response = await api.get("/dynamic-roles/template");
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error) {
+      console.error("Error fetching role creation template:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch template",
+        data: null,
+      };
+    }
+  },
+
+  /**
+   * Create a new custom role
+   * @param {Object} roleData - Role data with permissions
+   * @returns {Promise<Object>} API response
+   */
+  async createCustomRole(roleData) {
+    try {
+      const response = await api.post("/dynamic-roles/create", roleData);
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Error creating custom role:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to create role",
+      };
+    }
+  },
+
+  /**
+   * Get all roles with hierarchy information
+   * @returns {Promise<Object>} API response
+   */
+  async getAllRolesWithHierarchy() {
+    try {
+      const response = await api.get("/dynamic-roles/hierarchy");
+      return {
+        success: true,
+        data: response.data.data || [],
+        count: response.data.count || 0,
+      };
+    } catch (error) {
+      console.error("Error fetching roles with hierarchy:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch roles",
+        data: [],
+      };
+    }
+  },
+
+  /**
+   * Get role statistics for dashboard
+   * @returns {Promise<Object>} API response
+   */
+  async getRoleStatistics() {
+    try {
+      const response = await api.get("/roles/statistics");
+      return {
+        success: true,
+        data: response.data.data || [],
+      };
+    } catch (error) {
+      console.error("Error fetching role statistics:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch role statistics",
+        data: [],
+      };
+    }
+  },
+
+  /**
+   * Get role statistics for dashboard
+   * @returns {Promise<Object>} API response
+   */
+  async getRoleStatistics() {
+    try {
+      const response = await api.get("/roles/statistics");
+      return {
+        success: true,
+        data: response.data.data || [],
+      };
+    } catch (error) {
+      console.error("Error fetching role statistics:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch role statistics",
+        data: [],
+      };
+    }
+  },
+
+  /**
+   * Get role with full permissions and page assignments
+   * @param {string} roleId - Role ID
+   * @returns {Promise<Object>} API response
+   */
+  async getRoleWithPermissions(roleId) {
+    try {
+      const response = await api.get(`/dynamic-roles/${roleId}/permissions`);
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error) {
+      console.error("Error fetching role with permissions:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch role details",
+      };
+    }
+  },
+
+  /**
+   * Update role permissions
+   * @param {string} roleId - Role ID
+   * @param {Object} permissionUpdates - Permission updates
+   * @returns {Promise<Object>} API response
+   */
+  async updateRolePermissions(roleId, permissionUpdates) {
+    try {
+      const response = await api.put(`/dynamic-roles/${roleId}/permissions`, permissionUpdates);
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Error updating role permissions:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to update permissions",
+      };
+    }
+  },
+
+  /**
+   * Get roles that current user can assign
+   * @returns {Promise<Object>} API response
+   */
+  async getAssignableRoles() {
+    try {
+      const response = await api.get("/dynamic-roles/assignable");
+      return {
+        success: true,
+        data: response.data.data || [],
+        count: response.data.count || 0,
+      };
+    } catch (error) {
+      console.error("Error fetching assignable roles:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch assignable roles",
+        data: [],
+      };
+    }
+  },
+
+  /**
+   * Delete a custom role
+   * @param {string} roleId - Role ID
+   * @returns {Promise<Object>} API response
+   */
+  async deleteCustomRole(roleId) {
+    try {
+      const response = await api.delete(`/dynamic-roles/${roleId}`);
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Error deleting custom role:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to delete role",
+      };
+    }
+  },
+
+  /**
+   * Get user's resource access
+   * @param {string} userId - User ID
+   * @param {string} resourceType - Resource type
+   * @returns {Promise<Object>} API response
+   */
+  async getUserResourceAccess(userId, resourceType) {
+    try {
+      const response = await api.get(`/dynamic-roles/user/${userId}/resource/${resourceType}`);
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error) {
+      console.error("Error fetching user resource access:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to fetch resource access",
+      };
+    }
+  },
+
+  /**
+   * Assign resource to user
+   * @param {Object} assignmentData - Assignment data
+   * @returns {Promise<Object>} API response
+   */
+  async assignResourceToUser(assignmentData) {
+    try {
+      const response = await api.post("/dynamic-roles/assign-resource", assignmentData);
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Error assigning resource to user:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to assign resource",
+      };
+    }
+  },
+
+  /**
+   * Remove resource from user
+   * @param {Object} removalData - Removal data
+   * @returns {Promise<Object>} API response
+   */
+  async removeResourceFromUser(removalData) {
+    try {
+      const response = await api.delete("/dynamic-roles/remove-resource", { data: removalData });
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Error removing resource from user:", error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || "Failed to remove resource",
+      };
+    }
+  },
+
   // ==================== PROPERTIES API ====================
 
   /**

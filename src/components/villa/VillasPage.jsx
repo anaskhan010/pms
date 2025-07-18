@@ -10,6 +10,7 @@ import notificationService from "../../services/notificationService";
 import { DeleteConfirmationModal } from "../common";
 import PageBanner from "../common/PageBanner";
 import { useAuth } from "../../contexts/AuthContext";
+import { PermissionButton } from "../auth/PermissionGuard";
 
 const VillasPage = () => {
   const { user } = useAuth();
@@ -144,7 +145,10 @@ const VillasPage = () => {
             label: "Add Villa",
             icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
             onClick: () => setIsAddModalOpen(true),
-            variant: 'primary'
+            variant: 'primary',
+            resource: 'villas',
+            action: 'create',
+            tooltipText: "You don't have permission to create villas"
           }
         ]}
         gradient="from-purple-900 via-purple-800 to-slate-900"

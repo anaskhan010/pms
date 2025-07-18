@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePermissions } from '../../contexts/PermissionContext';
-import { PermissionGuard } from '../auth/ProtectedRoute';
+import PermissionGuard, { PermissionButton } from '../auth/PermissionGuard';
 import adminApiService from '../../services/adminApiService';
 import notificationService from '../../services/notificationService';
 import { DeleteConfirmationModal } from '../common';
@@ -202,17 +202,18 @@ const UserManagementPage = () => {
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-1">Manage system users and their roles</p>
         </div>
-        <PermissionGuard permissions={['users.create']}>
-          <button
-            onClick={handleAddUser}
-            className="bg-gradient-to-r from-slate-900 to-teal-800 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add User
-          </button>
-        </PermissionGuard>
+        <PermissionButton
+          resource="users"
+          action="create"
+          onClick={handleAddUser}
+          className="bg-gradient-to-r from-slate-900 to-teal-800 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+          tooltipText="You don't have permission to create users"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add User
+        </PermissionButton>
       </div>
 
       {/* Error Message */}
@@ -294,30 +295,33 @@ const UserManagementPage = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
-                      <PermissionGuard permissions={['users.view']}>
-                        <button
-                          onClick={() => handleViewUser(user.userId)}
-                          className="text-blue-600 hover:text-blue-900 px-2 py-1 rounded hover:bg-blue-50"
-                        >
-                          View
-                        </button>
-                      </PermissionGuard>
-                      <PermissionGuard permissions={['users.update']}>
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-green-600 hover:text-green-900 px-2 py-1 rounded hover:bg-green-50"
-                        >
-                          Edit
-                        </button>
-                      </PermissionGuard>
-                      <PermissionGuard permissions={['users.delete']}>
-                        <button
-                          onClick={() => handleDeleteUser(user.userId, `${user.firstName} ${user.lastName}`)}
-                          className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50"
-                        >
-                          Delete
-                        </button>
-                      </PermissionGuard>
+                      <PermissionButton
+                        resource="users"
+                        action="view"
+                        onClick={() => handleViewUser(user.userId)}
+                        className="text-blue-600 hover:text-blue-900 px-2 py-1 rounded hover:bg-blue-50"
+                        tooltipText="You don't have permission to view user details"
+                      >
+                        View
+                      </PermissionButton>
+                      <PermissionButton
+                        resource="users"
+                        action="update"
+                        onClick={() => handleEditUser(user)}
+                        className="text-green-600 hover:text-green-900 px-2 py-1 rounded hover:bg-green-50"
+                        tooltipText="You don't have permission to edit users"
+                      >
+                        Edit
+                      </PermissionButton>
+                      <PermissionButton
+                        resource="users"
+                        action="delete"
+                        onClick={() => handleDeleteUser(user.userId, `${user.firstName} ${user.lastName}`)}
+                        className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50"
+                        tooltipText="You don't have permission to delete users"
+                      >
+                        Delete
+                      </PermissionButton>
                     </div>
                   </td>
                 </tr>

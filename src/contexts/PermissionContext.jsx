@@ -118,7 +118,7 @@ export const PermissionProvider = ({ children }) => {
         { permissionName: 'vendors.delete', resource: 'vendors', action: 'delete' }
       ]);
     } else if (user?.role === 'owner' || user?.roleId === 2) {
-      // Give owner limited permissions
+      // Give owner limited permissions including permission management for staff
       setPermissions([
         { permissionName: 'dashboard.view', resource: 'dashboard', action: 'view' },
         { permissionName: 'villas.view_own', resource: 'villas', action: 'view_own' },
@@ -127,7 +127,31 @@ export const PermissionProvider = ({ children }) => {
         { permissionName: 'tenants.create', resource: 'tenants', action: 'create' },
         { permissionName: 'transactions.view_own', resource: 'transactions', action: 'view_own' },
         { permissionName: 'transactions.create', resource: 'transactions', action: 'create' },
-        { permissionName: 'messages.view', resource: 'messages', action: 'view' }
+        { permissionName: 'messages.view', resource: 'messages', action: 'view' },
+
+        // User management permissions for owner (resource permissions)
+        { permissionName: 'users.view', resource: 'users', action: 'view' },
+        { permissionName: 'users.create', resource: 'users', action: 'create' },
+        { permissionName: 'users.update', resource: 'users', action: 'update' },
+        { permissionName: 'users.delete', resource: 'users', action: 'delete' },
+
+        // User management page permissions for owner
+        { permissionName: 'user_management.view', resource: 'user_management', action: 'view' },
+        { permissionName: 'user_management.create', resource: 'user_management', action: 'create' },
+        { permissionName: 'user_management.update', resource: 'user_management', action: 'update' },
+        { permissionName: 'user_management.delete', resource: 'user_management', action: 'delete' },
+
+        // Permission management permissions for owner (scoped to staff roles)
+        { permissionName: 'permissions.view', resource: 'permissions', action: 'view' },
+        { permissionName: 'permissions.create', resource: 'permissions', action: 'create' },
+        { permissionName: 'permissions.update', resource: 'permissions', action: 'update' },
+        { permissionName: 'permissions.assign', resource: 'permissions', action: 'assign' },
+
+        // Role management permissions for owner (scoped to staff roles)
+        { permissionName: 'roles.view', resource: 'roles', action: 'view' },
+        { permissionName: 'roles.create', resource: 'roles', action: 'create' },
+        { permissionName: 'roles.update', resource: 'roles', action: 'update' },
+        { permissionName: 'roles.delete', resource: 'roles', action: 'delete' }
       ]);
     } else {
       // Basic dashboard access for other roles

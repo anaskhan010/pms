@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePermissions } from "../../contexts/PermissionContext";
-import { PermissionGuard } from "../auth/ProtectedRoute";
+import PermissionGuard, { PermissionButton } from "../auth/PermissionGuard";
 import adminApiService from "../../services/adminApiService";
 import notificationService from "../../services/notificationService";
 import { DeleteConfirmationModal } from "../common";
@@ -297,7 +297,10 @@ const BuildingsPage = () => {
               setUseComprehensiveModal(true);
               setIsModalOpen(true);
             },
-            variant: 'primary'
+            variant: 'primary',
+            resource: 'buildings',
+            action: 'create',
+            tooltipText: "You don't have permission to create buildings"
           }
         ]}
         gradient="from-blue-900 via-blue-800 to-slate-900"
@@ -399,38 +402,41 @@ const BuildingsPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <PermissionGuard permissions={['buildings.view', 'buildings.view_own']}>
-                      <Link
-                        to={`/admin/buildings/${building.id}`}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        View
-                      </Link>
-                    </PermissionGuard>
-                    <PermissionGuard permissions={['buildings.update', 'buildings.update_own']}>
-                      <button
-                        className="text-blue-600 hover:text-blue-900 mr-3"
+                    <div className="flex space-x-2">
+                      <PermissionGuard permission={['buildings.view', 'buildings.view_own']}>
+                        <Link
+                          to={`/admin/buildings/${building.id}`}
+                          className="text-blue-600 hover:text-blue-900 px-2 py-1 rounded hover:bg-blue-50"
+                        >
+                          View
+                        </Link>
+                      </PermissionGuard>
+                      <PermissionButton
+                        permission={['buildings.update', 'buildings.update_own']}
                         onClick={() => handleEdit(building)}
+                        className="text-green-600 hover:text-green-900 px-2 py-1 rounded hover:bg-green-50"
+                        tooltipText="You don't have permission to edit buildings"
                       >
                         Edit
-                      </button>
-                    </PermissionGuard>
-                    <PermissionGuard permissions={['buildings.delete']}>
-                      <button
-                        className="text-red-600 hover:text-red-900 mr-3"
+                      </PermissionButton>
+                      <PermissionButton
+                        resource="buildings"
+                        action="delete"
                         onClick={() => handleDelete(building.id, building.name)}
+                        className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50"
+                        tooltipText="You don't have permission to delete buildings"
                       >
                         Delete
-                      </button>
-                    </PermissionGuard>
-                    {user?.roleId === 1 && (
-                      <button
-                        className="text-green-600 hover:text-green-900"
-                        onClick={() => handleAssignBuilding(building)}
-                      >
-                        Assign Building To User
-                      </button>
-                    )}
+                      </PermissionButton>
+                      {user?.roleId === 1 && (
+                        <button
+                          className="text-purple-600 hover:text-purple-900 px-2 py-1 rounded hover:bg-purple-50"
+                          onClick={() => handleAssignBuilding(building)}
+                        >
+                          Assign Building To User
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

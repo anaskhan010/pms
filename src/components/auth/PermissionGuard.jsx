@@ -142,24 +142,7 @@ export const AccessDenied = ({
   </div>
 );
 
-/**
- * Button component with permission-based visibility
- */
-export const PermissionButton = ({ 
-  permission, 
-  resource, 
-  action, 
-  children, 
-  ...buttonProps 
-}) => {
-  return (
-    <PermissionGuard permission={permission} resource={resource} action={action}>
-      <button {...buttonProps}>
-        {children}
-      </button>
-    </PermissionGuard>
-  );
-};
+// Removed duplicate PermissionButton - using the more comprehensive one below
 
 /**
  * Link component with permission-based visibility
@@ -177,6 +160,85 @@ export const PermissionLink = ({
         {children}
       </a>
     </PermissionGuard>
+  );
+};
+
+// Button wrapper that automatically handles permission-based styling
+export const PermissionButton = ({
+  permission,
+  resource,
+  action,
+  onClick,
+  children,
+  className = '',
+  disabledClassName = 'opacity-50 cursor-not-allowed',
+  showTooltip = true,
+  tooltipText,
+  requireAll = false,
+  ...props
+}) => {
+  const { hasPermission, hasResourcePermission, loading } = usePermissions();
+
+  if (loading) {
+    return (
+      <button {...props} className={`${className} opacity-50`} disabled>
+        {children}
+      </button>
+    );
+  }
+
+  let hasAccess = false;
+
+  // Check permission based on the provided props
+  if (permission) {
+    if (Array.isArray(permission)) {
+      if (requireAll) {
+        hasAccess = permission.every(perm => hasPermission(perm));
+      } else {
+        hasAccess = permission.some(perm => hasPermission(perm));
+      }
+    } else {
+      hasAccess = hasPermission(permission);
+    }
+  } else if (resource && action) {
+    hasAccess = hasResourcePermission(resource, action);
+  }
+
+  if (!hasAccess) {
+    const buttonElement = (
+      <button
+        {...props}
+        className={`${className} ${disabledClassName}`}
+        disabled={true}
+        onClick={(e) => e.preventDefault()}
+      >
+        {children}
+      </button>
+    );
+
+    if (showTooltip) {
+      return (
+        <div className="relative group">
+          {buttonElement}
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 text-sm text-white bg-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+            {tooltipText || "You don't have permission for this action"}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+          </div>
+        </div>
+      );
+    }
+
+    return buttonElement;
+  }
+
+  return (
+    <button
+      {...props}
+      className={className}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 };
 

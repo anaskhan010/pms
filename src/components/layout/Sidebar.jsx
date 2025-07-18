@@ -43,30 +43,46 @@ const Sidebar = ({ isOpen, onToggle }) => {
     }
   }, [user]);
 
-  // Get menu items from database pages
+  // Get menu items from database pages with enhanced filtering
   const getMenuItems = () => {
     if (loading || !sidebarPages.length) {
       return [];
     }
 
-    // Convert database pages to menu items format
-    const menuItems = sidebarPages.map(page => ({
-      path: page.pageUrl,
-      icon: page.pageIcon,
-      label: user?.role === 'owner' && page.pageName !== 'Dashboard' ?
-        `My ${page.pageName}` : page.pageName,
-      requiredPermission: `${page.pageName.toLowerCase().replace(/\s+/g, '_')}.view`
-    }));
+    // Convert database pages to menu items format with enhanced labeling
+    const menuItems = sidebarPages.map(page => {
+      // Enhanced label formatting for owner users
+      let label = page.pageName;
+      if (user?.role === 'owner' && page.pageName !== 'Dashboard') {
+        // Remove "My" prefix if it already exists to avoid duplication
+        const cleanName = page.pageName.replace(/^My\s+/, '');
+        label = `My ${cleanName}`;
+      }
+
+      return {
+        path: page.pageUrl,
+        icon: page.pageIcon,
+        label: label,
+        pageName: page.pageName,
+        displayOrder: page.displayOrder,
+        requiredPermission: `${page.pageName.toLowerCase().replace(/\s+/g, '_').replace(/&/g, '')}.view`
+      };
+    });
+
+    // Sort by display order to maintain consistent ordering
+    menuItems.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 Dynamic Sidebar Debug:', {
+      console.log('🔍 Enhanced Dynamic Sidebar Debug:', {
         userRole: user?.role,
         userRoleId: user?.roleId,
         databasePages: sidebarPages.length,
         menuItems: menuItems.length,
         menuItemPaths: menuItems.map(item => item.path),
-        loading
+        menuItemLabels: menuItems.map(item => item.label),
+        loading,
+        hasPermissionContext: !!hasPermission
       });
     }
 
@@ -115,14 +131,33 @@ const Sidebar = ({ isOpen, onToggle }) => {
             <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-white">
               SENTRIX Real Estate
             </h1>
-            <p className="text-xs text-teal-300 mt-1">
-              {user?.role === 'owner' ? 'Owner Portal' : 'Admin Portal'}
-            </p>
+            <div className="flex items-center mt-1 space-x-2">
+              <p className="text-xs text-teal-300">
+                {user?.role === 'owner' ? 'Owner Portal' : 'Admin Portal'}
+              </p>
+              <span className={`px-2 py-0.5 text-xs rounded-full ${
+                user?.role === 'admin'
+                  ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                  : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+              }`}>
+                {user?.role?.toUpperCase() || 'USER'}
+              </span>
+            </div>
+            {user?.firstName && (
+              <p className="text-xs text-gray-400 mt-1">
+                Welcome, {user.firstName}
+              </p>
+            )}
           </div>
         ) : (
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-white">
-            {user?.role === 'owner' ? 'OP' : 'AP'}
-          </h1>
+          <div className="text-center">
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-white">
+              {user?.role === 'owner' ? 'OP' : 'AP'}
+            </h1>
+            <div className={`w-2 h-2 rounded-full mx-auto mt-1 ${
+              user?.role === 'admin' ? 'bg-red-400' : 'bg-blue-400'
+            }`}></div>
+          </div>
         )}
         <button
           onClick={toggleSidebar}
@@ -166,8 +201,27 @@ const Sidebar = ({ isOpen, onToggle }) => {
         <ul className="space-y-2 px-4">
           {loading ? (
             renderLoadingItems()
+          ) : menuItems.length === 0 ? (
+            // No pages available fallback
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center text-gray-400">
+                <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p className="text-sm">No pages available</p>
+                <p className="text-xs mt-1">Contact administrator</p>
+              </div>
+            </div>
           ) : (
-            menuItems.map((item) => (
+            menuItems
+              .filter(item => {
+                // Additional permission check using permission context
+                if (item.requiredPermission && hasPermission) {
+                  return hasPermission(item.requiredPermission);
+                }
+                return true; // Show item if no specific permission required
+              })
+              .map((item) => (
             <li key={item.path}>
               <Link
                 to={item.path}
@@ -178,6 +232,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                     ? "text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-md"
                     : "text-gray-300 hover:bg-slate-800/50 hover:text-teal-300 hover:translate-x-1 hover:border-l-4 hover:border-teal-500/50"
                 }`}
+                title={`Navigate to ${item.label}`}
               >
                 <span className="inline-flex items-center justify-center">
                   <svg
@@ -291,14 +346,14 @@ const Sidebar = ({ isOpen, onToggle }) => {
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                       />
                     )}
-                    {item.icon === "shield" && (
+                    {/* {item.icon === "shield" && (
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                       />
-                    )}
+                    )} */}
                   </svg>
                 </span>
                 {isOpen && (
@@ -317,6 +372,45 @@ const Sidebar = ({ isOpen, onToggle }) => {
         </ul>
       </nav>
 
+      {/* User Info Section */}
+      <div className="absolute bottom-16 left-0 right-0 px-4">
+        {isOpen && user && (
+          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">
+                  {user.firstName?.charAt(0) || user.email?.charAt(0) || 'U'}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  {user.firstName && user.lastName
+                    ? `${user.firstName} ${user.lastName}`
+                    : user.email
+                  }
+                </p>
+                <p className="text-xs text-gray-400 truncate">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className={`px-2 py-1 text-xs rounded-full ${
+                user?.role === 'admin'
+                  ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                  : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+              }`}>
+                {user?.role?.toUpperCase() || 'USER'}
+              </span>
+              <div className="text-xs text-gray-500">
+                {menuItems.length} pages
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Logout Section */}
       <div className="absolute bottom-0 w-full p-4 border-t border-slate-700 bg-gradient-to-r from-slate-800 to-teal-800">
         <button
           onClick={handleLogout}

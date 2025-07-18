@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { PermissionButton } from '../auth/PermissionGuard';
 
 const PageBanner = ({ 
   title, 
@@ -73,20 +74,45 @@ const PageBanner = ({
         {/* Actions */}
         {actions.length > 0 && (
           <div className="flex items-center space-x-3">
-            {actions.map((action, index) => (
-              <button
-                key={index}
-                onClick={action.onClick}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  action.variant === 'secondary' 
-                    ? 'bg-white/10 hover:bg-white/20 text-white' 
-                    : 'bg-teal-600 hover:bg-teal-700 text-white'
-                }`}
-              >
-                {action.icon && action.icon}
-                <span>{action.label}</span>
-              </button>
-            ))}
+            {actions.map((action, index) => {
+              // If action has permission requirements, use PermissionButton
+              if (action.permission || (action.resource && action.action)) {
+                return (
+                  <PermissionButton
+                    key={index}
+                    permission={action.permission}
+                    resource={action.resource}
+                    action={action.action}
+                    onClick={action.onClick}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      action.variant === 'secondary'
+                        ? 'bg-white/10 hover:bg-white/20 text-white'
+                        : 'bg-teal-600 hover:bg-teal-700 text-white'
+                    }`}
+                    tooltipText={action.tooltipText || `You don't have permission to ${action.label.toLowerCase()}`}
+                  >
+                    {action.icon && action.icon}
+                    <span>{action.label}</span>
+                  </PermissionButton>
+                );
+              }
+
+              // Regular button for actions without permission requirements
+              return (
+                <button
+                  key={index}
+                  onClick={action.onClick}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    action.variant === 'secondary'
+                      ? 'bg-white/10 hover:bg-white/20 text-white'
+                      : 'bg-teal-600 hover:bg-teal-700 text-white'
+                  }`}
+                >
+                  {action.icon && action.icon}
+                  <span>{action.label}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
