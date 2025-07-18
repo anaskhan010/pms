@@ -14,12 +14,20 @@ const getAllBuildings = asyncHandler(async (req, res, next) => {
       buildingAddress: req.query.buildingAddress
     };
 
-    // Add owner building filtering if user is owner
-    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
+    console.log(`🏢 getAllBuildings called by user ${req.user.userId} (role: ${req.user.roleId})`);
+
+    // Apply ownership-based data filtering
+    if (req.user && req.user.roleId === 1) {
+      // Admin users see everything - no filtering
+      console.log(`👑 Admin user - showing all buildings`);
+    } else if (req.ownerBuildings !== undefined && req.ownerBuildings !== null) {
       filters.ownerBuildings = req.ownerBuildings;
+      console.log(`🔍 Filtering buildings for owner: ${req.ownerBuildings.length} owned buildings`);
     }
 
     const result = await buildingModel.getAllBuildings(page, limit, filters);
+
+    console.log(`✅ Retrieved ${result.buildings.length} buildings (total: ${result.total})`);
 
     res.status(200).json({
       success: true,
@@ -42,8 +50,8 @@ const getBuildingById = asyncHandler(async (req, res, next) => {
   try {
     const buildingId = parseInt(req.params.id);
 
-    // Check if owner has access to this building
-    if (req.ownerBuildings && !req.ownerBuildings.includes(buildingId)) {
+    // Check if owner has access to this building (admin users bypass this check)
+    if (req.user.roleId !== 1 && req.ownerBuildings && !req.ownerBuildings.includes(buildingId)) {
       return next(new ErrorResponse('Access denied to this building', 403));
     }
 
@@ -72,7 +80,7 @@ const createBuilding = asyncHandler(async (req, res, next) => {
   try {
     const { buildingName, buildingAddress } = req.body;
 
-    const building = await buildingModel.createBuilding(buildingName, buildingAddress);
+    const building = await buildingModel.createBuilding(buildingName, buildingAddress, new Date(), req.user.userId);
 
     // Handle image upload if present
     if (req.files && req.files.length > 0) {
@@ -106,7 +114,9 @@ const createComprehensiveBuilding = asyncHandler(async (req, res, next) => {
     // Step 1: Create the building
     const building = await buildingModel.createBuilding(
       parsedBuildingData.buildingName,
-      parsedBuildingData.buildingAddress
+      parsedBuildingData.buildingAddress,
+      new Date(),
+      req.user.userId
     );
 
     // Step 2: Handle building images
@@ -568,8 +578,8 @@ const getComprehensiveBuildingById = asyncHandler(async (req, res, next) => {
   try {
     const buildingId = parseInt(req.params.id);
 
-    // Check if owner has access to this building
-    if (req.ownerBuildings && !req.ownerBuildings.includes(buildingId)) {
+    // Check if owner has access to this building (admin users bypass this check)
+    if (req.user.roleId !== 1 && req.ownerBuildings && !req.ownerBuildings.includes(buildingId)) {
       return next(new ErrorResponse('Access denied to this building', 403));
     }
 

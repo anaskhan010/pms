@@ -1,5 +1,6 @@
 import userModel from '../../models/user/User.js';
 import roleModel from '../../models/role/Role.js';
+import db from '../../config/db.js';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';
@@ -38,7 +39,7 @@ const upload = multer({
   }
 });
 
-// Get all users with pagination
+// Get all users with pagination (HIERARCHICAL)
 const getAllUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -46,19 +47,28 @@ const getAllUsers = async (req, res) => {
     const offset = (page - 1) * limit;
     const roleId = req.query.roleId ? parseInt(req.query.roleId) : null;
 
-    console.log('Fetching users with params:', { page, limit, offset, roleId });
+    console.log(`🔍 HIERARCHICAL getAllUsers called by user ${req.user.userId} (role: ${req.user.roleId})`);
 
     let users, totalUsers;
 
-    if (roleId) {
-      // Get users by specific role
-      users = await userModel.getUsersByRoleId(roleId, limit, offset);
-      totalUsers = await userModel.getUsersCountByRole(roleId);
+    if (req.user.roleId === 1) {
+      // Admin can see all users
+      console.log('Admin user - showing all users');
+      if (roleId) {
+        users = await userModel.getUsersByRoleId(roleId, limit, offset);
+        totalUsers = await userModel.getUsersCountByRole(roleId);
+      } else {
+        users = await userModel.getAllUsers(limit, offset);
+        totalUsers = await userModel.getUsersCount();
+      }
     } else {
-      // Get all users
-      users = await userModel.getAllUsers(limit, offset);
-      totalUsers = await userModel.getUsersCount();
+      // Owner/Manager user - showing only users created by them + themselves
+      console.log(`Owner/Manager user - showing only users created by ${req.user.userId}`);
+      users = await userModel.getUsersByCreator(req.user.userId, limit, offset, roleId);
+      totalUsers = await userModel.getUsersCountByCreator(req.user.userId, roleId);
     }
+
+    console.log(`✅ Retrieved ${users.length} users (total: ${totalUsers})`);
 
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -84,7 +94,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// Get user by ID
+// Get user by ID (HIERARCHICAL)
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -95,6 +105,17 @@ const getUserById = async (req, res) => {
         success: false,
         error: 'User not found'
       });
+    }
+
+    // Check hierarchical permissions for non-admin users
+    if (req.user.roleId !== 1) {
+      // Owner can only view users they created or themselves
+      if (user.createdBy !== req.user.userId && user.userId !== req.user.userId) {
+        return res.status(403).json({
+          success: false,
+          error: 'You can only view users you created or your own profile'
+        });
+      }
     }
 
     // Remove password from response
@@ -113,7 +134,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Create new user
+// Create new user (HIERARCHICAL)
 const createUser = async (req, res) => {
   try {
     const {
@@ -128,6 +149,8 @@ const createUser = async (req, res) => {
       dateOfBirth,
       roleId
     } = req.body;
+
+    console.log(`🔧 User ${req.user.userId} (role: ${req.user.roleId}) attempting to create user with role ${roleId}`);
 
     // Validate required fields
     if (!firstName || !lastName || !email || !password || !phoneNumber || !roleId) {
@@ -155,6 +178,32 @@ const createUser = async (req, res) => {
       });
     }
 
+    // Check hierarchical permissions for role creation
+    if (req.user.roleId !== 1) { // Not admin
+      // Owner can only create staff roles (3, 4, 5, 6) + custom roles they created
+      if (roleId === 1 || roleId === 2) {
+        return res.status(403).json({
+          success: false,
+          error: 'You do not have permission to create admin or owner users'
+        });
+      }
+
+      // Check if it's a custom role created by this owner
+      if (roleId > 6) {
+        const [customRole] = await db.execute(`
+          SELECT roleId, roleName FROM role
+          WHERE roleId = ? AND roleName LIKE ?
+        `, [roleId, `owner_${req.user.userId}_%`]);
+
+        if (customRole.length === 0) {
+          return res.status(403).json({
+            success: false,
+            error: 'You can only assign roles you have created or standard staff roles'
+          });
+        }
+      }
+    }
+
     // Hash password
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -165,8 +214,8 @@ const createUser = async (req, res) => {
       imagePath = `/public/uploads/users/${req.file.filename}`;
     }
 
-    // Create user
-    const result = await userModel.createUser(
+    // Create user with createdBy tracking
+    const result = await userModel.createUserWithCreator(
       firstName,
       lastName,
       email,
@@ -177,8 +226,11 @@ const createUser = async (req, res) => {
       nationality || '',
       dateOfBirth || null,
       imagePath,
-      roleId
+      roleId,
+      req.user.userId // Track who created this user
     );
+
+    console.log(`✅ User created successfully: ${result.userId} by ${req.user.userId}`);
 
     res.status(201).json({
       success: true,
@@ -197,7 +249,7 @@ const createUser = async (req, res) => {
   }
 };
 
-// Update user
+// Update user (HIERARCHICAL)
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -213,6 +265,8 @@ const updateUser = async (req, res) => {
       roleId
     } = req.body;
 
+    console.log(`🔧 User ${req.user.userId} attempting to update user ${id}`);
+
     // Check if user exists
     const existingUser = await userModel.getUserById(id);
     if (!existingUser) {
@@ -220,6 +274,29 @@ const updateUser = async (req, res) => {
         success: false,
         error: 'User not found'
       });
+    }
+
+    // Check hierarchical permissions
+    if (req.user.roleId !== 1) { // Not admin
+      // Owner can only update users they created or themselves
+      if (existingUser.createdBy !== req.user.userId && existingUser.userId !== req.user.userId) {
+        return res.status(403).json({
+          success: false,
+          error: 'You can only update users you created or your own profile'
+        });
+      }
+
+      // Prevent owners from changing their own role or other users to admin/owner
+      if (roleId) {
+        // If updating role
+        if ((existingUser.userId === req.user.userId && roleId !== req.user.roleId) ||
+            (roleId === 1 || roleId === 2)) {
+          return res.status(403).json({
+            success: false,
+            error: 'You cannot change your own role or set other users to admin/owner roles.'
+          });
+        }
+      }
     }
 
     // Check if email is taken by another user
@@ -292,10 +369,12 @@ const updateUser = async (req, res) => {
   }
 };
 
-// Delete user
+// Delete user (HIERARCHICAL)
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
+
+    console.log(`🗑️ User ${req.user.userId} attempting to delete user ${id}`);
 
     // Check if user exists
     const existingUser = await userModel.getUserById(id);
@@ -304,6 +383,33 @@ const deleteUser = async (req, res) => {
         success: false,
         error: 'User not found'
       });
+    }
+
+    // Check hierarchical permissions
+    if (req.user.roleId !== 1) { // Not admin
+      // Owner can only delete users they created (not themselves)
+      if (existingUser.createdBy !== req.user.userId) {
+        return res.status(403).json({
+          success: false,
+          error: 'You can only delete users you created'
+        });
+      }
+
+      // Prevent owners from deleting themselves
+      if (existingUser.userId === req.user.userId) {
+        return res.status(403).json({
+          success: false,
+          error: 'You cannot delete your own account'
+        });
+      }
+
+      // Prevent owners from deleting admin or owner users
+      if (existingUser.roleId === 1 || existingUser.roleId === 2) {
+        return res.status(403).json({
+          success: false,
+          error: 'You cannot delete admin or owner users'
+        });
+      }
     }
 
     // Delete user image if exists
@@ -320,6 +426,8 @@ const deleteUser = async (req, res) => {
       });
     }
 
+    console.log(`✅ User ${id} deleted successfully by ${req.user.userId}`);
+
     res.status(200).json({
       success: true,
       message: 'User deleted successfully'
@@ -333,10 +441,16 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Get all roles for dropdown
+// Get all roles for dropdown (HIERARCHICAL)
 const getAllRoles = async (req, res) => {
   try {
-    const roles = await roleModel.getAllRoles();
+    console.log(`🔍 getAllRoles called by user ${req.user.userId} (role: ${req.user.roleId})`);
+
+    // Use the new getManageableRoles function
+    const roles = await roleModel.getManageableRoles(req.user.userId, req.user.roleId);
+
+    console.log(`✅ User can see ${roles.length} manageable roles`);
+
     res.status(200).json({
       success: true,
       data: roles

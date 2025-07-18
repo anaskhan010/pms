@@ -11,15 +11,16 @@ const createVilla = async (villaData) => {
     price,
     description,
     yearOfCreation,
-    status
+    status,
+    createdBy
   } = villaData;
 
   const query = `
-    INSERT INTO villas (Name, Address, bedrooms, bathrooms, length, width, price, description, yearOfCreation, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO villas (Name, Address, bedrooms, bathrooms, length, width, price, description, yearOfCreation, status, createdBy)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const values = [Name, Address, bedrooms, bathrooms, length, width, price, description, yearOfCreation, status];
+  const values = [Name, Address, bedrooms, bathrooms, length, width, price, description, yearOfCreation, status, createdBy];
   const result = await db.execute(query, values);
 
   return {
@@ -33,7 +34,8 @@ const createVilla = async (villaData) => {
     price,
     description,
     yearOfCreation,
-    status
+    status,
+    createdBy
   };
 };
 
@@ -59,11 +61,23 @@ const getAllVillas = async (page = 1, limit = 25, filters = {}) => {
     let whereClause = ' WHERE 1 = 1';
     let searchParams = [];
 
-    // Add owner villa filtering
-    if (filters.ownerVillas && filters.ownerVillas.length > 0) {
-      const placeholders = filters.ownerVillas.map(() => '?').join(',');
-      whereClause += ` AND v.villasId IN (${placeholders})`;
-      searchParams.push(...filters.ownerVillas);
+    // Add ownership-based filtering for non-admin users
+    if (filters.ownerVillas !== undefined) {
+      if (filters.ownerVillas.length > 0) {
+        // User has specific villas they own - show only those
+        const placeholders = filters.ownerVillas.map(() => '?').join(',');
+        whereClause += ` AND v.villasId IN (${placeholders})`;
+        searchParams.push(...filters.ownerVillas);
+      } else {
+        // User has no villas - show nothing (empty result)
+        whereClause += ` AND 1 = 0`;
+      }
+    }
+
+    // Add createdBy filtering for hierarchical ownership
+    if (filters.createdBy) {
+      whereClause += ' AND v.createdBy = ?';
+      searchParams.push(filters.createdBy);
     }
 
     if (filters.search) {

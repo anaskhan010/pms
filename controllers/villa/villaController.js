@@ -13,9 +13,13 @@ const getAllVillas = asyncHandler(async (req, res, next) => {
       search: req.query.search
     };
 
-    // Add owner villa filtering if user is owner
-    if (req.ownerVillas && req.ownerVillas.length > 0) {
+    // Add ownership-based villa filtering
+    if (req.user && req.user.roleId === 1) {
+      // Admin users see everything - no filtering
+      console.log(`👑 Admin user - showing all villas`);
+    } else if (req.ownerVillas !== undefined && req.ownerVillas !== null) {
       filters.ownerVillas = req.ownerVillas;
+      console.log(`🔍 Filtering villas for owner: ${req.ownerVillas.length} owned villas`);
     }
 
     const result = await villaModel.getAllVillas(page, limit, filters);
@@ -117,7 +121,8 @@ const createVilla = asyncHandler(async (req, res, next) => {
       price: parseInt(price),
       description,
       yearOfCreation,
-      status: status || 'Available'
+      status: status || 'Available',
+      createdBy: req.user.userId
     };
 
     const villa = await villaModel.createVilla(villaData);

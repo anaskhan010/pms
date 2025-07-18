@@ -1,6 +1,6 @@
 import express from 'express';
 import authController from '../../controllers/user/authController.js';
-import { protect, requireResourcePermission } from '../../middleware/auth.js';
+import { protect, requireResourcePermission, smartAuthorize } from '../../middleware/auth.js';
 import { uploadUserImage, handleUploadError } from '../../middleware/upload.js';
 import {
   validateUserRegistration,
@@ -38,12 +38,12 @@ router.put('/updatedetails',
 router.put('/updatepassword', protect, authController.updatePassword);
 
 router.route('/users')
-  .get(protect, requireResourcePermission('users', 'view'), authController.getAllUsers)
-  .post(protect, requireResourcePermission('users', 'create'), uploadUserImage, handleUploadError, authController.createUser);
+  .get(protect, smartAuthorize('users', 'view'), authController.getAllUsers)
+  .post(protect, smartAuthorize('users', 'create'), uploadUserImage, handleUploadError, authController.createUser);
 
 router.route('/users/:id')
-  .get(protect, requireResourcePermission('users', 'view'), authController.getUserById)
-  .put(protect, requireResourcePermission('users', 'update'), uploadUserImage, handleUploadError, authController.updateUser)
-  .delete(protect, requireResourcePermission('users', 'delete'), authController.deleteUser);
+  .get(protect, smartAuthorize('users', 'view'), authController.getUserById)
+  .put(protect, smartAuthorize('users', 'update'), uploadUserImage, handleUploadError, authController.updateUser)
+  .delete(protect, smartAuthorize('users', 'delete'), authController.deleteUser);
 
 export default router;

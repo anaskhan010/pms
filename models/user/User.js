@@ -29,11 +29,54 @@ const createUser = async (firstName, lastName, email, hashedPassword, phoneNumbe
       image
     ];
 
-    console.log('Executing user insert query...');
-    const result = await db.execute(query, values);
-    const userId = result[0].insertId;
-    console.log('User created with ID:', userId);
+    const [result] = await db.execute(query, values);
+    const userId = result.insertId;
 
+    // Assign role to user
+    await db.execute('INSERT INTO userRole (userId, roleId) VALUES (?, ?)', [userId, roleId]);
+
+    return { userId, email };
+  } catch (error) {
+    console.error('Error in createUser:', error);
+    throw error;
+  }
+};
+
+// Create user with creator tracking (HIERARCHICAL)
+const createUserWithCreator = async (firstName, lastName, email, hashedPassword, phoneNumber, address, gender, nationality, dateOfBirth, image, roleId, createdBy) => {
+  try {
+    console.log(`Creating user with email: ${email}, created by: ${createdBy}`);
+
+    const roleExists = await roleModel.validateRoleId(roleId);
+    if (!roleExists) {
+      throw new Error('Invalid role ID provided');
+    }
+
+    const query = `INSERT INTO user (
+          firstName, lastName, email, password, phoneNumber,
+          address, gender, nationality, dateOfBirth, image, createdBy
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const values = [
+      firstName,
+      lastName,
+      email,
+      hashedPassword,
+      phoneNumber,
+      address,
+      gender,
+      nationality,
+      dateOfBirth,
+      image,
+      createdBy
+    ];
+
+    console.log('Executing user insert query with creator tracking...');
+    const [result] = await db.execute(query, values);
+    const userId = result.insertId;
+    console.log(`User created with ID: ${userId}, created by: ${createdBy}`);
+
+    // Assign role to user
     const userRoleQuery = `INSERT INTO userRole (userId, roleId) VALUES (?, ?)`;
     console.log('Assigning role to user...');
     await db.execute(userRoleQuery, [userId, roleId]);
@@ -41,7 +84,7 @@ const createUser = async (firstName, lastName, email, hashedPassword, phoneNumbe
 
     return { userId, email };
   } catch (error) {
-    console.error('Error in createUser:', error);
+    console.error('Error in createUserWithCreator:', error);
     throw error;
   }
 };
@@ -215,6 +258,82 @@ const getUsersCount = async () => {
       // Wait 1 second before retry
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
+  }
+};
+
+// Get users created by a specific user (HIERARCHICAL)
+const getUsersByCreator = async (creatorId, limit = 10, offset = 0, roleId = null) => {
+  try {
+    console.log(`getUsersByCreator: Getting users created by ${creatorId}`);
+
+    // Convert to integers
+    const limitInt = parseInt(limit) || 10;
+    const offsetInt = parseInt(offset) || 0;
+
+    let query, queryParams;
+
+    if (roleId) {
+      query = `
+        SELECT u.userId, u.firstName, u.lastName, u.email, u.phoneNumber,
+               u.address, u.gender, u.nationality, u.dateOfBirth, u.image,
+               u.created_at, r.roleName, r.roleId, u.createdBy
+        FROM user u
+        INNER JOIN userRole ur ON u.userId = ur.userId
+        INNER JOIN role r ON ur.roleId = r.roleId
+        WHERE (u.createdBy = ? OR u.userId = ?) AND r.roleId = ?
+        ORDER BY u.created_at DESC LIMIT ${limitInt} OFFSET ${offsetInt}
+      `;
+      queryParams = [creatorId, creatorId, roleId];
+    } else {
+      query = `
+        SELECT u.userId, u.firstName, u.lastName, u.email, u.phoneNumber,
+               u.address, u.gender, u.nationality, u.dateOfBirth, u.image,
+               u.created_at, r.roleName, r.roleId, u.createdBy
+        FROM user u
+        INNER JOIN userRole ur ON u.userId = ur.userId
+        INNER JOIN role r ON ur.roleId = r.roleId
+        WHERE (u.createdBy = ? OR u.userId = ?)
+        ORDER BY u.created_at DESC LIMIT ${limitInt} OFFSET ${offsetInt}
+      `;
+      queryParams = [creatorId, creatorId];
+    }
+
+    console.log('Executing query:', query);
+    console.log('Query params:', queryParams);
+
+    const [result] = await db.execute(query, queryParams);
+
+    console.log(`getUsersByCreator: Found ${result.length} users for creator ${creatorId}`);
+
+    return result;
+  } catch (error) {
+    console.error('Error in getUsersByCreator:', error);
+    throw error;
+  }
+};
+
+// Get count of users created by a specific user (HIERARCHICAL)
+const getUsersCountByCreator = async (creatorId, roleId = null) => {
+  try {
+    let query = `
+      SELECT COUNT(*) as count
+      FROM user u
+      INNER JOIN userRole ur ON u.userId = ur.userId
+      WHERE (u.createdBy = ? OR u.userId = ?)
+    `;
+
+    let queryParams = [creatorId, creatorId]; // Include self
+
+    if (roleId) {
+      query += ' AND ur.roleId = ?';
+      queryParams.push(roleId);
+    }
+
+    const [result] = await db.execute(query, queryParams);
+    return result[0].count;
+  } catch (error) {
+    console.error('Error in getUsersCountByCreator:', error);
+    throw error;
   }
 };
 
@@ -431,6 +550,7 @@ const deleteUserById = async (userId) => {
 
 export default {
   createUser,
+  createUserWithCreator,
   createUserWithConnection,
   getUserById,
   getUserByEmail,
@@ -438,6 +558,8 @@ export default {
   deleteUser: deleteUserById,
   getAllUsers,
   getUsersCount,
+  getUsersByCreator,
+  getUsersCountByCreator,
   updateUserRole,
   comparePassword,
   getUsersByRole,

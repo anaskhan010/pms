@@ -1,17 +1,30 @@
 import db from '../../config/db.js';
 
-const createRole = async (roleName) => {
+const createRole = async (roleName, createdByUserId = null) => {
   const existingRole = await getRoleByName(roleName);
   if (existingRole) {
     throw new Error('Role with this name already exists');
   }
 
+  // If created by an owner user, prefix the role name with owner identifier
+  let finalRoleName = roleName;
+  if (createdByUserId) {
+    // Check if the user is an owner (roleId = 2)
+    const userRoleQuery = 'SELECT roleId FROM userRole WHERE userId = ?';
+    const [userRoles] = await db.execute(userRoleQuery, [createdByUserId]);
+
+    if (userRoles.some(ur => ur.roleId === 2)) {
+      // Owner user - prefix the role name
+      finalRoleName = `owner_${createdByUserId}_${roleName}`;
+    }
+  }
+
   const query = 'INSERT INTO role (roleName) VALUES (?)';
-  const result = await db.execute(query, [roleName]);
-  
+  const result = await db.execute(query, [finalRoleName]);
+
   return {
     roleId: result[0].insertId,
-    roleName
+    roleName: finalRoleName
   };
 };
 
@@ -31,6 +44,31 @@ const getAllRoles = async () => {
   const query = 'SELECT * FROM role ORDER BY roleName ASC';
   const [rows] = await db.execute(query);
   return rows;
+};
+
+// Get roles that an owner can assign (HIERARCHICAL)
+const getRolesForOwner = async (ownerId) => {
+  try {
+    console.log(`getRolesForOwner: Getting roles for owner ${ownerId}`);
+
+    // Owner can assign staff roles (3-6) + custom roles they created
+    const query = `
+      SELECT roleId, roleName
+      FROM role
+      WHERE (roleId BETWEEN 3 AND 6)
+         OR (roleName LIKE ?)
+      ORDER BY roleId
+    `;
+
+    const [rows] = await db.execute(query, [`owner_${ownerId}_%`]);
+
+    console.log(`getRolesForOwner: Found ${rows.length} assignable roles for owner ${ownerId}`);
+
+    return rows;
+  } catch (error) {
+    console.error('Error in getRolesForOwner:', error);
+    throw error;
+  }
 };
 
 const updateRole = async (roleId, roleName) => {
@@ -104,9 +142,55 @@ const getUsersByRole = async (roleId, limit = 50, offset = 0) => {
     ORDER BY u.created_at DESC
     LIMIT ? OFFSET ?
   `;
-  
+
   const [rows] = await db.execute(query, [roleId, limit, offset]);
   return rows;
+};
+
+// Check if a role belongs to a specific owner
+const isRoleOwnedByUser = async (roleId, userId) => {
+  const role = await getRoleById(roleId);
+  if (!role) return false;
+
+  // Check if role name follows owner pattern
+  const ownerPattern = `owner_${userId}_`;
+  return role.roleName.startsWith(ownerPattern);
+};
+
+// Get roles created by a specific owner
+const getRolesByOwner = async (ownerId) => {
+  const query = `
+    SELECT roleId, roleName
+    FROM role
+    WHERE roleName LIKE ?
+    ORDER BY roleName ASC
+  `;
+
+  const [rows] = await db.execute(query, [`owner_${ownerId}_%`]);
+  return rows;
+};
+
+// Get all roles that a user can manage (admin gets all, owner gets their own + assignable roles)
+const getManageableRoles = async (userId, userRoleId) => {
+  if (userRoleId === 1) {
+    // Admin can manage all roles
+    return getAllRoles();
+  } else if (userRoleId === 2) {
+    // Owner can manage their own created roles + predefined assignable roles
+    const ownRoles = await getRolesByOwner(userId);
+    const assignableRoles = await getRolesForOwner(userId);
+
+    // Combine and deduplicate
+    const allRoles = [...ownRoles, ...assignableRoles];
+    const uniqueRoles = allRoles.filter((role, index, self) =>
+      index === self.findIndex(r => r.roleId === role.roleId)
+    );
+
+    return uniqueRoles;
+  } else {
+    // Other roles cannot manage roles
+    return [];
+  }
 };
 
 export default {
@@ -114,9 +198,13 @@ export default {
   getRoleById,
   getRoleByName,
   getAllRoles,
+  getRolesForOwner,
   updateRole,
   deleteRole,
   validateRoleId,
   getRoleStatistics,
-  getUsersByRole
+  getUsersByRole,
+  isRoleOwnedByUser,
+  getRolesByOwner,
+  getManageableRoles
 };

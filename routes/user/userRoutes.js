@@ -8,29 +8,32 @@ import {
   getAllRoles,
   upload
 } from '../../controllers/user/userController.js';
-import { protect, requireResourcePermission } from '../../middleware/auth.js';
+import { protect, requireResourcePermission, smartAuthorize, getUserAccess } from '../../middleware/auth.js';
 
 const router = express.Router();
 
 // Apply authentication middleware to all routes
 router.use(protect);
 
-// GET /api/users - Get all users with pagination
-router.get('/', requireResourcePermission('users', 'view'), getAllUsers);
+// Apply user access filtering middleware for ownership-based isolation
+router.use(getUserAccess);
 
-// GET /api/users/roles - Get all roles for dropdown
-router.get('/roles', requireResourcePermission('users', 'view'), getAllRoles);
+// GET /api/users - Get all users with pagination (with data filtering)
+router.get('/', smartAuthorize('users', 'view_own'), getAllUsers);
 
-// GET /api/users/:id - Get user by ID
-router.get('/:id', requireResourcePermission('users', 'view'), getUserById);
+// GET /api/users/roles - Get all roles for dropdown (with data filtering)
+router.get('/roles', smartAuthorize('users', 'view_own'), getAllRoles);
 
-// POST /api/users - Create new user (with image upload)
-router.post('/', requireResourcePermission('users', 'create'), upload.single('image'), createUser);
+// GET /api/users/:id - Get user by ID (with data filtering)
+router.get('/:id', smartAuthorize('users', 'view_own'), getUserById);
 
-// PUT /api/users/:id - Update user (with image upload)
-router.put('/:id', upload.single('image'), updateUser);
+// POST /api/users - Create new user (with image upload and data filtering)
+router.post('/', smartAuthorize('users', 'create'), upload.single('image'), createUser);
 
-// DELETE /api/users/:id - Delete user
-router.delete('/:id', deleteUser);
+// PUT /api/users/:id - Update user (with image upload and data filtering)
+router.put('/:id', smartAuthorize('users', 'update'), upload.single('image'), updateUser);
+
+// DELETE /api/users/:id - Delete user (with data filtering)
+router.delete('/:id', smartAuthorize('users', 'delete'), deleteUser);
 
 export default router;

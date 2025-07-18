@@ -21,6 +21,8 @@ import permissions from './routes/permission/permissions.js';
 import financialTransactions from './routes/financial/financialTransactions.js';
 import paymentSchedules from './routes/financial/paymentSchedules.js';
 import sidebar from './routes/sidebar/sidebarRoutes.js';
+import virtualTours from './routes/virtual/virtualTourRoutes.js';
+import vendors from './routes/vendor/vendorRoutes.js';
 
 
 
@@ -87,6 +89,8 @@ app.use('/api/v1/permissions', permissions);
 app.use('/api/v1/financial/transactions', financialTransactions);
 app.use('/api/v1/financial/payment-schedules', paymentSchedules);
 app.use('/api/v1/sidebar', sidebar);
+app.use('/api/v1/virtual-tours', virtualTours);
+app.use('/api/v1/vendors', vendors);
 
 
 

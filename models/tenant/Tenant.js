@@ -215,13 +215,43 @@ const getAllTenants = async (page = 1, limit = 25, filters = {}) => {
     const values = [];
     const countValues = [];
 
-    // Add owner building filtering
-    if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
-      const placeholders = filters.ownerBuildings.map(() => '?').join(',');
-      query += ` AND (b.buildingId IN (${placeholders}) OR aa.apartmentId IS NULL)`;
-      countQuery += ` AND (b.buildingId IN (${placeholders}) OR aa.apartmentId IS NULL)`;
-      values.push(...filters.ownerBuildings);
-      countValues.push(...filters.ownerBuildings);
+    // Apply ownership-based filtering for non-admin users
+    if (filters.ownerBuildings !== undefined || filters.tenantIds !== undefined) {
+      let ownershipConditions = [];
+
+      // Filter by building ownership - show tenants in owner's buildings
+      if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
+        const placeholders = filters.ownerBuildings.map(() => '?').join(',');
+        ownershipConditions.push(`(b.buildingId IN (${placeholders}) AND aa.apartmentId IS NOT NULL)`);
+        values.push(...filters.ownerBuildings);
+        countValues.push(...filters.ownerBuildings);
+      }
+
+      // Filter by direct tenant ownership - show tenants created by owner
+      if (filters.tenantIds && filters.tenantIds.length > 0) {
+        const placeholders = filters.tenantIds.map(() => '?').join(',');
+        ownershipConditions.push(`t.tenantId IN (${placeholders})`);
+        values.push(...filters.tenantIds);
+        countValues.push(...filters.tenantIds);
+      }
+
+      // Apply ownership conditions
+      if (ownershipConditions.length > 0) {
+        const ownershipFilter = `(${ownershipConditions.join(' OR ')})`;
+        query += ` AND ${ownershipFilter}`;
+        countQuery += ` AND ${ownershipFilter}`;
+
+        // Only exclude orphan tenants for direct tenant ownership, not building-based access
+        // Building-assigned owners should see ALL tenants in their buildings
+        if (filters.tenantIds && filters.tenantIds.length > 0 && (!filters.ownerBuildings || filters.ownerBuildings.length === 0)) {
+          query += ' AND t.createdBy IS NOT NULL';
+          countQuery += ' AND t.createdBy IS NOT NULL';
+        }
+      } else {
+        // Owner has no buildings and no tenants - show empty result
+        query += ` AND 1 = 0`;
+        countQuery += ` AND 1 = 0`;
+      }
     }
 
     query += ` ORDER BY u.created_at DESC LIMIT ${limitNum} OFFSET ${offset}`;

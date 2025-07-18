@@ -63,11 +63,11 @@ const uploadSingleVillaImage = multer({
 
 router.use(protect);
 
-// Statistics route
-router.get('/getVillaStatistics', requireResourcePermission('villas', 'view'), villaController.getVillaStatistics);
+// Statistics route (with data filtering)
+router.get('/getVillaStatistics', smartAuthorize('villas', 'view_own'), getOwnerVillas, villaController.getVillaStatistics);
 
 // Main CRUD routes
-router.get('/getVillas', smartAuthorize('villas', 'view'), getOwnerVillas, villaController.getAllVillas);
+router.get('/getVillas', smartAuthorize('villas', 'view_own'), getOwnerVillas, villaController.getAllVillas);
 
 router.post(
   '/createVilla',
@@ -77,7 +77,7 @@ router.post(
   villaController.createVilla
 );
 
-router.get('/getVilla/:id', smartAuthorize('villas', 'view'), validateId, handleValidationErrors, villaController.getVillaById);
+router.get('/getVilla/:id', smartAuthorize('villas', 'view_own'), getOwnerVillas, validateId, handleValidationErrors, villaController.getVillaById);
 
 router.put(
   '/updateVilla/:id',
@@ -93,7 +93,7 @@ router.put(
 router.delete('/deleteVilla/:id', requireResourcePermission('villas', 'delete'), validateId, handleValidationErrors, villaController.deleteVilla);
 
 // Villa image management routes
-router.get('/getVillaImages/:id', smartAuthorize('villas', 'view'), validateId, handleValidationErrors, villaController.getVillaImages);
+router.get('/getVillaImages/:id', smartAuthorize('villas', 'view_own'), getOwnerVillas, validateId, handleValidationErrors, villaController.getVillaImages);
 
 router.post(
   '/addVillaImage/:id',

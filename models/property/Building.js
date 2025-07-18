@@ -1,19 +1,20 @@
 import db from '../../config/db.js';
 
-const createBuilding = async (buildingName, buildingAddress, buildingCreatedDate = new Date()) => {
+const createBuilding = async (buildingName, buildingAddress, buildingCreatedDate = new Date(), createdBy = null) => {
   const query = `
-    INSERT INTO building (buildingName, buildingAddress, buildingCreatedDate) 
-    VALUES (?, ?, ?)
+    INSERT INTO building (buildingName, buildingAddress, buildingCreatedDate, createdBy)
+    VALUES (?, ?, ?, ?)
   `;
-  
-  const values = [buildingName, buildingAddress, buildingCreatedDate];
+
+  const values = [buildingName, buildingAddress, buildingCreatedDate, createdBy];
   const result = await db.execute(query, values);
-  
+
   return {
     buildingId: result[0].insertId,
     buildingName,
     buildingAddress,
-    buildingCreatedDate
+    buildingCreatedDate,
+    createdBy
   };
 };
 
@@ -57,13 +58,20 @@ const getAllBuildings = async (page = 1, limit = 25, filters = {}) => {
   const values      = [];
   const countValues = [];
 
-  // Add owner building filtering
-  if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
-    const placeholders = filters.ownerBuildings.map(() => '?').join(',');
-    query += ` AND b.buildingId IN (${placeholders})`;
-    countQuery += ` AND b.buildingId IN (${placeholders})`;
-    values.push(...filters.ownerBuildings);
-    countValues.push(...filters.ownerBuildings);
+  // Add ownership-based filtering for non-admin users
+  if (filters.ownerBuildings !== undefined) {
+    if (filters.ownerBuildings.length > 0) {
+      // User has specific buildings they own - show only those
+      const placeholders = filters.ownerBuildings.map(() => '?').join(',');
+      query += ` AND b.buildingId IN (${placeholders})`;
+      countQuery += ` AND b.buildingId IN (${placeholders})`;
+      values.push(...filters.ownerBuildings);
+      countValues.push(...filters.ownerBuildings);
+    } else {
+      // User has no buildings - show nothing (empty result)
+      query += ` AND 1 = 0`;
+      countQuery += ` AND 1 = 0`;
+    }
   }
 
   if (filters.buildingName) {

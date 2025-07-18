@@ -54,10 +54,7 @@ const testConnection = async () => {
     const connection = await pool.getConnection();
     console.log('✅ Database connection test successful');
 
-    // Test if we can select the database
-    const [result] = await connection.execute('SELECT DATABASE() as current_db');
-    console.log('Current database:', result[0].current_db);
-
+    
     connection.release();
     return true;
   } catch (error) {

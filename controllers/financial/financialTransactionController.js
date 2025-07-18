@@ -3,6 +3,24 @@ import PaymentSchedule from '../../models/financial/PaymentSchedule.js';
 import TenantPaymentHistory from '../../models/financial/TenantPaymentHistory.js';
 import db from '../../config/db.js';
 
+// Helper function to check if a transaction's tenant is in owner's buildings
+const checkTransactionBuildingAccess = async (tenantId, buildingIds) => {
+  if (!tenantId || !buildingIds || buildingIds.length === 0) return false;
+
+  const placeholders = buildingIds.map(() => '?').join(',');
+  const query = `
+    SELECT COUNT(*) as count
+    FROM ApartmentAssigned aa
+    INNER JOIN apartment a ON aa.apartmentId = a.apartmentId
+    INNER JOIN floor f ON a.floorId = f.floorId
+    INNER JOIN building b ON f.buildingId = b.buildingId
+    WHERE aa.tenantId = ? AND b.buildingId IN (${placeholders})
+  `;
+
+  const [result] = await db.execute(query, [tenantId, ...buildingIds]);
+  return result[0].count > 0;
+};
+
 /**
  * Financial Transaction Controller
  * Handles all financial transaction operations
@@ -41,9 +59,17 @@ const getTransactions = async (req, res) => {
       offset: (parseInt(page) - 1) * parseInt(limit)
     };
 
-    // Add owner building filtering if user is owner
-    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
-      filters.ownerBuildings = req.ownerBuildings;
+    // Add ownership-based transaction filtering
+    if (req.transactionFilter) {
+      if (req.transactionFilter.buildingIds) {
+        filters.ownerBuildings = req.transactionFilter.buildingIds;
+      }
+      if (req.transactionFilter.transactionIds) {
+        filters.transactionIds = req.transactionFilter.transactionIds;
+      }
+      console.log(`🔍 Filtering transactions for owner: ${req.transactionFilter.buildingIds?.length || 0} buildings, ${req.transactionFilter.transactionIds?.length || 0} direct transactions`);
+    } else if (req.user && req.user.roleId === 1) {
+      console.log(`👑 Admin user - showing all transactions`);
     }
 
     const transactions = await FinancialTransaction.getAllTransactions(filters);
@@ -90,32 +116,24 @@ const getTransaction = async (req, res) => {
       });
     }
 
-    // Check if owner has access to this transaction
-    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
-      // For owners, check if the transaction's tenant is assigned to an apartment in their buildings
-      if (transaction.tenantId) {
-        const tenantAccessQuery = `
-          SELECT COUNT(*) as count
-          FROM ApartmentAssigned aa
-          INNER JOIN apartment a ON aa.apartmentId = a.apartmentId
-          INNER JOIN floor f ON a.floorId = f.floorId
-          INNER JOIN building b ON f.buildingId = b.buildingId
-          WHERE aa.tenantId = ? AND b.buildingId IN (${req.ownerBuildings.map(() => '?').join(',')})
-        `;
-        const [accessResult] = await db.execute(tenantAccessQuery, [transaction.tenantId, ...req.ownerBuildings]);
+    // Check ownership - user can only view transactions they have access to
+    if (req.transactionFilter) {
+      const hasAccess =
+        (req.transactionFilter.transactionIds && req.transactionFilter.transactionIds.includes(req.params.id)) ||
+        (req.transactionFilter.buildingIds && transaction.tenantId && await checkTransactionBuildingAccess(transaction.tenantId, req.transactionFilter.buildingIds));
 
-        if (accessResult[0].count === 0) {
-          return res.status(403).json({
-            success: false,
-            error: 'Access denied. This transaction is not related to your assigned buildings.'
-          });
-        }
-      } else {
+      if (!hasAccess) {
         return res.status(403).json({
           success: false,
-          error: 'Access denied. This transaction has no associated tenant.'
+          error: 'Access denied. You can only view transactions you have access to.'
         });
       }
+    } else if (req.user && req.user.roleId !== 1) {
+      // Non-admin users without transaction filter should not access individual transactions
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. Insufficient permissions.'
+      });
     }
 
     res.status(200).json({
@@ -157,8 +175,8 @@ const createTransaction = async (req, res) => {
       billingPeriodEnd
     } = req.body;
 
-    // For owners, validate that the tenant/apartment belongs to their assigned buildings
-    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
+    // For owners, validate that the tenant/apartment belongs to their assigned buildings (admin users bypass this check)
+    if (req.user.roleId !== 1 && req.ownerBuildings && req.ownerBuildings.length > 0) {
       if (tenantId) {
         // Validate tenant is in owner's buildings
         const tenantValidationQuery = `
@@ -323,6 +341,44 @@ const updateTransaction = async (req, res) => {
 // @access  Private (Admin/Owner)
 const deleteTransaction = async (req, res) => {
   try {
+    // First, get the existing transaction to validate ownership
+    const existingTransaction = await FinancialTransaction.getTransactionById(req.params.id);
+
+    if (!existingTransaction) {
+      return res.status(404).json({
+        success: false,
+        error: 'Transaction not found'
+      });
+    }
+
+    // Admin role (roleId = 1) can delete any transaction
+    if (req.user.roleId !== 1) {
+      // For non-admin users, check if they have access to this transaction
+      if (req.isOwnershipAccess) {
+        // Check if the transaction belongs to a tenant in user's assigned buildings
+        const accessQuery = `
+          SELECT COUNT(*) as count
+          FROM FinancialTransactions ft
+          INNER JOIN tenant t ON ft.tenantId = t.tenantId
+          INNER JOIN apartmentAssignment aa ON t.tenantId = aa.tenantId
+          INNER JOIN apartment a ON aa.apartmentId = a.apartmentId
+          INNER JOIN floor f ON a.floorId = f.floorId
+          INNER JOIN building b ON f.buildingId = b.buildingId
+          INNER JOIN buildingAssigned ba ON b.buildingId = ba.buildingId
+          WHERE ft.transactionId = ? AND ba.userId = ?
+        `;
+
+        const [accessResult] = await db.execute(accessQuery, [req.params.id, req.user.userId]);
+
+        if (accessResult[0].count === 0) {
+          return res.status(403).json({
+            success: false,
+            error: 'You can only delete transactions for tenants in your assigned buildings'
+          });
+        }
+      }
+    }
+
     const deleted = await FinancialTransaction.deleteTransaction(req.params.id);
 
     if (!deleted) {
@@ -520,24 +576,23 @@ const getTenantPaymentHistory = async (req, res) => {
     const { tenantId } = req.params;
     const { year, apartmentId, limit = 12 } = req.query;
 
-    // Check if owner has access to this tenant
-    if (req.ownerBuildings && req.ownerBuildings.length > 0) {
-      const tenantAccessQuery = `
-        SELECT COUNT(*) as count
-        FROM ApartmentAssigned aa
-        INNER JOIN apartment a ON aa.apartmentId = a.apartmentId
-        INNER JOIN floor f ON a.floorId = f.floorId
-        INNER JOIN building b ON f.buildingId = b.buildingId
-        WHERE aa.tenantId = ? AND b.buildingId IN (${req.ownerBuildings.map(() => '?').join(',')})
-      `;
-      const [accessResult] = await db.execute(tenantAccessQuery, [tenantId, ...req.ownerBuildings]);
+    // Check ownership - user can only view payment history for tenants they have access to
+    if (req.transactionFilter) {
+      const hasAccess =
+        (req.transactionFilter.buildingIds && await checkTenantInBuildings(parseInt(tenantId), req.transactionFilter.buildingIds));
 
-      if (accessResult[0].count === 0) {
+      if (!hasAccess) {
         return res.status(403).json({
           success: false,
-          error: 'Access denied. This tenant is not assigned to your buildings.'
+          error: 'Access denied. You can only view payment history for tenants you have access to.'
         });
       }
+    } else if (req.user && req.user.roleId !== 1) {
+      // Non-admin users without transaction filter should not access tenant payment history
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. Insufficient permissions.'
+      });
     }
 
     const filters = { year, apartmentId, limit: parseInt(limit) };

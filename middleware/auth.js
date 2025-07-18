@@ -106,28 +106,19 @@ export const getOwnerBuildings = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  // Check if user has permission to view all buildings (admin-level access)
-  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'buildings', 'view');
-
-  if (hasViewAllPermission) {
-    // User can see all buildings
-    req.ownerBuildings = null; // null means no filtering
-    return next();
-  }
+  // Admin role already handled above, proceed with ownership-based filtering
 
   // Check if user has permission to view their own buildings
   const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'buildings', 'view_own');
 
   if (hasViewOwnPermission) {
-    // Get buildings assigned to this user
+    // Get buildings ASSIGNED TO this user (assignment-based)
     const query = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
     const [rows] = await db.execute(query, [req.user.userId]);
     req.ownerBuildings = rows.map(row => row.buildingId);
 
-    if (req.ownerBuildings.length === 0) {
-      return next(new ErrorResponse('No buildings assigned to this user', 403));
-    }
-
+    // Allow users with no buildings assigned - they'll see empty results
+    // This is normal for new users who haven't been assigned any buildings yet
     return next();
   }
 
@@ -137,28 +128,25 @@ export const getOwnerBuildings = asyncHandler(async (req, res, next) => {
 
 // Enhanced middleware to get villas assigned to user based on permissions
 export const getOwnerVillas = asyncHandler(async (req, res, next) => {
-  // Check if user has permission to view all villas (admin-level access)
-  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'villas', 'view');
-
-  if (hasViewAllPermission) {
-    // User can see all villas
+  // Admin role (roleId = 1) has access to everything
+  if (req.user.roleId === 1) {
     req.ownerVillas = null; // null means no filtering
     return next();
   }
+
+  // Admin role already handled above, proceed with ownership-based filtering
 
   // Check if user has permission to view their own villas
   const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'villas', 'view_own');
 
   if (hasViewOwnPermission) {
-    // Get villas assigned to this user
-    const query = 'SELECT villaId FROM villasAssigned WHERE userId = ?';
+    // Get villas CREATED BY this user (ownership-based, not assignment-based)
+    const query = 'SELECT villasId FROM villas WHERE createdBy = ?';
     const [rows] = await db.execute(query, [req.user.userId]);
-    req.ownerVillas = rows.map(row => row.villaId);
+    req.ownerVillas = rows.map(row => row.villasId);
 
-    if (req.ownerVillas.length === 0) {
-      return next(new ErrorResponse('No villas assigned to this user', 403));
-    }
-
+    // Allow users with no villas created - they'll see empty results
+    // This is normal for new users who haven't created any villas yet
     return next();
   }
 
@@ -271,28 +259,24 @@ export const getTenantAccess = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  // Check if user has permission to view all tenants
-  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'tenants', 'view');
-
-  if (hasViewAllPermission) {
-    req.tenantFilter = null; // null means no filtering
-    return next();
-  }
+  // Admin role already handled above, proceed with ownership-based filtering
 
   // Check if user has permission to view their own tenants
   const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'tenants', 'view_own');
 
   if (hasViewOwnPermission) {
-    // Get buildings assigned to this user to filter tenants
+    // Get buildings ASSIGNED TO this user to filter tenants (assignment-based)
     const buildingQuery = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
     const [buildingRows] = await db.execute(buildingQuery, [req.user.userId]);
     const buildingIds = buildingRows.map(row => row.buildingId);
 
-    if (buildingIds.length === 0) {
-      return next(new ErrorResponse('No buildings assigned to this user', 403));
-    }
+    // Also get tenants CREATED BY this user directly
+    const tenantQuery = 'SELECT tenantId FROM tenant WHERE createdBy = ?';
+    const [tenantRows] = await db.execute(tenantQuery, [req.user.userId]);
+    const tenantIds = tenantRows.map(row => row.tenantId);
 
-    req.tenantFilter = { buildingIds };
+    // Allow users with no buildings/tenants assigned - they'll see empty results
+    req.tenantFilter = { buildingIds, tenantIds };
     return next();
   }
 
@@ -301,28 +285,30 @@ export const getTenantAccess = asyncHandler(async (req, res, next) => {
 
 // Enhanced middleware for transaction access with ownership validation
 export const getTransactionAccess = asyncHandler(async (req, res, next) => {
-  // Check if user has permission to view all transactions
-  const hasViewAllPermission = await permissionModel.hasResourcePermission(req.user.userId, 'transactions', 'view');
-
-  if (hasViewAllPermission) {
+  // Admin role (roleId = 1) has access to everything
+  if (req.user.roleId === 1) {
     req.transactionFilter = null; // null means no filtering
     return next();
   }
+
+  // Admin role already handled above, proceed with ownership-based filtering
 
   // Check if user has permission to view their own transactions
   const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'transactions', 'view_own');
 
   if (hasViewOwnPermission) {
-    // Get buildings assigned to this user to filter transactions
+    // Get buildings ASSIGNED TO this user to filter transactions (assignment-based)
     const buildingQuery = 'SELECT buildingId FROM buildingAssigned WHERE userId = ?';
     const [buildingRows] = await db.execute(buildingQuery, [req.user.userId]);
     const buildingIds = buildingRows.map(row => row.buildingId);
 
-    if (buildingIds.length === 0) {
-      return next(new ErrorResponse('No buildings assigned to this user', 403));
-    }
+    // Also get transactions CREATED BY this user directly
+    const transactionQuery = 'SELECT transactionId FROM FinancialTransactions WHERE createdBy = ?';
+    const [transactionRows] = await db.execute(transactionQuery, [req.user.userId]);
+    const transactionIds = transactionRows.map(row => row.transactionId);
 
-    req.transactionFilter = { buildingIds };
+    // Allow users with no buildings/transactions assigned - they'll see empty results
+    req.transactionFilter = { buildingIds, transactionIds };
     return next();
   }
 
@@ -438,4 +424,27 @@ export const sendTokenResponse = (user, statusCode, res) => {
     });
 };
 
+// Enhanced middleware to get users that current user can manage (ownership-based)
+export const getUserAccess = asyncHandler(async (req, res, next) => {
+  // Admin role (roleId = 1) has access to everything
+  if (req.user.roleId === 1) {
+    req.userFilter = null; // null means no filtering
+    return next();
+  }
 
+  // Check if user has permission to view own users
+  const hasViewOwnPermission = await permissionModel.hasResourcePermission(req.user.userId, 'users', 'view_own');
+
+  if (hasViewOwnPermission) {
+    // Get users CREATED BY this user + themselves
+    const userQuery = 'SELECT userId FROM user WHERE createdBy = ? OR userId = ?';
+    const [userRows] = await db.execute(userQuery, [req.user.userId, req.user.userId]);
+    const userIds = userRows.map(row => row.userId);
+
+    // Allow users with no created users - they'll see only themselves
+    req.userFilter = { userIds };
+    return next();
+  }
+
+  return next(new ErrorResponse('Access denied. Insufficient permissions.', 403));
+});

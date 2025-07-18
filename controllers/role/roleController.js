@@ -3,7 +3,8 @@ import asyncHandler from '../../utils/asyncHandler.js';
 import ErrorResponse from '../../utils/errorResponse.js';
 
 const getAllRoles = asyncHandler(async (req, res, next) => {
-  const roles = await roleModel.getAllRoles();
+  // Use getManageableRoles to filter based on user's role
+  const roles = await roleModel.getManageableRoles(req.user.userId, req.user.roleId);
 
   res.status(200).json({
     success: true,
@@ -33,7 +34,8 @@ const createRole = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const role = await roleModel.createRole(roleName);
+    // Pass the user ID to track ownership for owner users
+    const role = await roleModel.createRole(roleName, req.user.userId);
 
     res.status(201).json({
       success: true,
@@ -51,8 +53,25 @@ const updateRole = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Role name is required', 400));
   }
 
+  // Check ownership for non-admin users
+  if (req.user.roleId !== 1) {
+    const isOwned = await roleModel.isRoleOwnedByUser(req.params.id, req.user.userId);
+    if (!isOwned) {
+      return next(new ErrorResponse('You can only update roles you created', 403));
+    }
+  }
+
   try {
-    const role = await roleModel.updateRole(req.params.id, roleName);
+    // For owner users, maintain the ownership prefix
+    let finalRoleName = roleName;
+    if (req.user.roleId === 2) {
+      const existingRole = await roleModel.getRoleById(req.params.id);
+      if (existingRole && existingRole.roleName.startsWith(`owner_${req.user.userId}_`)) {
+        finalRoleName = `owner_${req.user.userId}_${roleName}`;
+      }
+    }
+
+    const role = await roleModel.updateRole(req.params.id, finalRoleName);
 
     res.status(200).json({
       success: true,
@@ -64,6 +83,14 @@ const updateRole = asyncHandler(async (req, res, next) => {
 });
 
 const deleteRole = asyncHandler(async (req, res, next) => {
+  // Check ownership for non-admin users
+  if (req.user.roleId !== 1) {
+    const isOwned = await roleModel.isRoleOwnedByUser(req.params.id, req.user.userId);
+    if (!isOwned) {
+      return next(new ErrorResponse('You can only delete roles you created', 403));
+    }
+  }
+
   try {
     const success = await roleModel.deleteRole(req.params.id);
 

@@ -58,11 +58,11 @@ const uploadSingleBuildingImage = multer({
 
 router.use(protect);
 
-// Statistics route
-router.get('/getBuildingStatistics', requireResourcePermission('buildings', 'view'), buildingController.getBuildingStatistics);
+// Statistics route (with data filtering)
+router.get('/getBuildingStatistics', smartAuthorize('buildings', 'view_own'), getOwnerBuildings, buildingController.getBuildingStatistics);
 
 // Main CRUD routes
-router.get('/getBuildings', smartAuthorize('buildings', 'view'), getOwnerBuildings, buildingController.getAllBuildings);
+router.get('/getBuildings', smartAuthorize('buildings', 'view_own'), getOwnerBuildings, buildingController.getAllBuildings);
 
 router.post(
   '/createBuilding',
@@ -127,9 +127,9 @@ router.post(
   buildingController.createComprehensiveBuilding
 );
 
-router.get('/getBuilding/:id', smartAuthorize('buildings', 'view'), getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingById);
+router.get('/getBuilding/:id', smartAuthorize('buildings', 'view_own'), getOwnerBuildings, validateId, handleValidationErrors, buildingController.getBuildingById);
 
-router.get('/getComprehensiveBuilding/:id', smartAuthorize('buildings', 'view'), getOwnerBuildings, validateId, handleValidationErrors, buildingController.getComprehensiveBuildingById);
+router.get('/getComprehensiveBuilding/:id', smartAuthorize('buildings', 'view_own'), getOwnerBuildings, validateId, handleValidationErrors, buildingController.getComprehensiveBuildingById);
 
 router.put(
   '/updateBuilding/:id',

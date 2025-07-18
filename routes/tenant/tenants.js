@@ -18,19 +18,19 @@ const router = express.Router();
 
 router.use(protect);
 
-router.get('/statistics', smartAuthorize('tenants', 'view'), tenantController.getTenantStatistics);
-router.get('/count', smartAuthorize('tenants', 'view'), tenantController.getTenantCount);
+router.get('/statistics', smartAuthorize('tenants', 'view_own'), getTenantAccess, tenantController.getTenantStatistics);
+router.get('/count', smartAuthorize('tenants', 'view_own'), getTenantAccess, tenantController.getTenantCount);
 
 // Building and apartment routes for tenant creation
-router.get('/buildings', smartAuthorize('buildings', 'view'), getTenantAccess, tenantController.getAllBuildings);
-router.get('/buildings/:buildingId/floors', smartAuthorize('buildings', 'view'), getTenantAccess, tenantController.getFloorsByBuilding);
-router.get('/floors/:floorId/apartments', smartAuthorize('apartments', 'view'), getTenantAccess, tenantController.getApartmentsByFloor);
-router.get('/available-apartments', smartAuthorize('apartments', 'view'), getTenantAccess, tenantController.getAvailableApartments);
-router.get('/available-for-assignment', smartAuthorize('tenants', 'assign'), tenantController.getAvailableTenantsForAssignment);
-router.get('/assignments', smartAuthorize('tenants', 'view'), getTenantAccess, tenantController.getApartmentAssignments);
+router.get('/buildings', smartAuthorize('buildings', 'view_own'), getTenantAccess, tenantController.getAllBuildings);
+router.get('/buildings/:buildingId/floors', smartAuthorize('buildings', 'view_own'), getTenantAccess, tenantController.getFloorsByBuilding);
+router.get('/floors/:floorId/apartments', smartAuthorize('apartments', 'view_own'), getTenantAccess, tenantController.getApartmentsByFloor);
+router.get('/available-apartments', smartAuthorize('apartments', 'view_own'), getTenantAccess, tenantController.getAvailableApartments);
+router.get('/available-for-assignment', smartAuthorize('tenants', 'assign'), getTenantAccess, tenantController.getAvailableTenantsForAssignment);
+router.get('/assignments', smartAuthorize('tenants', 'view_own'), getTenantAccess, tenantController.getApartmentAssignments);
 
 // Alternative endpoints for frontend compatibility
-router.get('/get-all-tenants', smartAuthorize('tenants', 'view'), getTenantAccess, tenantController.getAllTenants);
+router.get('/get-all-tenants', smartAuthorize('tenants', 'view_own'), getTenantAccess, tenantController.getAllTenants);
 router.post('/create-tenant',
   smartAuthorize('tenants', 'create'),
   getTenantAccess,
@@ -40,7 +40,7 @@ router.post('/create-tenant',
 );
 
 router.route('/')
-  .get(smartAuthorize('tenants', 'view'), getTenantAccess, tenantController.getAllTenants)
+  .get(smartAuthorize('tenants', 'view_own'), getTenantAccess, tenantController.getAllTenants)
   .post(
     smartAuthorize('tenants', 'create'),
     getTenantAccess,
@@ -52,7 +52,7 @@ router.route('/')
   );
 
 router.route('/:id')
-  .get(validateId, handleValidationErrors, tenantController.getTenantById)
+  .get(smartAuthorize('tenants', 'view_own'), getTenantAccess, validateId, handleValidationErrors, tenantController.getTenantById)
   .put(
     smartAuthorize('tenants', 'update'),
     validateResourceOwnership('tenants'),
@@ -65,13 +65,13 @@ router.route('/:id')
   .delete(smartAuthorize('tenants', 'delete'), validateId, handleValidationErrors, tenantController.deleteTenant);
 
 router.route('/:id/apartments')
-  .get(validateId, handleValidationErrors, tenantController.getTenantApartments);
+  .get(smartAuthorize('tenants', 'view_own'), getTenantAccess, validateId, handleValidationErrors, tenantController.getTenantApartments);
 
 router.route('/:id/apartments/:apartmentId')
   .post(smartAuthorize('apartments', 'assign'), validateId, handleValidationErrors, tenantController.assignApartment)
   .delete(smartAuthorize('apartments', 'assign'), validateId, handleValidationErrors, tenantController.removeApartmentAssignment);
 
 router.route('/:id/contracts')
-  .get(validateId, handleValidationErrors, tenantController.getTenantContracts);
+  .get(smartAuthorize('tenants', 'view_own'), getTenantAccess, validateId, handleValidationErrors, tenantController.getTenantContracts);
 
 export default router;

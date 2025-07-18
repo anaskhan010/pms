@@ -73,9 +73,17 @@ const getAllTenants = asyncHandler(async (req, res, next) => {
     search: req.query.search
   };
 
-  // Add owner building filtering if user is owner
-  if (req.ownerBuildings && req.ownerBuildings.length > 0) {
-    filters.ownerBuildings = req.ownerBuildings;
+  // Add ownership-based tenant filtering
+  if (req.tenantFilter) {
+    if (req.tenantFilter.buildingIds) {
+      filters.ownerBuildings = req.tenantFilter.buildingIds;
+    }
+    if (req.tenantFilter.tenantIds) {
+      filters.tenantIds = req.tenantFilter.tenantIds;
+    }
+    console.log(`🔍 Filtering tenants for owner: ${req.tenantFilter.buildingIds?.length || 0} buildings, ${req.tenantFilter.tenantIds?.length || 0} direct tenants`);
+  } else if (req.user && req.user.roleId === 1) {
+    console.log(`👑 Admin user - showing all tenants`);
   }
 
   const result = await tenantModel.getAllTenants(page, limit, filters);
@@ -98,6 +106,20 @@ const getTenantById = asyncHandler(async (req, res, next) => {
 
   if (!tenant) {
     return next(new ErrorResponse(`Tenant not found with id of ${req.params.id}`, 404));
+  }
+
+  // Check ownership - user can only view tenants they have access to
+  if (req.tenantFilter) {
+    const hasAccess =
+      (req.tenantFilter.tenantIds && req.tenantFilter.tenantIds.includes(parseInt(req.params.id))) ||
+      (req.tenantFilter.buildingIds && tenant.buildingId && req.tenantFilter.buildingIds.includes(tenant.buildingId));
+
+    if (!hasAccess) {
+      return next(new ErrorResponse('Access denied. You can only view tenants you have access to.', 403));
+    }
+  } else if (req.user && req.user.roleId !== 1) {
+    // Non-admin users without tenant filter should not access individual tenants
+    return next(new ErrorResponse('Access denied. Insufficient permissions.', 403));
   }
 
   res.status(200).json({
@@ -164,6 +186,19 @@ const deleteTenant = asyncHandler(async (req, res, next) => {
 });
 
 const getTenantApartments = asyncHandler(async (req, res, next) => {
+  // Check ownership first - user can only view apartments for tenants they have access to
+  if (req.tenantFilter) {
+    const hasAccess =
+      (req.tenantFilter.tenantIds && req.tenantFilter.tenantIds.includes(parseInt(req.params.id)));
+
+    if (!hasAccess) {
+      return next(new ErrorResponse('Access denied. You can only view apartments for tenants you have access to.', 403));
+    }
+  } else if (req.user && req.user.roleId !== 1) {
+    // Non-admin users without tenant filter should not access tenant apartments
+    return next(new ErrorResponse('Access denied. Insufficient permissions.', 403));
+  }
+
   const apartments = await tenantModel.getTenantApartments(req.params.id);
 
   res.status(200).json({
@@ -343,6 +378,20 @@ const getApartmentAssignments = asyncHandler(async (req, res, next) => {
 const getTenantContracts = asyncHandler(async (req, res, next) => {
   try {
     const tenantId = req.params.id;
+
+    // Check ownership first - user can only view contracts for tenants they have access to
+    if (req.tenantFilter) {
+      const hasAccess =
+        (req.tenantFilter.tenantIds && req.tenantFilter.tenantIds.includes(parseInt(tenantId)));
+
+      if (!hasAccess) {
+        return next(new ErrorResponse('Access denied. You can only view contracts for tenants you have access to.', 403));
+      }
+    } else if (req.user && req.user.roleId !== 1) {
+      // Non-admin users without tenant filter should not access tenant contracts
+      return next(new ErrorResponse('Access denied. Insufficient permissions.', 403));
+    }
+
     const contracts = await tenantModel.getTenantContracts(tenantId);
 
     res.status(200).json({

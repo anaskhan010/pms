@@ -174,18 +174,37 @@ const getAllTransactions = async (filters = {}) => {
 
   const queryParams = [];
 
-  // Add owner building filtering - only show transactions for tenants assigned to apartments in owner's buildings
-  if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
-    const placeholders = filters.ownerBuildings.map(() => '?').join(',');
-    query += ` AND ft.tenantId IN (
-      SELECT DISTINCT aa.tenantId
-      FROM ApartmentAssigned aa
-      INNER JOIN apartment ap ON aa.apartmentId = ap.apartmentId
-      INNER JOIN floor fl ON ap.floorId = fl.floorId
-      INNER JOIN building bd ON fl.buildingId = bd.buildingId
-      WHERE bd.buildingId IN (${placeholders})
-    )`;
-    queryParams.push(...filters.ownerBuildings);
+  // Add ownership-based filtering for non-admin users
+  if (filters.ownerBuildings !== undefined || filters.transactionIds !== undefined) {
+    let ownershipConditions = [];
+
+    // Filter by building ownership - show transactions for tenants in owner's buildings
+    if (filters.ownerBuildings && filters.ownerBuildings.length > 0) {
+      const placeholders = filters.ownerBuildings.map(() => '?').join(',');
+      ownershipConditions.push(`ft.tenantId IN (
+        SELECT DISTINCT aa.tenantId
+        FROM ApartmentAssigned aa
+        INNER JOIN apartment ap ON aa.apartmentId = ap.apartmentId
+        INNER JOIN floor fl ON ap.floorId = fl.floorId
+        INNER JOIN building bd ON fl.buildingId = bd.buildingId
+        WHERE bd.buildingId IN (${placeholders})
+      )`);
+      queryParams.push(...filters.ownerBuildings);
+    }
+
+    // Filter by direct transaction ownership - show transactions created by owner
+    if (filters.transactionIds && filters.transactionIds.length > 0) {
+      const placeholders = filters.transactionIds.map(() => '?').join(',');
+      ownershipConditions.push(`ft.transactionId IN (${placeholders})`);
+      queryParams.push(...filters.transactionIds);
+    }
+
+    if (ownershipConditions.length > 0) {
+      query += ` AND (${ownershipConditions.join(' OR ')})`;
+    } else {
+      // User has no buildings and no transactions - show nothing
+      query += ` AND 1 = 0`;
+    }
   }
 
   // Apply filters

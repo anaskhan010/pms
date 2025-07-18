@@ -88,7 +88,8 @@ const getUserPermissions = asyncHandler(async (req, res, next) => {
 // Get current user's permissions (no admin permission required)
 const getMyPermissions = asyncHandler(async (req, res, next) => {
   try {
-    let permissions;
+    let permissions = [];
+    let pagePermissions = [];
 
     // Admin users (roleId = 1) get all permissions automatically
     if (req.user.roleId === 1) {
@@ -101,14 +102,59 @@ const getMyPermissions = asyncHandler(async (req, res, next) => {
         action: p.action,
         description: p.description
       }));
+
+      // Admin gets all page permissions too
+      const db = (await import('../../config/db.js')).default;
+      const [allPagePerms] = await db.execute(`
+        SELECT CONCAT(LOWER(REPLACE(sp.pageName, ' ', '_')), '.', pp.permissionType) as permissionName,
+               LOWER(REPLACE(sp.pageName, ' ', '_')) as resource,
+               pp.permissionType as action,
+               pp.description
+        FROM sidebar_pages sp
+        INNER JOIN page_permissions pp ON sp.pageId = pp.pageId
+        WHERE sp.isActive = 1
+      `);
+
+      pagePermissions = allPagePerms.map(p => ({
+        permissionId: 0, // Page permissions don't have IDs in the same table
+        permissionName: p.permissionName,
+        resource: p.resource,
+        action: p.action,
+        description: p.description
+      }));
     } else {
       // Regular users get their assigned permissions
       permissions = await permissionModel.getUserPermissions(req.user.userId);
+
+      // Also get their page permissions
+      const db = (await import('../../config/db.js')).default;
+      const [userPagePerms] = await db.execute(`
+        SELECT CONCAT(LOWER(REPLACE(sp.pageName, ' ', '_')), '.', pp.permissionType) as permissionName,
+               LOWER(REPLACE(sp.pageName, ' ', '_')) as resource,
+               pp.permissionType as action,
+               pp.description
+        FROM sidebar_pages sp
+        INNER JOIN page_permissions pp ON sp.pageId = pp.pageId
+        INNER JOIN role_page_permissions rpp ON pp.pageId = rpp.pageId AND pp.permissionType = rpp.permissionType
+        INNER JOIN userRole ur ON rpp.roleId = ur.roleId
+        WHERE ur.userId = ? AND rpp.isGranted = 1 AND sp.isActive = 1
+      `, [req.user.userId]);
+
+      pagePermissions = userPagePerms.map(p => ({
+        permissionId: 0, // Page permissions don't have IDs in the same table
+        permissionName: p.permissionName,
+        resource: p.resource,
+        action: p.action,
+        description: p.description
+      }));
     }
+
+    // Combine resource permissions and page permissions
+    const allPermissions = [...permissions, ...pagePermissions];
 
     res.status(200).json({
       success: true,
-      data: permissions
+      data: allPermissions
     });
   } catch (error) {
     console.error('Error fetching current user permissions:', error);
